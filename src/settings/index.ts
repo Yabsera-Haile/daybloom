@@ -1,5 +1,6 @@
 // Settings (ST-01). Only what the user changes is stored; everything else follows the phone, so a
 // new install starts with the phone's week start, clock style and currency (ON-01, D9).
+import { eq } from 'drizzle-orm';
 import { getCalendars, getLocales } from 'expo-localization';
 
 import { hemisphereForTimeZone, type Hemisphere, type WeekStart } from '@/calendar/dates';
@@ -72,9 +73,39 @@ export function readSettings(db: Db, defaults: Settings = phoneDefaults()): Sett
   return out as unknown as Settings;
 }
 
+/**
+ * Small remembered choices that aren't settings: a tip that was hidden (HB-03), a routine card
+ * left collapsed (TD-05). Stored as `flag.<name>` next to the settings.
+ */
+export function readFlag(db: Db, name: string): boolean {
+  return (
+    db
+      .select()
+      .from(settings)
+      .where(eq(settings.key, `flag.${name}`))
+      .get()?.value === 'true'
+  );
+}
+
+export function saveFlag(db: Db, name: string, on: boolean): void {
+  if (!on) {
+    db.delete(settings)
+      .where(eq(settings.key, `flag.${name}`))
+      .run();
+    return;
+  }
+  db.insert(settings)
+    .values({ key: `flag.${name}`, value: 'true' })
+    .onConflictDoUpdate({ target: settings.key, set: { value: 'true' } })
+    .run();
+}
+
 export function saveSetting<K extends keyof Settings>(db: Db, key: K, value: Settings[K]): void {
   const v = typeof value === 'string' && key === 'name' ? value.trim() || null : value;
   if (!checks[key](v)) throw new Error(`Not a valid ${key}: ${String(value)}`);
   const json = JSON.stringify(v);
-  db.insert(settings).values({ key, value: json }).onConflictDoUpdate({ target: settings.key, set: { value: json } }).run();
+  db.insert(settings)
+    .values({ key, value: json })
+    .onConflictDoUpdate({ target: settings.key, set: { value: json } })
+    .run();
 }
