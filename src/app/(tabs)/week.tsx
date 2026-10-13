@@ -10,7 +10,7 @@ import { useLive } from '@/data/live';
 import { PlanRow } from '@/features/PlanRow';
 import { dayStatus, paceLabel, plansByDay, type Plan } from '@/features/plans';
 import { TaskForm } from '@/features/sheets/TaskForm';
-import { TabScreen } from '@/features/TabScreen';
+import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { monthDay, weekdayLetter, weekdayLong } from '@/i18n/format';
 import { eventsBetween } from '@/planner/events';
@@ -235,9 +235,10 @@ export default function WeekScreen() {
   const [selected, setSelected] = useState<string | null>(null);
   const [addingPriority, setAddingPriority] = useState(false);
   const prioritiesY = useRef(0);
+  const headerOffset = useHeaderOffset();
   useEffect(() => {
-    if (addingPriority) scroll.current?.scrollTo({ y: prioritiesY.current - 8, animated: true });
-  }, [addingPriority]);
+    if (addingPriority) scroll.current?.scrollTo({ y: prioritiesY.current - headerOffset, animated: true });
+  }, [addingPriority, headerOffset]);
   const [editingIntention, setEditingIntention] = useState<string | null>(null);
 
   const range = weekRange(dateOf(weekDay ?? today), settings.weekStart);
@@ -277,7 +278,7 @@ export default function WeekScreen() {
   };
   const jumpTo = (day: string) => {
     setSelected(day);
-    scroll.current?.scrollTo({ y: spreadY.current + (cardY.current[day] ?? 0) - 8, animated: true });
+    scroll.current?.scrollTo({ y: spreadY.current + (cardY.current[day] ?? 0) - headerOffset, animated: true });
   };
   const addDay = isThisWeek ? today : start;
 

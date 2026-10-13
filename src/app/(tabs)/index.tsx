@@ -11,7 +11,7 @@ import { DateCard } from '@/features/today/DateCard';
 import { Intentions } from '@/features/today/Intentions';
 import { Timeline } from '@/features/today/Timeline';
 import { UpNext } from '@/features/today/UpNext';
-import { TabScreen } from '@/features/TabScreen';
+import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { longDay } from '@/i18n/format';
 import { eventsBetween } from '@/planner/events';
@@ -35,6 +35,7 @@ export default function TodayScreen() {
   const { todayDay, showDay, openSheet, addingTask, setAddingTask } = useUi();
   const scroll = useRef<ScrollView>(null);
   const intentionsY = useRef(0);
+  const headerOffset = useHeaderOffset();
   const day = todayDay ?? today;
   const isToday = day === today;
 
@@ -46,8 +47,8 @@ export default function TodayScreen() {
 
   // bring the inline "Add to-do" form into view (also when opened from the + Add chooser)
   useEffect(() => {
-    if (addingTask) scroll.current?.scrollTo({ y: Math.max(0, intentionsY.current - 8), animated: true });
-  }, [addingTask]);
+    if (addingTask) scroll.current?.scrollTo({ y: Math.max(0, intentionsY.current - headerOffset), animated: true });
+  }, [addingTask, headerOffset]);
 
   const move = (by: 1 | -1) => {
     setAddingTask(false);
