@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Icons and stickers are up to date with the designs
+        run: npm run generate:ui && git diff --exit-code src/ui/generated
+      - name: Database migrations match the schema
+        run: npx drizzle-kit check
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test -- --ci
+      - name: Android JavaScript bundle builds
+        run: npx expo export --platform android --output-dir dist-android
