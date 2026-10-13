@@ -12,9 +12,12 @@ import {
   deleteHabit,
   listHabits,
   listRoutines,
+  reminderTimes,
+  REMIND_EVERY,
   updateHabit,
   type Frequency,
   type Habit,
+  type HabitInput,
 } from '@/habits/store';
 import { t } from '@/i18n';
 import { clockText } from '@/i18n/format';
@@ -71,6 +74,48 @@ function Radio({
   );
 }
 
+function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <View accessibilityRole="radiogroup" className="flex-row rounded-full bg-surface-container p-1">
+      {options.map((o) => (
+        <Pressable
+          key={o.value}
+          accessibilityRole="radio"
+          accessibilityState={{ checked: value === o.value }}
+          onPress={() => onChange(o.value)}
+          hitSlop={{ top: 4, bottom: 4 }}
+          className={`min-h-11 flex-1 items-center justify-center rounded-full px-1 ${value === o.value ? 'bg-primary' : ''}`}>
+          <Text
+            variant="labelLg"
+            color={value === o.value ? 'onPrimary' : 'onSurfaceVariant'}
+            style={{ textAlign: 'center' }}>
+            {o.label}
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+function TimeRow({ label, time, onPress }: { label: string; time: string; onPress: () => void }) {
+  return (
+    <View className="min-h-touch flex-row items-center justify-between">
+      <Text variant="bodyMd">{label}</Text>
+      <PickerPill label={label} value={time} onPress={onPress} />
+    </View>
+  );
+}
+
+type RemindMode = 'off' | 'once' | 'several';
+
 /** New or edited habit (HB-07; design/daybloom/habit). Only the name is required. */
 export function HabitForm({
   habit,
@@ -91,25 +136,60 @@ export function HabitForm({
   const [name, setName] = useState(habit?.name ?? presetName ?? '');
   const [frequency, setFrequency] = useState<Frequency>((habit?.frequency as Frequency) ?? 'daily');
   const [routineId, setRoutineId] = useState<string | null>(habit ? habit.routineId : (presetRoutine ?? null));
-  const [reminderTime, setReminderTime] = useState<string | null>(habit?.reminderTime ?? null);
+  const repeating = !!habit?.reminderEvery && !!habit.reminderTime;
+  const [remindMode, setRemindMode] = useState<RemindMode>(
+    repeating ? 'several' : habit?.reminderTime ? 'once' : 'off',
+  );
+  const [onceAt, setOnceAt] = useState(!repeating && habit?.reminderTime ? habit.reminderTime : '09:00');
+  const [from, setFrom] = useState(repeating ? habit.reminderTime! : '08:00');
+  const [until, setUntil] = useState(habit?.reminderUntil ?? '20:00');
+  const [every, setEvery] = useState<number>(habit?.reminderEvery ?? 120);
   const [note, setNote] = useState(habit?.note ?? '');
   const [newRoutine, setNewRoutine] = useState(false);
   const [askDelete, setAskDelete] = useState(false);
-  const canSave = name.trim().length > 0;
   const routine = routines.find((r) => r.id === routineId) ?? null;
+  // only daily habits remind several times a day
+  const mode: RemindMode = frequency === 'weekly' && remindMode === 'several' ? 'once' : remindMode;
+  const backwards = !routine && mode === 'several' && until <= from;
+  const canSave = name.trim().length > 0 && !backwards;
 
   const save = () => {
     if (!canSave) return;
-    const input = { name, note, frequency, routineId: routine?.id ?? null, reminderTime };
+    const input: HabitInput = {
+      name,
+      note,
+      frequency,
+      routineId: routine?.id ?? null,
+      reminderTime: mode === 'off' ? null : mode === 'once' ? onceAt : from,
+      reminderEvery: mode === 'several' ? every : null,
+      reminderUntil: mode === 'several' ? until : null,
+    };
     if (habit) updateHabit(db, habit.id, input);
     else createHabit(db, input);
     router.back();
   };
 
-  const chooseTime = async () => {
-    const picked = await pickTime(reminderTime ?? '18:00', tf === '24h');
-    if (picked) setReminderTime(picked);
+  const choose = async (time: string, set: (time: string) => void) => {
+    const picked = await pickTime(time, tf === '24h');
+    if (picked) set(picked);
   };
+
+  const remindText = routine
+    ? routine.time
+      ? t.habits.remindWithRoutine(routine.name, clockText(routine.time, tf))
+      : t.habits.remindRoutineNoTime(routine.name)
+    : mode === 'off'
+      ? t.habits.noReminder
+      : mode === 'once'
+        ? t.habits.remindOnceText(clockText(onceAt, tf), frequency === 'weekly')
+        : backwards
+          ? t.habits.remindEndFirst
+          : t.habits.remindSeveralText(
+              t.habits.remindEvery(every),
+              clockText(from, tf),
+              clockText(until, tf),
+              reminderTimes({ reminderTime: from, reminderEvery: every, reminderUntil: until }).length,
+            );
 
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
@@ -168,20 +248,14 @@ export function HabitForm({
             <Icon name="repeat" />
             <Text variant="bodyLg">{t.habits.howOften}</Text>
           </View>
-          <View accessibilityRole="radiogroup" className="flex-row rounded-full bg-surface-container p-1">
-            {(['daily', 'weekly'] as const).map((f) => (
-              <Pressable
-                key={f}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: frequency === f }}
-                onPress={() => setFrequency(f)}
-                className={`h-11 flex-1 items-center justify-center rounded-full ${frequency === f ? 'bg-primary' : ''}`}>
-                <Text variant="labelLg" color={frequency === f ? 'onPrimary' : 'onSurfaceVariant'}>
-                  {f === 'daily' ? t.habits.everyDay : t.habits.onceAWeek}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          <Segmented
+            value={frequency}
+            onChange={setFrequency}
+            options={[
+              { value: 'daily', label: t.habits.everyDay },
+              { value: 'weekly', label: t.habits.onceAWeek },
+            ]}
+          />
         </Section>
 
         {/* When: part of a routine (D1) */}
@@ -225,41 +299,52 @@ export function HabitForm({
           </View>
         </Section>
 
-        {/* Reminder: routine habits share the routine's */}
-        <Section className="min-h-[72px] flex-row items-center justify-between gap-3 px-space-md">
-          <View className="flex-1 flex-row items-center gap-3">
+        {/* Reminder: routine habits share the routine's; others ring once, or every so often in a range */}
+        <Section className="gap-space-sm p-space-md">
+          <View className="flex-row items-center gap-3">
             <Icon name="notifications" />
             <View className="flex-1">
               <Text variant="bodyLg">{t.habits.remind}</Text>
-              <Text variant="bodySm" color="onSurfaceVariant">
-                {routine
-                  ? routine.time
-                    ? t.habits.remindWithRoutine(routine.name, clockText(routine.time, tf))
-                    : t.habits.remindRoutineNoTime(routine.name)
-                  : reminderTime
-                    ? t.habits.remindOwn
-                    : t.habits.noReminder}
+              <Text variant="bodySm" color={backwards ? 'error' : 'onSurfaceVariant'} accessibilityLiveRegion="polite">
+                {remindText}
               </Text>
             </View>
           </View>
           {routine ? null : (
-            <View className="flex-row items-center">
-              <PickerPill
-                label={t.habits.remind}
-                value={reminderTime ? clockText(reminderTime, tf) : t.habits.addTime}
-                onPress={chooseTime}
-              />
-              {reminderTime ? (
-                <Button
-                  label={t.habits.removeTime}
-                  variant="text"
-                  size="md"
-                  align="center"
-                  onPress={() => setReminderTime(null)}
-                />
-              ) : null}
-            </View>
+            <Segmented
+              value={mode}
+              onChange={setRemindMode}
+              options={[
+                { value: 'off', label: t.habits.remindOff },
+                { value: 'once', label: t.habits.remindOnce },
+                ...(frequency === 'daily' ? [{ value: 'several' as const, label: t.habits.remindSeveral }] : []),
+              ]}
+            />
           )}
+          {!routine && mode === 'once' ? (
+            <TimeRow label={t.habits.remindAt} time={clockText(onceAt, tf)} onPress={() => choose(onceAt, setOnceAt)} />
+          ) : null}
+          {!routine && mode === 'several' ? (
+            <>
+              <View accessibilityRole="radiogroup" className="flex-row flex-wrap gap-2">
+                {REMIND_EVERY.map((m) => (
+                  <ChoiceChip
+                    key={m}
+                    role="radio"
+                    label={t.habits.remindEvery(m)}
+                    selected={every === m}
+                    onPress={() => setEvery(m)}
+                  />
+                ))}
+              </View>
+              <TimeRow label={t.habits.remindFrom} time={clockText(from, tf)} onPress={() => choose(from, setFrom)} />
+              <TimeRow
+                label={t.habits.remindUntil}
+                time={clockText(until, tf)}
+                onPress={() => choose(until, setUntil)}
+              />
+            </>
+          ) : null}
         </Section>
 
         {/* Note */}
