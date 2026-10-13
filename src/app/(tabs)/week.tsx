@@ -7,6 +7,7 @@ import { addDaysToKey, parseDayKey } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { HabitsAtGlance } from '@/features/habits/Glance';
 import { PlanRow } from '@/features/PlanRow';
 import { dayStatus, paceLabel, plansByDay, type Plan } from '@/features/plans';
 import { TaskForm } from '@/features/sheets/TaskForm';
@@ -474,6 +475,9 @@ export default function WeekScreen() {
           </View>
         )}
       </View>
+
+      {/* Habits at a glance (WK-11) */}
+      <HabitsAtGlance days={days} today={today} />
 
       {editingIntention !== null ? (
         <Sheet visible onClose={() => setEditingIntention(null)} title={t.week.intention} closeButton>
