@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.4, 2026-10-12. Every screen designed (`design/daybloom/`). **Phase 0 done:** the Expo app is set up in `C:\Users\STUDENT\Documents\Projects\Daybloom Personal Planner mobile app` (out of OneDrive) and runs on Android with the component gallery. Next: milestone M1.
+**Status:** v0.5, 2026-10-13. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner) built:** Today, the event form and details, Week, Month, reminders, onboarding, Settings and search, checked on the Android emulator. Next: try it on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android; then M2.
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -143,7 +143,8 @@ iOS allows only **64 pending local notifications** per app. The scheduler theref
 - [x] App shell: 5 tabs with the custom tab bar, header, "+ Add" button; Today shows the real date, season and day of year
 - [x] **Component gallery** (More › Component gallery) checked on an Android 16 emulator and in the browser
 - [x] CI workflow (`.github/workflows/ci.yml`) and EAS build profiles (`eas.json`) ready; they run once the repo is on GitHub / an Expo account is linked
-- [ ] Spikes, moved into M1: exact-alarm reminders on Samsung and Xiaomi; repeats across daylight-saving changes; blurred header on a low-end phone
+- [x] Repeats across daylight-saving changes (unit tests, T-05.4)
+- [ ] Exact-alarm reminders on Samsung (the S24 Ultra) and Xiaomi; blurred header on a low-end phone (the header is 95% opaque paper for now, without blur)
 
 **Exit:** the component gallery runs on Android and matches the design (done on the emulator; try it on your phone with Expo Go); checks pass; decisions are made.
 
@@ -156,6 +157,11 @@ Each milestone ends with an installable build on a real phone.
 | **M2 Routines & habits** | Habits tab; routines on Today; habits at a glance on Week; streaks | HB, TD-05…07, WK-11 |
 | **M3 Money & goals** | More tab; Budget; Record Entry; savings goals; bills; monthly goal on Month | MR, BU, MO-06 (goals) |
 | **M4 Finishing** | Move-unfinished-tasks prompt, quotes, seasonal images, data export, polish | FR-15, TD-18, ST-02, S items |
+
+**M1 status (2026-10-13):** built and tried on the emulator. Covers SH-01…06; TD-01, 03, 04, 08…17 (plus TD-02 swipe and TD-19 Up next); WK-01, 02, 04…10, 12 (plus WK-03 and WK-07); MO-01, 03…07 except the month's goal (M3) (plus MO-02); EV-01…07; FR-01…14; ON-01; ST-01; ST-03; NT-01; SR-01. Notes:
+- Reminders are local notifications kept as a rolling window (section 5.4). **Expo Go on Android can't show them** (Expo removed its notification channels in SDK 53), so the app skips them there and says so on the help screen. They work in the installed app.
+- Categories are reordered with Move up / Move down in their edit sheet (works with a screen reader; no drag library needed).
+- Changing the time or the repeat of several occurrences drops changes made to single ones, as Google Calendar does.
 
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 
@@ -217,7 +223,7 @@ The code is iOS-ready throughout. This phase covers the Apple Developer account,
 | 1 | **Scope:** the MVP is a planner + habit tracker + budget app in one | Timeline | Milestones M1→M3; Budget can move to the first update (D4) |
 | 2 | Every development machine needs Node 22.13+ | Can't run the project | Install Node 24 LTS (README) |
 | 3 | The prototype is HTML; the app is React Native | Small visual differences | Side-by-side review of every screen (TEST_PLAN) |
-| 4 | Expo Go only has Expo's own native modules | Some M1+ features (exact alarms, widgets) may need more | Switch to an EAS development build when the first such module is added |
+| 4 | Expo Go only has Expo's own native modules, and on Android it can't show local notifications | Reminders can't be tried in Expo Go | Try reminders in the installed app: a local build (README) or an EAS build |
 | 5 | Reminders killed by phone battery savers | Trust in the app | Exact alarms, Samsung/Xiaomi testing, help screen |
 | 6 | Package name `com.daybloom.app` is permanent after the first Play upload | Store identity | Confirm before the first upload |
 | 7 | Blurred header slow on low-end Android | Smoothness | Phase 0 spike; solid fallback |

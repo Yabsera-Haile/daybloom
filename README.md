@@ -14,7 +14,12 @@ A calm personal planner for Android (iOS later): the simplicity of a paper plann
 | `src/ui/` | Shared components (buttons, chips, checkboxes, cards, tab bar…) |
 | `src/theme/` | Typed design tokens, fonts, shadows |
 | `src/db/` | SQLite schema (Drizzle) and database setup |
-| `src/calendar/` | Date logic: weeks, day of year, seasons |
+| `src/calendar/` | Date logic: weeks, day of year, seasons, time zones |
+| `src/planner/` | Events (with repeats), to-dos, hour notes, categories, search |
+| `src/recurrence/` | Repeat rules (the format Google Calendar uses) and their plain-words labels |
+| `src/reminders/` | Which reminders to schedule, and keeping the phone's notifications in step |
+| `src/features/` | Pieces of screens: Today's parts, sheets, the event form |
+| `src/i18n/` | All interface text (English) and date/time formatting |
 | `drizzle/` | Generated database migrations |
 | `scripts/` | `generate-ui-assets.mjs` builds the icon set and stickers from the designs |
 
@@ -26,10 +31,21 @@ You need **Node.js 22.13 or newer** (Node 24 LTS recommended: `winget install Op
 npm install
 npm start          # then scan the QR code with the Expo Go app on an Android phone (same Wi-Fi)
 npm run android    # or open it on a running Android emulator
-npm run web        # quick look in a browser (design preview only; no database on web)
 ```
 
 In the app: **More › Component gallery** shows every building block, to compare with `design/daybloom/`.
+
+**Reminders don't ring in Expo Go on Android** (Expo removed notification support there). Everything else works in Expo Go. To try reminders, install the app itself (below).
+
+## Install it on a phone without an account
+
+```bash
+npx expo prebuild --platform android          # makes the android/ folder (not kept in Git); then undo its package.json change
+cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+# → android/app/build/outputs/apk/release/app-release.apk; copy it to the phone and open it
+```
+
+On Windows, build from a short path (`subst R: "<project folder>"`, then run Gradle from `R:\android`): native builds can fail on long paths or paths with spaces.
 
 ## Check your work
 
