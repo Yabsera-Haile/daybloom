@@ -55,6 +55,13 @@ export function bestStreak(habit: Pick<Habit, 'frequency'>, done: Set<string>): 
 
 const createdDay = (h: HabitLike) => toDayKey(new Date(h.createdAt));
 
+/** Where a habit's history begins: the day it was added, or its first tick if earlier. Days before aren't missed. */
+export function startedOn(habit: HabitLike, done: Set<string>): string {
+  let start = createdDay(habit);
+  for (const p of done) if (p < start) start = p;
+  return start;
+}
+
 /**
  * HB-01: share of daily ticks done this month so far, counting each habit from the day it was
  * added. null when there is nothing to count yet.

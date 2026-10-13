@@ -68,7 +68,11 @@ export function IconButton({ icon, tone = 'plain', iconColor, filled, className 
   const circle = tone === 'tonal' ? 'bg-surface-container-low' : tone === 'primary' ? 'bg-primary' : '';
   const color: ColorName = iconColor ?? (tone === 'primary' ? 'onPrimary' : 'onSurfaceVariant');
   return (
-    <Pressable accessibilityRole="button" className={`h-12 w-12 items-center justify-center active:opacity-70 ${className}`} {...rest}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!rest.disabled }}
+      className={`h-12 w-12 items-center justify-center active:opacity-70 ${rest.disabled ? 'opacity-30' : ''} ${className}`}
+      {...rest}>
       <View className={`h-10 w-10 items-center justify-center rounded-full ${circle}`}>
         <Icon name={icon} size={22} color={color} filled={filled} />
       </View>

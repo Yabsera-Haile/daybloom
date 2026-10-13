@@ -3,7 +3,7 @@ import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
 import { reminderOffsets } from '@/reminders/store';
 
-import { bestStreak, currentStreak, donePeriods, doneOn, monthCompletion, weekSoFar } from './stats';
+import { bestStreak, currentStreak, donePeriods, doneOn, monthCompletion, startedOn, weekSoFar } from './stats';
 import {
   archiveHabit,
   archivedHabits,
@@ -137,6 +137,12 @@ describe('numbers on the Habits tab', () => {
     expect(monthCompletion([a], checks, '2024-10-01', '2024-10-03')).toBeCloseTo(2 / 3);
     expect(monthCompletion([a, b], checks, '2024-10-01', '2024-10-23')).toBeCloseTo(3 / 25);
     expect(monthCompletion([], checks, '2024-10-01', '2024-10-23')).toBeNull();
+  });
+
+  it('history begins when a habit was added, or at an earlier tick filled in later', () => {
+    const h = { id: 'h', frequency: 'daily' as const, createdAt: new Date(2024, 9, 14, 0, 30).getTime() };
+    expect(startedOn(h, new Set())).toBe('2024-10-14');
+    expect(startedOn(h, new Set(['2024-10-13', '2024-10-14']))).toBe('2024-10-13');
   });
 
   it('WK-11 "done so far" counts only days up to today', () => {
