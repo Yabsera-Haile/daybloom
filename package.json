@@ -1,0 +1,76 @@
+{
+  "name": "daybloom",
+  "main": "expo-router/entry",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "jest",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "generate:ui": "node scripts/generate-ui-assets.mjs",
+    "db:generate": "drizzle-kit generate"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/design/",
+      "/dist/"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|nativewind|react-native-css-interop|date-fns)"
+    ]
+  },
+  "dependencies": {
+    "@expo-google-fonts/literata": "^0.4.3",
+    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
+    "date-fns": "^4.4.0",
+    "drizzle-orm": "^0.45.4",
+    "expo": "~57.0.28",
+    "expo-constants": "~57.0.21",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.12",
+    "expo-router": "~57.0.26",
+    "expo-splash-screen": "~57.0.10",
+    "expo-sqlite": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "nativewind": "^4.2.7",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.10.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@material-symbols/svg-400": "^0.48.0",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.2.2",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-preset-expo": "~57.0.0",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "jest": "~29.7.0",
+    "jest-expo": "~57.0.6",
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~6.0.3"
+  }
+}

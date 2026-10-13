@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Daybloom",
+    "slug": "daybloom",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "daybloom",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fff8f5",
+    "ios": {
+      "bundleIdentifier": "com.daybloom.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.daybloom.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#5B7E67",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#fff8f5",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/literata/400Regular/Literata_400Regular.ttf",
+            "node_modules/@expo-google-fonts/literata/400Regular_Italic/Literata_400Regular_Italic.ttf",
+            "node_modules/@expo-google-fonts/literata/500Medium/Literata_500Medium.ttf",
+            "node_modules/@expo-google-fonts/literata/600SemiBold/Literata_600SemiBold.ttf",
+            "node_modules/@expo-google-fonts/literata/700Bold/Literata_700Bold.ttf",
+            "node_modules/@expo-google-fonts/plus-jakarta-sans/400Regular/PlusJakartaSans_400Regular.ttf",
+            "node_modules/@expo-google-fonts/plus-jakarta-sans/400Regular_Italic/PlusJakartaSans_400Regular_Italic.ttf",
+            "node_modules/@expo-google-fonts/plus-jakarta-sans/500Medium/PlusJakartaSans_500Medium.ttf",
+            "node_modules/@expo-google-fonts/plus-jakarta-sans/600SemiBold/PlusJakartaSans_600SemiBold.ttf",
+            "node_modules/@expo-google-fonts/plus-jakarta-sans/700Bold/PlusJakartaSans_700Bold.ttf"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
