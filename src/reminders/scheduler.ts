@@ -19,7 +19,7 @@ export const CHANNEL = 'reminders';
  * SDK 53), so there Daybloom skips them quietly; the installed app (a development or store build) has them.
  */
 export const remindersAvailable = !(Platform.OS === 'android' && isRunningInExpoGo());
-const PLANNED = /^[et]\./; // ids made by plan.ts; snoozes and tests are left alone
+const PLANNED = /^[ethr]\./; // ids made by plan.ts (events, to-dos, habits, routines); snoozes and tests are left alone
 
 export async function setUpNotifications(): Promise<void> {
   if (!remindersAvailable) return;
@@ -51,6 +51,13 @@ export async function setUpNotifications(): Promise<void> {
     { identifier: 'done', buttonTitle: t.notify.done, options: { opensAppToForeground: true } },
     { identifier: 'later', buttonTitle: t.notify.later, options: { opensAppToForeground: true } },
   ]);
+  await Notifications.setNotificationCategoryAsync('routine', [
+    { identifier: 'open', buttonTitle: t.notify.openChecklist, options: { opensAppToForeground: true } },
+  ]);
+  await Notifications.setNotificationCategoryAsync('habit', [
+    { identifier: 'done', buttonTitle: t.notify.done, options: { opensAppToForeground: true } },
+    { identifier: 'open', buttonTitle: t.notify.open, options: { opensAppToForeground: true } },
+  ]);
 }
 
 export async function notificationsAllowed(): Promise<boolean> {
@@ -73,7 +80,7 @@ function contentOf(
     data: r.data,
     // urgent to-dos use the rose accent (NT-01)
     color: r.urgent ? colors.secondary : colors.primary,
-    categoryIdentifier: r.data.kind === 'task' ? 'task' : r.atStart ? 'eventNow' : 'event',
+    categoryIdentifier: r.data.kind === 'event' ? (r.atStart ? 'eventNow' : 'event') : r.data.kind,
     sound: 'default',
   };
 }
@@ -93,7 +100,8 @@ export function syncReminders(): Promise<void> {
       do {
         again = false;
         if (!(await notificationsAllowed())) return;
-        const planned = plannedReminders(db, Date.now(), readSettings(db).timeFormat);
+        const settings = readSettings(db);
+        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart);
         const scheduled = (await Notifications.getAllScheduledNotificationsAsync())
           .filter((n) => PLANNED.test(n.identifier))
           .map((n) => ({ id: n.identifier, sig: (n.content.data as Partial<ReminderData> | undefined)?.sig }));

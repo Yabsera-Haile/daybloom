@@ -2,12 +2,14 @@
 // (scheduler.ts) compares this list with what is scheduled and fixes the difference.
 import { and, eq, gte, isNull, lte } from 'drizzle-orm';
 
-import { toDayKey } from '@/calendar/dates';
+import { toDayKey, type WeekStart } from '@/calendar/dates';
 import { addDaysToKey } from '@/calendar/timezone';
 import { tasks } from '@/db/schema';
 import type { Db } from '@/db/types';
 import { t } from '@/i18n';
 import { clockText, timeOf, type TimeFormat } from '@/i18n/format';
+import { doneOn, donePeriods, periodOf } from '@/habits/stats';
+import { checksBetween, listHabits, listRoutines, weekOf } from '@/habits/store';
 import { eventsBetween } from '@/planner/events';
 
 import { reminderOffsets } from './store';
@@ -15,17 +17,21 @@ import { reminderOffsets } from './store';
 /** iOS keeps at most 64 waiting notifications per app; leave room for snoozes and the test reminder. */
 export const MAX_SCHEDULED = 60;
 const HORIZON_DAYS = 45;
+/** Routines and habits remind this many days ahead. */
+const HABIT_DAYS = 7;
 /** All-day events and their reminders are anchored to 9 AM. */
 const ALL_DAY_HOUR = 9;
 
 export type ReminderData = {
-  kind: 'event' | 'task';
+  kind: 'event' | 'task' | 'routine' | 'habit';
   /** The day it belongs to, for opening Today there */
   day: string;
   eventId?: string;
   seriesId?: string | null;
   originalStartAt?: number | null;
   taskId?: string;
+  routineId?: string;
+  habitId?: string;
   /** When the event starts / the to-do is due: Snooze never goes past it */
   at: number;
   /** Changes when anything shown changes, so the scheduler replaces it */
@@ -62,6 +68,7 @@ export function plannedReminders(
   now: number,
   timeFormat: TimeFormat,
   limit = MAX_SCHEDULED,
+  weekStart: WeekStart = 1,
 ): PlannedReminder[] {
   const first = toDayKey(new Date(now));
   const last = addDaysToKey(first, HORIZON_DAYS);
@@ -130,6 +137,53 @@ export function plannedReminders(
         urgent: x.urgent,
         atStart: minutes === 0,
         data: { kind: 'task', day: x.date, taskId: x.id, at, sig: `${fireAt}|${title}|${body}|${x.urgent}` },
+      });
+    }
+  }
+
+  // Routines and habits remind for the next week only, so they don't crowd events out of the window.
+  // Nothing is sent for a day that is already all ticked.
+  const habitDays = Array.from({ length: HABIT_DAYS }, (_, i) => addDaysToKey(first, i));
+  const habits = listHabits(db);
+  const ticks = checksBetween(db, addDaysToKey(first, -7), addDaysToKey(first, HABIT_DAYS + 7));
+  for (const r of listRoutines(db)) {
+    if (!r.time || reminderOffsets(db, 'routine', r.id).length === 0) continue;
+    const members = habits.filter((h) => h.routineId === r.id && h.frequency === 'daily');
+    if (members.length === 0) continue;
+    const title = t.notify.eventTitle(clockText(r.time, timeFormat), r.name);
+    const body = members.map((h) => h.name).join(' · ');
+    for (const day of habitDays) {
+      const fireAt = clockToMs(day, r.time);
+      if (fireAt <= now || doneOn(members, ticks, day).done === members.length) continue;
+      out.push({
+        id: `r.${r.id}.${day}`.replace(/[^A-Za-z0-9.]/g, '_'),
+        fireAt,
+        title,
+        body,
+        urgent: false,
+        atStart: true,
+        data: { kind: 'routine', day, routineId: r.id, at: fireAt, sig: `${fireAt}|${title}|${body}` },
+      });
+    }
+  }
+  for (const h of habits) {
+    if (h.routineId || !h.reminderTime) continue;
+    const title = t.notify.eventTitle(clockText(h.reminderTime, timeFormat), h.name);
+    const body = h.note ?? t.notify.habitBody;
+    const done = donePeriods(h, ticks, weekStart);
+    for (const day of habitDays) {
+      // weekly habits are reminded on the first day of their week
+      if (h.frequency === 'weekly' && weekOf(day, weekStart).start !== day) continue;
+      const fireAt = clockToMs(day, h.reminderTime);
+      if (fireAt <= now || done.has(periodOf(h, day, weekStart))) continue;
+      out.push({
+        id: `h.${h.id}.${day}`.replace(/[^A-Za-z0-9.]/g, '_'),
+        fireAt,
+        title,
+        body,
+        urgent: false,
+        atStart: true,
+        data: { kind: 'habit', day, habitId: h.id, at: fireAt, sig: `${fireAt}|${title}|${body}` },
       });
     }
   }

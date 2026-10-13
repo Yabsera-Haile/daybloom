@@ -291,6 +291,8 @@ export const en = {
     open: 'Open',
     done: 'Done',
     later: 'In 30 min',
+    habitBody: 'A small step for today',
+    openChecklist: 'Open checklist',
     testTitle: 'This is a test reminder',
     testBody: 'Your reminders are working.',
   },
@@ -345,7 +347,8 @@ export const en = {
     anytime: 'Anytime',
     noSetTime: 'No set time',
     title: (month: string) => `Habits · ${month}`,
-    dayOfMonth: (day: number, total: number, pct: number | null) => `Day ${day} of ${total}${pct === null ? '' : ` · ${pct}% of habits done`}`,
+    dayOfMonth: (day: number, total: number, pct: number | null) =>
+      `Day ${day} of ${total}${pct === null ? '' : ` · ${pct}% of habits done`}`,
     monthBar: (pct: number) => `${pct}% of the month has passed`,
     history: "See each habit's month",
     bestStreak: 'Best streak',
@@ -392,7 +395,8 @@ export const en = {
     everyDay: 'Every day',
     onceAWeek: 'Once a week',
     when: 'When',
-    routineDetail: (time: string | null, n: number) => [time, n === 1 ? '1 habit' : `${n} habits`].filter(Boolean).join(' · '),
+    routineDetail: (time: string | null, n: number) =>
+      [time, n === 1 ? '1 habit' : `${n} habits`].filter(Boolean).join(' · '),
     newRoutine: 'New routine',
     remind: 'Remind me',
     remindWithRoutine: (name: string, time: string) => `With ${name} at ${time}`,
@@ -409,7 +413,7 @@ export const en = {
     archivedToast: 'Habit archived',
     delete: 'Delete habit and its history',
     deleteAsk: (name: string) => `Delete ${name} and its history?`,
-    deleteText: "Its ticks will be gone for good. To keep them, archive it instead.",
+    deleteText: 'Its ticks will be gone for good. To keep them, archive it instead.',
     deleteYes: 'Delete for good',
     keep: 'Keep it',
     // routine sheet
@@ -424,7 +428,8 @@ export const en = {
     routineDeleteText: 'Its habits move to Anytime.',
     routineDeleted: 'Routine deleted',
     // Today (TD-05..07)
-    progress: (time: string | null, done: number, total: number) => [time, `${done} of ${total} done`].filter(Boolean).join(' · '),
+    progress: (time: string | null, done: number, total: number) =>
+      [time, `${done} of ${total} done`].filter(Boolean).join(' · '),
     startsAt: (time: string, n: number) => `Starts ${time} · ${n === 1 ? '1 habit' : `${n} habits`}`,
     collapse: (name: string) => `Collapse ${name}`,
     expand: (name: string) => `Open ${name}`,

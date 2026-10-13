@@ -1,5 +1,6 @@
 import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
+import { createHabit, ensureDefaultRoutines, listHabits, setHabitDone } from '@/habits/store';
 import {
   createEvent,
   deleteEvent,
@@ -128,5 +129,41 @@ describe('reminders', () => {
       [0, 1440],
     );
     expect(plan(db).map((r) => [r.fireAt, r.title])).toEqual([[at(24, 9), "All day · Mom's birthday"]]);
+  });
+
+  it('T-NT01.1 a routine rings at its time with its habits, for a week, and not on a day all ticked', () => {
+    ensureDefaultRoutines(db);
+    const tea = createHabit(db, { name: 'Herbal tea', frequency: 'daily', routineId: 'evening' });
+    createHabit(db, { name: 'Read 10 pages', frequency: 'daily', routineId: 'evening' });
+    const rs = plan(db);
+    // Morning Ritual has no habits, so it stays quiet
+    expect(rs.map((r) => r.fireAt)).toEqual([23, 24, 25, 26, 27, 28, 29].map((d) => at(d, 21, 30)));
+    expect([rs[0].title, rs[0].body, rs[0].data.kind]).toEqual([
+      '9:30 PM · Evening Wind-Down',
+      'Herbal tea · Read 10 pages',
+      'routine',
+    ]);
+    setHabitDone(db, { id: tea, frequency: 'daily' }, '2024-10-23', true, 1);
+    expect(plan(db)[0].fireAt).toBe(at(23, 21, 30)); // one of two is still to do
+    for (const h of listHabits(db)) setHabitDone(db, h, '2024-10-23', true, 1);
+    expect(plan(db)[0].fireAt).toBe(at(24, 21, 30));
+  });
+
+  it('T-NT01.1 an Anytime habit with its own time rings then; a weekly one on the first day of its week, until done', () => {
+    createHabit(db, { name: 'Stretch', frequency: 'daily', routineId: null, reminderTime: '18:00' });
+    const plants = createHabit(db, {
+      name: 'Water plants',
+      frequency: 'weekly',
+      routineId: null,
+      reminderTime: '10:00',
+    });
+    createHabit(db, { name: 'No reminder', frequency: 'daily', routineId: null });
+    const weekly = () => plan(db).filter((r) => r.data.habitId === plants);
+    // Wednesday: this week's Monday has passed, so next Monday
+    expect(weekly().map((r) => r.fireAt)).toEqual([at(28, 10)]);
+    expect(plan(db).filter((r) => r.title === '6:00 PM · Stretch')).toHaveLength(7);
+    expect(plan(db)[0].body).toBe('A small step for today');
+    setHabitDone(db, { id: plants, frequency: 'weekly' }, '2024-10-29', true, 1);
+    expect(weekly()).toEqual([]);
   });
 });

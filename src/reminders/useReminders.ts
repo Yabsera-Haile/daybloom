@@ -6,8 +6,10 @@ import { AppState } from 'react-native';
 import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
 import { onDataChanged } from '@/data/live';
+import { getHabit, setHabitDone } from '@/habits/store';
 import { findOccurrence } from '@/planner/events';
 import { setTaskDone } from '@/planner/tasks';
+import { readSettings } from '@/settings';
 import { useUi } from '@/state/ui';
 
 import type { ReminderData } from './plan';
@@ -20,6 +22,10 @@ function handle(response: Notifications.NotificationResponse) {
   switch (response.actionIdentifier) {
     case 'done':
       if (data.taskId) setTaskDone(db, data.taskId, true);
+      if (data.habitId) {
+        const habit = getHabit(db, data.habitId);
+        if (habit) setHabitDone(db, habit, data.day, true, readSettings(db).weekStart);
+      }
       break;
     case 'later':
       void remindAgain(content, 30);
@@ -28,7 +34,11 @@ function handle(response: Notifications.NotificationResponse) {
       void remindAgain(content, 10);
       break;
     default: {
-      // a tap (or "Open"): show that day on Today with the item open
+      // a tap (or "Open"): a habit opens Habits; anything else shows that day on Today with the item open
+      if (data.kind === 'habit') {
+        router.navigate('/habits');
+        break;
+      }
       const ui = useUi.getState();
       ui.showDay(data.day === toDayKey(new Date()) ? null : data.day);
       router.navigate('/');
