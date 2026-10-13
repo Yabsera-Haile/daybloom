@@ -2,6 +2,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { ensureDefaultRoutines } from '@/habits/store';
 import { ensureDefaultCategories } from '@/planner/categories';
 import { Text } from '@/ui';
 
@@ -10,10 +11,11 @@ import { db } from './client';
 
 let seeded = false;
 
-/** First-run data (the starter categories), once the tables exist. Safe to repeat. */
+/** First-run data (starter categories and routines), once the tables exist. Safe to repeat. */
 function seedOnce() {
   if (seeded) return;
   ensureDefaultCategories(db);
+  ensureDefaultRoutines(db);
   seeded = true;
 }
 
