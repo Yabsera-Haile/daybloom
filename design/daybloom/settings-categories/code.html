@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Categories</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Categories (ST-01). Opened from Settings. States: default, #edit-category ("Work"). -->
+<body data-back="../settings/code.html" data-title="Categories">
+<main class="pt-16 pb-16 px-margin flex flex-col gap-space-md">
+
+  <p class="mt-space-sm text-body-md text-on-surface-variant">Categories give your plans their color. Drag to change the order they appear in the add form.</p>
+
+  <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+    <li class="flex items-center gap-1 pr-1"><span class="w-11 h-14 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder Wellness"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <a href="#edit-category" class="flex-1 flex items-center gap-3 min-h-[60px]"><span class="w-7 h-7 rounded-full bg-primary-fixed border-2 border-primary"></span><span class="flex-1"><span class="block text-body-lg text-on-surface">Wellness</span><span class="block text-body-sm text-on-surface-variant">14 plans</span></span><span class="material-symbols-outlined text-on-surface-variant mr-2">chevron_right</span></a></li>
+    <li class="flex items-center gap-1 pr-1"><span class="w-11 h-14 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder Work"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <a href="#edit-category" class="flex-1 flex items-center gap-3 min-h-[60px]"><span class="w-7 h-7 rounded-full bg-secondary-fixed border-2 border-secondary"></span><span class="flex-1"><span class="block text-body-lg text-on-surface">Work</span><span class="block text-body-sm text-on-surface-variant">22 plans</span></span><span class="material-symbols-outlined text-on-surface-variant mr-2">chevron_right</span></a></li>
+    <li class="flex items-center gap-1 pr-1"><span class="w-11 h-14 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder Personal"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <a href="#edit-category" class="flex-1 flex items-center gap-3 min-h-[60px]"><span class="w-7 h-7 rounded-full bg-tertiary-fixed border-2 border-tertiary"></span><span class="flex-1"><span class="block text-body-lg text-on-surface">Personal</span><span class="block text-body-sm text-on-surface-variant">18 plans · used for new plans</span></span><span class="material-symbols-outlined text-on-surface-variant mr-2">chevron_right</span></a></li>
+    <li class="flex items-center gap-1 pr-1"><span class="w-11 h-14 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder Social"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <a href="#edit-category" class="flex-1 flex items-center gap-3 min-h-[60px]"><span class="w-7 h-7 rounded-full bg-social-container border-2 border-social"></span><span class="flex-1"><span class="block text-body-lg text-on-surface">Social</span><span class="block text-body-sm text-on-surface-variant">9 plans</span></span><span class="material-symbols-outlined text-on-surface-variant mr-2">chevron_right</span></a></li>
+    <li class="flex items-center gap-1 pr-1"><span class="w-11 h-14 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder Creative"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <a href="#edit-category" class="flex-1 flex items-center gap-3 min-h-[60px]"><span class="w-7 h-7 rounded-full bg-surface-variant border-2 border-on-surface-variant"></span><span class="flex-1"><span class="block text-body-lg text-on-surface">Creative</span><span class="block text-body-sm text-on-surface-variant">6 plans</span></span><span class="material-symbols-outlined text-on-surface-variant mr-2">chevron_right</span></a></li>
+  </ul>
+
+  <a href="#edit-category" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>New category</a>
+</main>
+
+<div data-sheet="edit-category" hidden class="fixed inset-0 z-50">
+  <a href="#close" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="ec-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float px-margin pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-md"></div>
+    <div class="flex items-center justify-between mb-space-md">
+      <h3 id="ec-title" class="font-serif text-headline-md text-on-surface">Edit category</h3>
+      <a href="#close" aria-label="Close" class="w-12 h-12 flex items-center justify-center"><span class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">close</span></span></a>
+    </div>
+    <label for="ec-name" class="text-label-md text-on-surface-variant">Name</label>
+    <input id="ec-name" value="Work" class="w-full h-12 mt-1 mb-space-md px-4 rounded-xl bg-surface border-[1.5px] border-primary text-body-lg text-on-surface outline-none"/>
+    <p class="text-label-md text-on-surface-variant mb-2">Color</p>
+    <div class="flex gap-3 mb-space-lg" role="radiogroup" aria-label="Color">
+      <button role="radio" aria-checked="false" aria-label="Sage" class="w-12 h-12 rounded-full bg-primary-fixed border-2 border-primary"></button>
+      <button role="radio" aria-checked="true" aria-label="Rose" class="w-12 h-12 rounded-full bg-secondary-fixed border-2 border-secondary outline outline-2 outline-offset-2 outline-on-surface flex items-center justify-center text-secondary"><span class="material-symbols-outlined">check</span></button>
+      <button role="radio" aria-checked="false" aria-label="Butterscotch" class="w-12 h-12 rounded-full bg-tertiary-fixed border-2 border-tertiary"></button>
+      <button role="radio" aria-checked="false" aria-label="Lavender" class="w-12 h-12 rounded-full bg-social-container border-2 border-social"></button>
+      <button role="radio" aria-checked="false" aria-label="Stone" class="w-12 h-12 rounded-full bg-surface-variant border-2 border-on-surface-variant"></button>
+    </div>
+    <div class="grid grid-cols-2 gap-space-sm">
+      <a href="#close" class="h-14 rounded-full border-[1.5px] border-outline-variant text-label-lg text-secondary flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">delete</span>Delete</a>
+      <a href="#close" class="h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Save</a>
+    </div>
+    <p class="text-body-sm text-on-surface-variant text-center mt-space-sm">Deleting moves its 22 plans to Personal.</p>
+  </div>
+</div>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

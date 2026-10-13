@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Empty states</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Design spec sheet, not an app screen: the empty state for each section (UX-06, G5).
+     Pattern: friendly sentence + one next step. Past days never offer "Add". -->
+<body data-back="../today-empty/code.html" data-title="Empty states (spec)" data-avatar="none">
+<main class="pt-16 pb-16 px-margin flex flex-col gap-space-lg">
+
+  <p class="mt-space-sm text-body-md text-on-surface-variant">Every empty section says something friendly and offers one next step. Labels above each card name the screen.</p>
+
+  <!-- Week -->
+  <section class="flex flex-col gap-space-sm">
+    <h2 class="text-label-sm text-primary uppercase">Week · a future day with nothing planned</h2>
+    <div class="rounded-2xl bg-surface-container-low p-space-md flex items-center justify-between">
+      <span class="flex items-center gap-space-sm"><span class="w-8 h-8 rounded-full bg-surface-variant text-label-md text-on-surface-variant flex items-center justify-center">27</span><span class="font-serif text-headline-sm text-on-surface">Sunday</span></span>
+      <a href="#" class="h-10 px-3 rounded-full border-[1.5px] border-outline-variant text-label-md text-on-surface flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">add</span>Add</a>
+    </div>
+    <h2 class="text-label-sm text-primary uppercase mt-space-sm">Week · a past day with nothing planned</h2>
+    <div class="rounded-2xl bg-surface-container-low/60 p-space-md flex items-center justify-between">
+      <span class="flex items-center gap-space-sm"><span class="w-8 h-8 rounded-full bg-surface-variant text-label-md text-on-surface-variant flex items-center justify-center">22</span><span class="font-serif text-headline-sm text-on-surface">Tuesday</span></span>
+      <span class="text-body-md text-on-surface-variant">Nothing planned</span>
+    </div>
+    <h2 class="text-label-sm text-primary uppercase mt-space-sm">Week · no priorities yet</h2>
+    <div class="rounded-2xl bg-surface-container-low p-space-md">
+      <div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">flag</span><span class="font-serif text-headline-md text-on-surface">Weekly Priorities</span></div>
+      <div class="mt-space-sm rounded-xl border-[1.5px] border-dashed border-outline-variant p-space-md text-center">
+        <p class="text-body-lg text-on-surface">What matters most this week?</p>
+        <p class="text-body-md text-on-surface-variant">Pick one to three things.</p>
+        <a href="#" class="mt-space-sm mx-auto h-12 w-fit px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>Add a priority</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Month -->
+  <section class="flex flex-col gap-space-sm">
+    <h2 class="text-label-sm text-primary uppercase">Month · selected day is free</h2>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+      <div class="flex items-center gap-space-sm">
+        <span class="w-11 h-11 rounded-full bg-surface-container text-on-surface font-serif text-headline-sm flex items-center justify-center">29</span>
+        <div><p class="font-serif text-headline-md text-on-surface leading-tight">Tuesday, Oct 29</p><p class="text-label-md text-on-surface-variant">A free day 🌿</p></div>
+      </div>
+      <a href="#" class="mt-space-md h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>Plan something</a>
+    </div>
+    <h2 class="text-label-sm text-primary uppercase mt-space-sm">Month · no deadlines left</h2>
+    <div class="rounded-2xl bg-surface-container-low p-space-md flex items-center gap-space-sm">
+      <span class="material-symbols-outlined text-primary">task_alt</span>
+      <p class="text-body-md text-on-surface">No deadlines left this month. Enjoy the breathing room.</p>
+    </div>
+  </section>
+
+  <!-- Habits -->
+  <section class="flex flex-col gap-space-sm">
+    <h2 class="text-label-sm text-primary uppercase">Habits · first visit</h2>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-space-lg text-center flex flex-col items-center gap-space-sm">
+      <span class="w-16 h-16 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">spa</span></span>
+      <p class="font-serif text-headline-md text-on-surface">Start with one small habit</p>
+      <p class="text-body-md text-on-surface-variant">Small and daily beats big and rare. Pick one to begin:</p>
+      <div class="flex flex-wrap justify-center gap-2 my-space-sm">
+        <a href="#" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center hit">Drink water</a>
+        <a href="#" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center hit">Stretch 5 minutes</a>
+        <a href="#" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center hit">Read 10 pages</a>
+        <a href="#" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center hit">Walk outside</a>
+      </div>
+      <a href="#" class="h-12 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>My own habit</a>
+    </div>
+  </section>
+
+  <!-- Budget -->
+  <section class="flex flex-col gap-space-sm">
+    <h2 class="text-label-sm text-primary uppercase">Budget · first visit</h2>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-space-lg text-center flex flex-col items-center gap-space-sm">
+      <span class="w-16 h-16 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">savings</span></span>
+      <p class="font-serif text-headline-md text-on-surface">Start your money page</p>
+      <p class="text-body-md text-on-surface-variant">Set how much you plan to spend this month, then add what you spend as you go. It stays on this phone.</p>
+      <a href="#" class="mt-space-sm h-12 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center">Set my monthly budget</a>
+    </div>
+  </section>
+
+  <!-- Search -->
+  <section class="flex flex-col gap-space-sm">
+    <h2 class="text-label-sm text-primary uppercase">Search · nothing found</h2>
+    <div class="rounded-2xl bg-surface-container-low p-space-md text-center">
+      <p class="text-body-lg text-on-surface">Nothing found for “dentist”</p>
+      <p class="text-body-md text-on-surface-variant">Try a different word, or check the spelling.</p>
+    </div>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

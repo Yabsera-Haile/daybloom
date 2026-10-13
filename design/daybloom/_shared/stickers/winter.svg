@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Winter pine">
+  <circle cx="60" cy="60" r="58" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="52" fill="#ece6f3"/>
+  <rect x="56" y="82" width="8" height="12" rx="2" fill="#8f4b3b"/>
+  <path d="M60 22 L80 50 L40 50 Z" fill="#5b7e67" stroke="#5b7e67" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M60 36 L86 68 L34 68 Z" fill="#43654f" stroke="#43654f" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M60 52 L90 86 L30 86 Z" fill="#5b7e67" stroke="#5b7e67" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M52 33 C56 36 64 36 68 33 L60 22 Z" fill="#ffffff"/>
+  <g fill="#ffffff"><circle cx="30" cy="38" r="3"/><circle cx="90" cy="36" r="2.5"/><circle cx="94" cy="58" r="3"/><circle cx="24" cy="62" r="2.5"/><circle cx="84" cy="22" r="2"/></g>
+</svg>

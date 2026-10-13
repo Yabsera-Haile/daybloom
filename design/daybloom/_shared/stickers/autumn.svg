@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Autumn leaves">
+  <circle cx="60" cy="60" r="58" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="52" fill="#ffddb5"/>
+  <g transform="rotate(-38 60 66)">
+    <path d="M60 28 C79 40 83 64 66 85 C63 89 60 91 60 91 C60 91 57 89 54 85 C37 64 41 40 60 28 Z" fill="#e3a857"/>
+    <path d="M60 36 L60 82" stroke="#fff8f5" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <g transform="rotate(22 60 66)">
+    <path d="M60 26 C79 38 83 63 66 84 C63 88 60 90 60 90 C60 90 57 88 54 84 C37 63 41 38 60 26 Z" fill="#e08d79"/>
+    <path d="M60 34 L60 82" stroke="#fff8f5" stroke-width="3" stroke-linecap="round"/>
+    <path d="M60 89 L60 100" stroke="#8f4b3b" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M60 50 L70 42 M60 62 L71 55 M60 50 L50 42 M60 62 L49 55" stroke="#fff8f5" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(83 82)">
+    <ellipse cx="0" cy="6" rx="7" ry="8.5" fill="#8f4b3b"/>
+    <path d="M-9.5 2 C-9.5 -6 9.5 -6 9.5 2 Z" fill="#643f00"/>
+    <path d="M0 -4 L1.5 -9" stroke="#643f00" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>

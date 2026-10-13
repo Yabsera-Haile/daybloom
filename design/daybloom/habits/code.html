@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Habits</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Sample data: today Wed Oct 23 2024, 1:15 PM. Habits are grouped by routine (D1): ticking
+     "Warm lemon water" here is the same tick as in Today's Morning Ritual. -->
+<body data-tab="habits" data-title="Habits">
+<main class="pt-16 pb-32 px-margin flex flex-col gap-space-lg">
+
+  <!-- Overview (HB-01) -->
+  <section class="pt-space-sm flex flex-col gap-space-sm">
+    <div class="flex items-center justify-between gap-2">
+      <div>
+        <h1 class="font-serif text-headline-md text-on-surface">Habits · October 2024</h1>
+        <p class="text-label-md text-on-surface-variant flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined icon-fill text-[16px] text-primary">eco</span>Day 23 of 31 · 78% of habits done</p>
+      </div>
+      <a href="../habit-history/code.html" aria-label="See each habit's month" class="w-12 h-12 flex items-center justify-center shrink-0">
+        <span class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center"><span class="material-symbols-outlined">calendar_month</span></span>
+      </a>
+    </div>
+    <div class="h-2 rounded-full bg-surface-container overflow-hidden" role="img" aria-label="74% of the month has passed"><div class="h-full rounded-full bg-primary" style="width:74%"></div></div>
+  </section>
+
+  <!-- Stats (HB-02): all calculated from the table below -->
+  <section class="grid grid-cols-3 gap-space-sm">
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3 flex flex-col gap-0.5">
+      <span class="material-symbols-outlined icon-fill text-primary text-[20px]">local_fire_department</span>
+      <span class="font-serif text-display-lg-mobile text-on-surface mt-1">18<span class="text-label-md font-sans text-on-surface-variant"> days</span></span>
+      <span class="text-label-sm text-on-surface-variant">Best streak</span>
+    </div>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3 flex flex-col gap-0.5">
+      <span class="material-symbols-outlined text-tertiary text-[20px]">spa</span>
+      <span class="font-serif text-display-lg-mobile text-on-surface mt-1" id="active-count">11</span>
+      <span class="text-label-sm text-on-surface-variant">Active habits</span>
+    </div>
+    <div class="rounded-2xl bg-primary-fixed shadow-card p-3 flex flex-col gap-0.5">
+      <span class="material-symbols-outlined icon-fill text-on-primary-fixed text-[20px]">check_circle</span>
+      <span class="font-serif text-display-lg-mobile text-on-primary-fixed mt-1" id="today-done">3<span class="text-label-md font-sans">/8</span></span>
+      <span class="text-label-sm text-on-primary-fixed-variant">Done today</span>
+    </div>
+  </section>
+
+  <!-- Hint (HB-03): dismissible -->
+  <section class="rounded-2xl bg-surface-container-low flex items-center gap-space-sm pl-space-md text-on-surface-variant">
+    <span class="material-symbols-outlined text-primary">touch_app</span>
+    <span class="flex-1 text-body-md">Tap a circle to tick a habit for that day</span>
+    <a href="#" aria-label="Hide this tip" class="w-12 h-12 flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">close</span></a>
+  </section>
+
+  <!-- Daily habits (HB-04, HB-06, HB-08) -->
+  <section class="flex flex-col gap-space-sm">
+    <div class="flex items-end justify-between">
+      <h2 class="font-serif text-headline-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">sunny</span>Daily habits</h2>
+      <span class="text-label-md text-on-surface-variant">Oct 17 – 23</span>
+    </div>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3" id="daily"></div>
+  </section>
+
+  <!-- Weekly habits (HB-05): one column per week of the month; October 2024 has 5 -->
+  <section class="flex flex-col gap-space-sm">
+    <div class="flex items-end justify-between">
+      <h2 class="font-serif text-headline-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-secondary">calendar_view_week</span>Weekly habits</h2>
+      <span class="text-label-md text-on-surface-variant">October · 5 weeks</span>
+    </div>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3" id="weekly"></div>
+  </section>
+
+  <!-- Add / edit (HB-07) -->
+  <section class="grid grid-cols-2 gap-space-sm">
+    <a href="#edit-list" data-hide-on="edit-list" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">edit</span>Edit habits</a>
+    <a href="#close" data-show-on="edit-list" hidden class="h-12 rounded-full border-[1.5px] border-primary text-label-lg text-primary flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">check</span>Done</a>
+    <a href="../habit/code.html#new" class="h-12 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>New habit</a>
+  </section>
+</main>
+
+<script src="../_shared/shell.js"></script>
+<script>
+  // The sample fixture. 1 = done, 0 = not done. Days: Thu 17 … Wed 23 (today).
+  const days = [["T", 17], ["F", 18], ["S", 19], ["S", 20], ["M", 21], ["T", 22], ["W", 23]];
+  const dayNames = ["Thursday", "Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
+  const groups = [
+    { name: "Morning Ritual", time: "7:00 AM", icon: "wb_twilight", habits: [
+      { name: "Warm lemon water", note: "18-day streak", d: [1,1,1,1,1,1,1] },
+      { name: "Gentle stretch, 15 min", note: "4-day streak", d: [1,1,0,1,1,1,1] },
+      { name: "Morning journal", note: "Mind", d: [1,0,1,1,1,0,0] } ] },
+    { name: "Evening Wind-Down", time: "9:30 PM", icon: "bedtime", habits: [
+      { name: "Skin care", note: "6-day streak", d: [1,1,1,1,1,1,0] },
+      { name: "Read 20 minutes", note: "Mind", d: [1,1,0,1,0,1,0] },
+      { name: "Lights out by 10:30", note: "5-day streak", d: [0,1,1,1,1,1,0] } ] },
+    { name: "Anytime", time: "", icon: "all_inclusive", habits: [
+      { name: "10,000 steps", note: "Walk", d: [1,1,0,1,1,0,0] },
+      { name: "Vitamins", note: "12-day streak", d: [1,1,1,1,1,1,1] } ] }
+  ];
+  const weekly = [
+    { name: "Deep clean the studio", note: "Home", w: [1,1,1,0,null] },
+    { name: "Budget check-in", note: "Usually Fridays", w: [1,1,1,0,null] },
+    { name: "Meal prep Sunday", note: "Food", w: [1,0,1,1,null] }
+  ];
+  const cols = "grid grid-cols-[minmax(0,1fr),repeat(7,28px)] gap-x-1 items-center";
+  const circle = (done, label, today) => `<button type="button" aria-pressed="${!!done}" aria-label="${label}${done ? ", done" : ", not done"}"
+      class="hit-dense w-7 h-7 mx-auto rounded-full flex items-center justify-center ${done ? "bg-primary text-on-primary" : "border-[1.5px] border-outline bg-surface-container-lowest"} ${today ? "outline outline-2 outline-offset-1 outline-primary/40" : ""}">
+      ${done ? '<span class="material-symbols-outlined text-[18px]">check</span>' : ""}</button>`;
+
+  // Edit mode (#edit-list): drag handles to reorder, tap a habit to edit it.
+  function editRow(h) {
+    return `<div class="flex items-center gap-1 min-h-[56px] border-t border-surface-variant">
+      <span class="w-10 h-12 flex items-center justify-center text-on-surface-variant" role="button" aria-label="Drag to reorder ${h.name}"><span class="material-symbols-outlined">drag_indicator</span></span>
+      <span class="flex-1 min-w-0"><span class="block text-body-lg text-on-surface">${h.name}</span><span class="block text-body-sm text-on-surface-variant">${h.note}</span></span>
+      <a href="../habit/code.html#edit" aria-label="Edit ${h.name}" class="w-12 h-12 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></a></div>`;
+  }
+  function render() {
+  if (location.hash === "#edit-list") {
+    document.getElementById("daily").innerHTML = groups.map((g) => `<div class="flex items-center justify-between pt-3 pb-1 text-label-md text-primary"><span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">${g.icon}</span>${g.name}</span>${g.time ? '<a href="#" class="h-10 px-2 flex items-center text-label-md text-primary">Edit routine</a>' : ""}</div>` + g.habits.map(editRow).join("")).join("");
+    document.getElementById("weekly").innerHTML = weekly.map(editRow).join("") + `<a href="#" class="mt-1 min-h-touch flex items-center gap-1.5 text-label-lg text-on-surface-variant border-t border-surface-variant pt-2"><span class="material-symbols-outlined text-[20px]">inventory_2</span>Archived habits (2)</a>`;
+    return;
+  }
+  let html = `<div class="${cols} pb-2 text-center text-label-sm text-on-surface-variant">
+    <span class="text-left">Habit</span>${days.map(([l, n], i) => `<span class="flex flex-col rounded-lg py-0.5 ${i === 6 ? "bg-primary-fixed/60 text-primary" : ""}"><span>${l}</span><span>${n}</span></span>`).join("")}</div>`;
+  groups.forEach((g) => {
+    html += `<div class="flex items-center gap-1.5 pt-3 pb-1 text-label-md text-primary border-t border-surface-variant mt-1">
+      <span class="material-symbols-outlined text-[18px]">${g.icon}</span>${g.name}${g.time ? `<span class="text-on-surface-variant font-normal">· ${g.time}</span>` : ""}</div>`;
+    g.habits.forEach((h) => {
+      html += `<div class="${cols} py-1.5 min-h-touch">
+        <span class="min-w-0 pr-1"><span class="block text-body-md font-medium text-on-surface leading-tight">${h.name}</span><span class="block text-label-sm font-medium text-on-surface-variant mt-0.5">${h.note}</span></span>
+        ${h.d.map((v, i) => circle(v, `${h.name}, ${dayNames[i]} ${days[i][1]}`, i === 6)).join("")}</div>`;
+    });
+  });
+  document.getElementById("daily").innerHTML = html;
+
+  const wcols = "grid grid-cols-[minmax(0,1fr),repeat(5,32px)] gap-x-1.5 items-center";
+  const weeks = ["Sep 29", "Oct 6", "Oct 13", "Oct 20", "Oct 27"];
+  let whtml = `<div class="${wcols} pb-2 text-center text-label-sm text-on-surface-variant"><span class="text-left">Week of</span>${weeks.map((w, i) => `<span class="rounded-lg py-0.5 leading-tight ${i === 3 ? "bg-primary-fixed/60 text-primary" : ""}">${w.replace(" ", "<br/>")}</span>`).join("")}</div>`;
+  weekly.forEach((h) => {
+    whtml += `<div class="${wcols} py-1.5 min-h-touch border-t border-surface-variant">
+      <span class="min-w-0 pr-1"><span class="block text-body-md font-medium text-on-surface leading-tight">${h.name}</span><span class="block text-label-sm font-medium text-on-surface-variant mt-0.5">${h.note}</span></span>
+      ${h.w.map((v, i) => v === null
+        ? `<span class="w-7 h-7 mx-auto rounded-full border-[1.5px] border-dashed border-outline-variant" aria-label="Week of ${weeks[i]}, not yet"></span>`
+        : circle(v, `${h.name}, week of ${weeks[i]}`, i === 3)).join("")}</div>`;
+  });
+  document.getElementById("weekly").innerHTML = whtml;
+  }
+  render();
+  window.addEventListener("hashchange", render);
+
+  // Stats straight from the fixture (FR-13)
+  const daily = groups.flatMap((g) => g.habits);
+  document.getElementById("active-count").textContent = daily.length + weekly.length;
+  document.getElementById("today-done").innerHTML = `${daily.filter((h) => h.d[6]).length}<span class="text-label-md font-sans">/${daily.length}</span>`;
+</script>
+</body>
+</html>

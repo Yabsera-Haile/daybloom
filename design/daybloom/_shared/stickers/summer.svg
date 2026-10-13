@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Summer sun">
+  <circle cx="60" cy="60" r="58" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="52" fill="#ffdad2"/>
+  <g stroke="#e3a857" stroke-width="5" stroke-linecap="round">
+    <path d="M56 22 L56 30"/><path d="M56 86 L56 94"/><path d="M20 58 L28 58"/><path d="M84 58 L92 58"/>
+    <path d="M30.5 32.5 L36 38"/><path d="M76 78 L81.5 83.5"/><path d="M30.5 83.5 L36 78"/><path d="M76 38 L81.5 32.5"/>
+  </g>
+  <circle cx="56" cy="58" r="20" fill="#f9bb68"/>
+  <circle cx="50" cy="56" r="2.5" fill="#643f00"/><circle cx="62" cy="56" r="2.5" fill="#643f00"/>
+  <path d="M50 64 C53 68 59 68 62 64" stroke="#643f00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M66 88 C66 81 72 77 78 79 C80 73 89 72 92 79 C98 79 100 88 94 90 L70 90 C67 90 66 89 66 88 Z" fill="#ffffff"/>
+</svg>

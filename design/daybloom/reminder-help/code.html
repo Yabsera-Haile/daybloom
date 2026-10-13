@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Reminder help</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Reminders not arriving? (ST-03, G17). Opened from More or Settings, and offered automatically
+     when the app notices a reminder fired late. Each check reads the phone's real setting. -->
+<body data-back="../more/code.html" data-title="Reminder help">
+<main class="pt-16 pb-16 px-margin flex flex-col gap-space-md">
+
+  <section class="mt-space-sm rounded-2xl bg-tertiary-fixed/50 p-space-md flex items-center gap-space-md">
+    <span class="w-14 h-14 rounded-full bg-surface-container-lowest text-tertiary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[30px]">notifications_active</span></span>
+    <p class="text-body-lg text-on-surface">Some phones pause apps to save battery. These checks keep your reminders on time.</p>
+  </section>
+
+  <!-- Live checks -->
+  <section aria-labelledby="checks">
+    <h2 id="checks" class="text-label-md text-on-surface-variant uppercase mb-2">Your phone</h2>
+    <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+      <li class="flex items-center gap-space-md px-space-md min-h-[64px]">
+        <span class="material-symbols-outlined icon-fill text-primary">check_circle</span>
+        <span class="flex-1"><span class="block text-body-lg text-on-surface">Notifications</span><span class="block text-body-sm text-on-surface-variant">Daybloom is allowed to notify you</span></span>
+        <span class="rounded-full bg-primary-fixed text-on-primary-fixed px-2.5 py-0.5 text-label-sm">On</span>
+      </li>
+      <li class="flex items-center gap-space-md px-space-md min-h-[64px]">
+        <span class="material-symbols-outlined icon-fill text-primary">check_circle</span>
+        <span class="flex-1"><span class="block text-body-lg text-on-surface">On-time reminders</span><span class="block text-body-sm text-on-surface-variant">Reminders can ring at the exact minute</span></span>
+        <span class="rounded-full bg-primary-fixed text-on-primary-fixed px-2.5 py-0.5 text-label-sm">On</span>
+      </li>
+      <li class="px-space-md py-3">
+        <div class="flex items-center gap-space-md">
+          <span class="material-symbols-outlined icon-fill text-tertiary">error</span>
+          <span class="flex-1"><span class="block text-body-lg text-on-surface">Battery saving</span><span class="block text-body-sm text-on-surface-variant">Your phone may pause Daybloom</span></span>
+          <span class="rounded-full bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-0.5 text-label-sm">Check</span>
+        </div>
+        <a href="#" class="mt-space-sm ml-10 h-11 w-fit px-4 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1">Open battery settings<span class="material-symbols-outlined text-[18px]">open_in_new</span></a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Step by step per brand -->
+  <section aria-labelledby="steps">
+    <h2 id="steps" class="text-label-md text-on-surface-variant uppercase mb-2">Step by step</h2>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+      <details open class="group px-space-md">
+        <summary class="list-none flex items-center justify-between min-h-[60px] cursor-pointer"><span class="text-body-lg font-semibold text-on-surface">Samsung</span><span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span></summary>
+        <ol class="pb-space-md flex flex-col gap-space-sm text-body-md text-on-surface">
+          <li class="flex gap-3"><span class="w-7 h-7 rounded-full bg-primary-fixed text-on-primary-fixed text-label-md flex items-center justify-center shrink-0">1</span><span>Open <b>Settings</b>, then <b>Apps</b>, then <b>Daybloom</b>.</span></li>
+          <li class="flex gap-3"><span class="w-7 h-7 rounded-full bg-primary-fixed text-on-primary-fixed text-label-md flex items-center justify-center shrink-0">2</span><span>Tap <b>Battery</b> and choose <b>Unrestricted</b>.</span></li>
+          <li class="flex gap-3"><span class="w-7 h-7 rounded-full bg-primary-fixed text-on-primary-fixed text-label-md flex items-center justify-center shrink-0">3</span><span>In <b>Settings › Battery › Background usage limits</b>, make sure Daybloom isn't in <b>Sleeping apps</b>.</span></li>
+        </ol>
+      </details>
+      <details class="group px-space-md">
+        <summary class="list-none flex items-center justify-between min-h-[60px] cursor-pointer"><span class="text-body-lg font-semibold text-on-surface">Xiaomi, Redmi, POCO</span><span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span></summary>
+        <p class="pb-space-md text-body-md text-on-surface">Settings › Apps › Manage apps › Daybloom: set <b>Battery saver</b> to <b>No restrictions</b> and turn on <b>Autostart</b>.</p>
+      </details>
+      <details class="group px-space-md">
+        <summary class="list-none flex items-center justify-between min-h-[60px] cursor-pointer"><span class="text-body-lg font-semibold text-on-surface">OnePlus, Oppo, Realme</span><span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span></summary>
+        <p class="pb-space-md text-body-md text-on-surface">Settings › Battery › Daybloom: choose <b>Don't optimize</b> and allow <b>background activity</b>.</p>
+      </details>
+      <details class="group px-space-md">
+        <summary class="list-none flex items-center justify-between min-h-[60px] cursor-pointer"><span class="text-body-lg font-semibold text-on-surface">Other phones</span><span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span></summary>
+        <p class="pb-space-md text-body-md text-on-surface">Look in Settings for <b>Battery</b> or <b>App battery usage</b> and allow Daybloom to run in the background.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-low p-space-md flex flex-col items-center text-center gap-space-sm">
+    <p class="text-body-lg text-on-surface">Want to be sure?</p>
+    <a href="#" class="h-12 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1"><span class="material-symbols-outlined text-[20px]">send</span>Send a test reminder</a>
+    <p class="text-body-sm text-on-surface-variant">It arrives in 1 minute. Close the app and wait for it.</p>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

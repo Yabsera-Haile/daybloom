@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Bill</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- New / Edit bill (BU-06, BU-10). States: #new (default), #edit ("Car insurance"). Same layout as the event form. -->
+<body data-header="none">
+
+<header class="fixed top-0 frame-x z-40 bg-surface/95 backdrop-blur-xl border-b border-surface-variant">
+  <div class="h-16 px-1 flex items-center justify-between">
+    <a href="../budget/code.html" class="h-12 px-4 rounded-full text-label-lg text-on-surface-variant flex items-center">Cancel</a>
+    <h1 class="font-serif text-headline-sm text-on-surface"><span data-show-on="new">New bill</span><span data-show-on="edit" hidden>Edit bill</span></h1>
+    <a href="../budget/code.html" class="mr-3 h-10 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center hit">Save</a>
+  </div>
+</header>
+
+<main class="pt-20 pb-12 px-margin flex flex-col gap-space-md">
+  <div>
+    <label for="name" class="sr-only">Bill name</label>
+    <input id="name" type="text" autocomplete="off" placeholder="What's the bill?" class="w-full bg-transparent font-serif text-headline-lg text-on-surface placeholder:text-outline border-b-[1.5px] border-primary pb-2 outline-none"/>
+  </div>
+
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card">
+    <div class="p-space-md">
+      <label for="amount" class="text-label-md text-on-surface-variant">Amount</label>
+      <div class="relative mt-1">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 font-serif text-headline-lg text-on-surface-variant">$</span>
+        <input id="amount" inputmode="decimal" placeholder="0.00" class="w-full h-14 pl-10 pr-4 rounded-xl bg-surface border-[1.5px] border-outline-variant font-serif text-headline-lg text-on-surface placeholder:text-outline outline-none focus:border-primary"/>
+      </div>
+    </div>
+    <div class="border-t border-surface-variant mx-space-md"></div>
+    <button type="button" class="w-full flex items-center justify-between px-space-md min-h-[56px]">
+      <span class="flex items-center gap-3 text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">event</span>Due</span>
+      <span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-on-surface flex items-center" id="due">Pick a date</span>
+    </button>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">repeat</span>Repeats</h2>
+    <div class="flex flex-wrap gap-2" data-chips="repeat">
+      <button type="button" data-value="none" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Just once</button>
+      <button type="button" data-value="1" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every month</button>
+      <button type="button" data-value="3" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every 3 months</button>
+      <button type="button" data-value="6" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every 6 months</button>
+      <button type="button" data-value="12" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every year</button>
+    </div>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>How it's paid</h2>
+    <div role="radiogroup" aria-label="How it's paid" class="flex flex-col gap-space-sm" data-radios="paid">
+      <button type="button" role="radio" data-value="auto" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span><span class="block text-body-lg text-on-surface">Paid automatically</span><span class="block text-body-sm text-on-surface-variant">Your bank pays it; Daybloom just reminds you</span></span>
+      </button>
+      <button type="button" role="radio" data-value="manual" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span><span class="block text-body-lg text-on-surface">I pay it myself</span><span class="block text-body-sm text-on-surface-variant">Shows "Needs paying" until you mark it paid</span></span>
+      </button>
+      <button type="button" role="radio" data-value="flex" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span><span class="block text-body-lg text-on-surface">Flexible</span><span class="block text-body-sm text-on-surface-variant">Money you're setting aside, no fixed due day</span></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">notifications</span>Remind me</h2>
+    <div class="flex flex-wrap gap-2" data-chips="remind">
+      <button type="button" data-value="none" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">No reminder</button>
+      <button type="button" data-value="0" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">On the day</button>
+      <button type="button" data-value="1" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">1 day before</button>
+      <button type="button" data-value="3" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">3 days before</button>
+    </div>
+  </section>
+
+  <div data-show-on="edit" hidden class="flex flex-col gap-space-sm">
+    <a href="../budget/code.html" class="h-12 rounded-full border-[1.5px] border-primary text-label-lg text-primary flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[20px]">check_circle</span>Mark as paid</a>
+    <p class="text-body-sm text-on-surface-variant text-center">Adds $420.00 to October's spending and moves the bill to Apr 25.</p>
+    <a href="../budget/code.html" class="h-12 rounded-full text-label-lg text-secondary flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[20px]">delete</span>Delete bill</a>
+  </div>
+</main>
+<script src="../_shared/shell.js"></script>
+<script>
+  const pick = (attr, name, value) => document.querySelectorAll(`[data-${attr}="${name}"] button`).forEach((b) =>
+    b.setAttribute(attr === "chips" ? "aria-pressed" : "aria-checked", b.dataset.value === value));
+  document.querySelectorAll("[data-chips], [data-radios]").forEach((g) => g.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    g.dataset.chips ? pick("chips", g.dataset.chips, b.dataset.value) : pick("radios", g.dataset.radios, b.dataset.value);
+  }));
+  function applyMode() {
+    const edit = location.hash === "#edit";
+    document.getElementById("name").value = edit ? "Car insurance" : "";
+    document.getElementById("amount").value = edit ? "420.00" : "";
+    document.getElementById("due").textContent = edit ? "Fri, Oct 25" : "Pick a date";
+    pick("chips", "repeat", edit ? "6" : "1");
+    pick("radios", "paid", edit ? "manual" : "auto");
+    pick("chips", "remind", edit ? "3" : "1");
+    if (!edit) document.getElementById("name").focus();
+  }
+  window.addEventListener("hashchange", applyMode);
+  applyMode();
+</script>
+</body>
+</html>

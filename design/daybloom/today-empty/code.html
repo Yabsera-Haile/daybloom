@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Today (first day)</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Today on the very first day, right after onboarding (UX-06, G5). -->
+<body data-tab="today" data-title="Today" data-fab="add" data-add-for="Wednesday, Oct 23">
+<main class="pt-16 pb-44 px-margin flex flex-col gap-space-md">
+
+  <!-- Date header (TD-01). Seasonal sticker instead of a photo (D7); no weather (D2). -->
+  <section class="rounded-2xl bg-surface-container-low shadow-card mt-space-sm p-space-md flex items-start justify-between gap-space-sm">
+    <div class="min-w-0">
+      <h1 class="font-serif text-headline-lg text-on-surface">Wednesday, Oct 23</h1>
+      <p class="text-label-md text-on-surface-variant mt-0.5">Autumn · Day 297 of 366</p>
+      <div class="mt-space-sm -ml-1 inline-flex items-center bg-surface-container-lowest rounded-full shadow-card">
+        <a href="#" aria-label="Previous day" class="w-12 h-12 flex items-center justify-center text-on-surface"><span class="material-symbols-outlined">chevron_left</span></a>
+        <span class="text-label-md text-primary px-1" aria-current="date">Today</span>
+        <a href="#" aria-label="Next day" class="w-12 h-12 flex items-center justify-center text-on-surface"><span class="material-symbols-outlined">chevron_right</span></a>
+      </div>
+    </div>
+    <img src="../_shared/stickers/autumn.svg" alt="" class="w-20 h-20 shrink-0 -mr-1 -mt-1 rotate-6"/>
+  </section>
+
+  <!-- Welcome -->
+  <section class="rounded-2xl bg-primary-fixed/50 p-space-md flex gap-space-sm">
+    <span class="material-symbols-outlined text-primary text-[28px]">local_florist</span>
+    <div>
+      <h2 class="font-serif text-headline-sm text-on-surface">Welcome, Rose</h2>
+      <p class="text-body-md text-on-surface-variant mt-0.5">This is your first page. Tap <span class="font-semibold text-on-surface">+ Add</span> to plan something, or start with a small routine.</p>
+    </div>
+  </section>
+
+  <!-- Routines: empty -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center gap-space-sm">
+      <span class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center"><span class="material-symbols-outlined">wb_twilight</span></span>
+      <div>
+        <h2 class="font-serif text-headline-sm text-on-surface">Start a gentle routine</h2>
+        <p class="text-body-md text-on-surface-variant">A few small habits for the start or end of your day</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-space-sm mt-space-md">
+      <a href="#" class="min-h-touch rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px] text-primary">wb_twilight</span>Morning</a>
+      <a href="#" class="min-h-touch rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px] text-secondary">bedtime</span>Evening</a>
+    </div>
+  </section>
+
+  <!-- To-dos: empty -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center gap-space-sm">
+      <span class="material-symbols-outlined text-primary">checklist</span>
+      <div>
+        <h2 class="font-serif text-headline-md text-on-surface">Daily Intentions</h2>
+        <p class="text-body-sm text-on-surface-variant">Your to-dos for today</p>
+      </div>
+    </div>
+    <div class="mt-space-md rounded-xl border-[1.5px] border-dashed border-outline-variant p-space-md flex flex-col items-center text-center gap-space-sm">
+      <p class="text-body-lg text-on-surface">Nothing on your list yet</p>
+      <p class="text-body-md text-on-surface-variant">Write down one thing you'd like to get done today.</p>
+      <a href="../today/code.html#add-task" class="h-12 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>Add a to-do</a>
+    </div>
+  </section>
+
+  <!-- Timeline: empty -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center justify-between mb-space-sm">
+      <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary">schedule</span><h2 class="font-serif text-headline-md text-on-surface">Hourly Timeline</h2></div>
+      <span class="flex items-center gap-1.5 rounded-full bg-surface-container px-3 h-8 text-label-md text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-secondary"></span>1:15 PM now</span>
+    </div>
+    <p class="text-body-md text-on-surface-variant mb-space-md">Your day is open. Tap any hour to plan something.</p>
+    <ol class="flex flex-col gap-1.5">
+      <li class="flex gap-2"><span class="w-12 text-right text-label-md text-outline pt-3">12 PM</span><a href="#add" aria-label="Add something at 12 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch"></a></li>
+      <li class="flex gap-2"><span class="w-12 text-right text-label-md text-outline pt-3">1 PM</span><a href="#add" aria-label="Add something at 1 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch"></a></li>
+      <li class="flex gap-2 items-center" aria-label="Now, 1:15 PM"><span class="w-12 text-right text-label-sm text-secondary">1:15</span><span class="flex-1 flex items-center" aria-hidden="true"><span class="w-3 h-3 rounded-full bg-secondary -ml-1.5"></span><span class="flex-1 h-[2px] bg-secondary"></span></span></li>
+      <li class="flex gap-2"><span class="w-12 text-right text-label-md text-outline pt-3">2 PM</span><a href="#add" aria-label="Add something at 2 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch flex items-center justify-center text-label-md text-on-surface-variant gap-1"><span class="material-symbols-outlined text-[18px]">add</span>Tap to add</a></li>
+      <li class="flex gap-2"><span class="w-12 text-right text-label-md text-outline pt-3">3 PM</span><a href="#add" aria-label="Add something at 3 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch"></a></li>
+      <li class="flex gap-2"><span class="w-12 text-right text-label-md text-outline pt-3">4 PM</span><a href="#add" aria-label="Add something at 4 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch"></a></li>
+    </ol>
+    <a href="#" class="mt-1 min-h-touch flex items-center justify-center gap-1 text-label-lg text-primary"><span class="material-symbols-outlined text-[18px]">unfold_more</span>Show the whole day (7 AM – 9 PM)</a>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-high/60 p-space-md flex items-center gap-space-sm">
+    <span class="material-symbols-outlined text-secondary text-[24px]">spa</span>
+    <p class="font-serif italic text-body-lg text-on-surface-variant">“Every planner starts with a single blank page.”</p>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

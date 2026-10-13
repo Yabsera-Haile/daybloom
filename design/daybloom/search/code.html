@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Search</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Search (SR-01, SR-02). Opened from the search button in the header.
+     States: default (results for "tax"), #recent (nothing typed yet), #none (no results). -->
+<body data-header="none">
+
+<header class="fixed top-0 frame-x z-40 bg-surface/95 backdrop-blur-xl">
+  <div class="h-16 pl-1 pr-margin flex items-center gap-1">
+    <a href="../today/code.html" aria-label="Back" class="w-12 h-12 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">arrow_back</span></a>
+    <div class="flex-1 relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[22px]">search</span>
+      <label for="q" class="sr-only">Search your plans</label>
+      <input id="q" type="search" placeholder="Search your plans" class="w-full h-12 pl-11 pr-12 rounded-full bg-surface-container-lowest border-[1.5px] border-primary text-body-lg text-on-surface placeholder:text-outline outline-none"/>
+      <a href="#recent" aria-label="Clear search" data-hide-on="recent" class="absolute right-0 top-0 w-12 h-12 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">close</span></a>
+    </div>
+  </div>
+</header>
+
+<main class="pt-20 pb-12 px-margin flex flex-col gap-space-md">
+
+  <!-- Nothing typed yet -->
+  <section data-show-on="recent" hidden class="flex flex-col gap-space-sm">
+    <h2 class="text-label-md text-on-surface-variant uppercase">Recent searches</h2>
+    <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+      <li class="flex items-center"><a href="#none" class="flex-1 flex items-center gap-space-md pl-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">history</span>dentist</a><a href="#recent" aria-label="Remove dentist from recent searches" class="w-12 h-12 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">close</span></a></li>
+      <li class="flex items-center"><a href="#" class="flex-1 flex items-center gap-space-md pl-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">history</span>Maya</a><a href="#recent" aria-label="Remove Maya from recent searches" class="w-12 h-12 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">close</span></a></li>
+      <li class="flex items-center"><a href="#" class="flex-1 flex items-center gap-space-md pl-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">history</span>rent</a><a href="#recent" aria-label="Remove rent from recent searches" class="w-12 h-12 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">close</span></a></li>
+    </ul>
+    <p class="text-body-md text-on-surface-variant mt-space-sm">Try a name, a place, or a word from your notes. Search looks through events, to-dos, habits and money.</p>
+  </section>
+
+  <!-- No results -->
+  <section data-show-on="none" hidden class="pt-space-xl flex flex-col items-center text-center gap-space-sm">
+    <img src="../_shared/stickers/winter.svg" alt="" class="w-20 h-20 -rotate-6"/>
+    <p class="font-serif text-headline-md text-on-surface">Nothing found for “dentist”</p>
+    <p class="text-body-md text-on-surface-variant">Try a different word, or check the spelling.</p>
+  </section>
+
+  <!-- Results for "tax" -->
+  <div data-hide-on="recent none" class="flex flex-col gap-space-md">
+    <div class="flex gap-2 overflow-x-auto -mx-margin px-margin" role="tablist" aria-label="Filter results">
+      <button role="tab" aria-selected="true" class="h-9 px-3 rounded-full bg-primary text-on-primary text-label-md shrink-0 hit">All (3)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-md shrink-0 hit">Events (1)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-md shrink-0 hit">To-dos (2)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface-variant text-label-md shrink-0 hit">Habits (0)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface-variant text-label-md shrink-0 hit">Money (0)</button>
+    </div>
+
+    <section>
+      <h2 class="text-label-md text-primary uppercase mb-1.5">Today · Wed, Oct 23</h2>
+      <a href="../today/code.html#task-menu" class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md flex items-start gap-3">
+        <span class="w-10 h-10 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0"><span class="material-symbols-outlined">task_alt</span></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-body-lg text-on-surface">Submit quarterly <mark class="bg-tertiary-fixed text-on-surface rounded px-0.5">tax</mark> paperwork</span>
+          <span class="flex items-center gap-2 mt-1"><span class="inline-flex items-center pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span><span class="text-body-sm text-on-surface-variant">To-do · Due 5:00 PM</span></span>
+        </span>
+      </a>
+    </section>
+
+    <section>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Coming up</h2>
+      <a href="../today/code.html#event-detail" class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md flex items-start gap-3">
+        <span class="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined">call</span></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-body-lg text-on-surface">Call with the <mark class="bg-tertiary-fixed text-on-surface rounded px-0.5">tax</mark> advisor</span>
+          <span class="block text-body-sm text-on-surface-variant mt-1">Event · Tue, Nov 5 · 11:00 AM · Work</span>
+        </span>
+      </a>
+    </section>
+
+    <section>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Earlier</h2>
+      <a href="#" class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md flex items-start gap-3">
+        <span class="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0"><span class="material-symbols-outlined">check</span></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-body-lg text-on-surface-variant done-text">Gather <mark class="bg-tertiary-fixed text-on-surface rounded px-0.5">tax</mark> receipts</span>
+          <span class="block text-body-sm text-on-surface-variant mt-1">To-do · Done Mon, Oct 14</span>
+        </span>
+      </a>
+    </section>
+  </div>
+</main>
+<script src="../_shared/shell.js"></script>
+<script>
+  function fill() {
+    const q = document.getElementById("q");
+    q.value = location.hash === "#recent" ? "" : location.hash === "#none" ? "dentist" : "tax";
+    if (location.hash === "#recent") q.focus();
+  }
+  window.addEventListener("hashchange", fill);
+  fill();
+</script>
+</body>
+</html>

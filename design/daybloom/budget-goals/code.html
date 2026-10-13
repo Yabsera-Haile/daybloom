@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Savings goals</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Savings goals (BU-05, G14). Opened from Budget > Manage. States: default, #add-money, #new-goal. -->
+<body data-back="../budget/code.html" data-title="Savings goals">
+<main class="pt-16 pb-16 px-margin flex flex-col gap-space-md">
+
+  <section class="mt-space-sm rounded-2xl bg-surface-container p-space-md flex items-center gap-space-md">
+    <img src="../_shared/stickers/savings.svg" alt="" class="w-14 h-14 shrink-0 -rotate-6"/>
+    <div>
+      <p class="text-label-md text-on-surface-variant">Saved so far</p>
+      <p class="font-serif text-display-lg-mobile text-primary font-bold">$11,550</p>
+      <p class="text-body-sm text-on-surface-variant">Across 3 goals</p>
+    </div>
+  </section>
+
+  <!-- Goal cards -->
+  <article class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-start justify-between gap-2 mb-2">
+      <div class="flex items-center gap-space-sm"><span class="w-10 h-10 rounded-xl bg-surface-container text-primary flex items-center justify-center"><span class="material-symbols-outlined icon-fill">shield_with_heart</span></span>
+        <div><h2 class="text-body-lg font-semibold text-on-surface leading-tight">Emergency fund</h2><p class="text-body-sm text-on-surface-variant">3 months of safety</p></div></div>
+      <a href="#" aria-label="Edit Emergency fund" class="w-12 h-12 -mt-2 -mr-3 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">more_vert</span></a>
+    </div>
+    <div class="flex items-center gap-space-sm"><div class="h-2 flex-1 rounded-full bg-surface-container overflow-hidden"><div class="h-full rounded-full bg-primary-container" style="width:82%"></div></div><span class="text-label-sm text-primary">82%</span></div>
+    <div class="flex items-center justify-between mt-space-sm">
+      <p class="text-body-md text-on-surface"><span class="font-semibold text-primary">$8,200</span> of $10,000</p>
+      <a href="#add-money" class="h-10 px-4 rounded-full border-[1.5px] border-primary text-label-md text-primary flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">add</span>Add money</a>
+    </div>
+  </article>
+
+  <article class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-start justify-between gap-2 mb-2">
+      <div class="flex items-center gap-space-sm"><span class="w-10 h-10 rounded-xl bg-surface-container text-secondary flex items-center justify-center"><span class="material-symbols-outlined">flight_takeoff</span></span>
+        <div><h2 class="text-body-lg font-semibold text-on-surface leading-tight">Tokyo autumn trip</h2><p class="text-body-sm text-on-surface-variant">By Nov 15 · about $320 a week to get there</p></div></div>
+      <a href="#" aria-label="Edit Tokyo autumn trip" class="w-12 h-12 -mt-2 -mr-3 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">more_vert</span></a>
+    </div>
+    <div class="flex items-center gap-space-sm"><div class="h-2 flex-1 rounded-full bg-surface-container overflow-hidden"><div class="h-full rounded-full bg-secondary-container" style="width:70%"></div></div><span class="text-label-sm text-secondary">70%</span></div>
+    <div class="flex items-center justify-between mt-space-sm">
+      <p class="text-body-md text-on-surface"><span class="font-semibold text-secondary">$2,450</span> of $3,500</p>
+      <a href="#add-money" class="h-10 px-4 rounded-full border-[1.5px] border-primary text-label-md text-primary flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">add</span>Add money</a>
+    </div>
+  </article>
+
+  <article class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-start justify-between gap-2 mb-2">
+      <div class="flex items-center gap-space-sm"><span class="w-10 h-10 rounded-xl bg-surface-container text-tertiary flex items-center justify-center"><span class="material-symbols-outlined">laptop_mac</span></span>
+        <div><h2 class="text-body-lg font-semibold text-on-surface leading-tight">Studio workstation</h2><p class="text-body-sm text-on-surface-variant">New creative tools</p></div></div>
+      <a href="#" aria-label="Edit Studio workstation" class="w-12 h-12 -mt-2 -mr-3 flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">more_vert</span></a>
+    </div>
+    <div class="flex items-center gap-space-sm"><div class="h-2 flex-1 rounded-full bg-surface-container overflow-hidden"><div class="h-full rounded-full bg-tertiary-container" style="width:75%"></div></div><span class="text-label-sm text-tertiary">75%</span></div>
+    <div class="flex items-center justify-between mt-space-sm">
+      <p class="text-body-md text-on-surface"><span class="font-semibold">$900</span> of $1,200</p>
+      <a href="#add-money" class="h-10 px-4 rounded-full border-[1.5px] border-primary text-label-md text-primary flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">add</span>Add money</a>
+    </div>
+  </article>
+
+  <a href="#new-goal" class="h-12 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">add</span>New savings goal</a>
+
+  <a href="#" class="rounded-2xl bg-surface-container-low p-space-md flex items-center gap-space-sm">
+    <span class="material-symbols-outlined text-primary">celebration</span>
+    <span class="flex-1"><span class="block text-body-lg text-on-surface">Reached goals (1)</span><span class="block text-body-sm text-on-surface-variant">New bike · $600 · June</span></span>
+    <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+  </a>
+</main>
+
+<!-- Add money to a goal -->
+<div data-sheet="add-money" hidden class="fixed inset-0 z-50">
+  <a href="#close" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="am-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float px-margin pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-md"></div>
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 id="am-title" class="font-serif text-headline-md text-on-surface">Add to Emergency fund</h3>
+        <p class="text-body-md text-on-surface-variant">$8,200 of $10,000 saved</p>
+      </div>
+      <a href="#close" aria-label="Close" class="w-12 h-12 flex items-center justify-center"><span class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">close</span></span></a>
+    </div>
+    <label for="am" class="block text-label-md text-on-surface-variant mt-space-md">Amount</label>
+    <div class="relative mt-1">
+      <span class="absolute left-4 top-1/2 -translate-y-1/2 font-serif text-display-lg-mobile text-on-surface-variant">$</span>
+      <input id="am" inputmode="decimal" value="100.00" class="w-full h-16 pl-10 pr-4 rounded-xl bg-surface border-[1.5px] border-primary font-serif text-display-lg-mobile text-on-surface outline-none"/>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-space-sm">
+      <button class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">+$50</button>
+      <button aria-pressed="true" class="h-10 px-3.5 rounded-full bg-primary text-on-primary text-label-lg hit">+$100</button>
+      <button class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">+$200</button>
+      <button class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">+$500</button>
+    </div>
+    <p class="text-body-sm text-on-surface-variant mt-space-md">After this: <span class="font-semibold text-primary">$8,300 · 83%</span>. Savings aren't counted as spending.</p>
+    <a href="#close" class="mt-space-lg w-full h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Add $100.00</a>
+  </div>
+</div>
+
+<!-- New goal -->
+<div data-sheet="new-goal" hidden class="fixed inset-0 z-50">
+  <a href="#close" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="ng-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float px-margin pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-md"></div>
+    <div class="flex items-center justify-between mb-space-sm">
+      <h3 id="ng-title" class="font-serif text-headline-md text-on-surface">New savings goal</h3>
+      <a href="#close" aria-label="Close" class="w-12 h-12 flex items-center justify-center"><span class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">close</span></span></a>
+    </div>
+    <label for="ng-name" class="text-label-md text-on-surface-variant">What are you saving for?</label>
+    <input id="ng-name" placeholder="e.g. A new sofa" class="w-full h-12 mt-1 mb-space-md px-4 rounded-xl bg-surface border-[1.5px] border-primary text-body-lg text-on-surface placeholder:text-outline outline-none"/>
+    <label for="ng-target" class="text-label-md text-on-surface-variant">How much do you need?</label>
+    <div class="relative mt-1 mb-space-md">
+      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-headline-sm text-on-surface-variant">$</span>
+      <input id="ng-target" inputmode="decimal" placeholder="0" class="w-full h-12 pl-9 pr-4 rounded-xl bg-surface border-[1.5px] border-outline-variant text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-primary"/>
+    </div>
+    <button type="button" class="w-full min-h-touch flex items-center justify-between rounded-xl bg-surface-container-low px-4 mb-space-md">
+      <span class="flex items-center gap-2 text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">event</span>By when <span class="text-body-sm text-on-surface-variant">(optional)</span></span>
+      <span class="text-label-lg text-on-surface-variant flex items-center gap-1">Pick a date<span class="material-symbols-outlined text-[18px]">expand_more</span></span>
+    </button>
+    <p class="text-label-md text-on-surface-variant mb-2">Picture</p>
+    <div class="flex gap-2 mb-space-lg" role="radiogroup" aria-label="Picture">
+      <button role="radio" aria-checked="true" aria-label="Piggy bank" class="w-12 h-12 rounded-xl bg-primary-fixed text-on-primary-fixed outline outline-2 outline-primary flex items-center justify-center"><span class="material-symbols-outlined">savings</span></button>
+      <button role="radio" aria-checked="false" aria-label="Home" class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined">chair</span></button>
+      <button role="radio" aria-checked="false" aria-label="Travel" class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined">flight_takeoff</span></button>
+      <button role="radio" aria-checked="false" aria-label="Learning" class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined">school</span></button>
+      <button role="radio" aria-checked="false" aria-label="Gift" class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined">redeem</span></button>
+      <button role="radio" aria-checked="false" aria-label="Heart" class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined">favorite</span></button>
+    </div>
+    <a href="#close" class="w-full h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Create goal</a>
+  </div>
+</div>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

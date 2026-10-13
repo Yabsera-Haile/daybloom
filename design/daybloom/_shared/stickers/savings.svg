@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="A coin with a sprout">
+  <circle cx="60" cy="60" r="58" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="52" fill="#c5ecd0"/>
+  <path d="M60 64 C60 52 60 46 60 38" stroke="#43654f" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 46 C50 48 42 42 40 32 C50 30 58 36 60 46 Z" fill="#5b7e67"/>
+  <path d="M60 40 C68 38 76 30 78 22 C68 22 61 30 60 40 Z" fill="#43654f"/>
+  <ellipse cx="60" cy="82" rx="26" ry="10" fill="#e3a857"/>
+  <rect x="34" y="70" width="52" height="12" fill="#e3a857"/>
+  <ellipse cx="60" cy="70" rx="26" ry="10" fill="#f9bb68"/>
+  <ellipse cx="60" cy="70" rx="17" ry="6" fill="none" stroke="#e3a857" stroke-width="3"/>
+</svg>

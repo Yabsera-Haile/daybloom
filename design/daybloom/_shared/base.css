@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block");
+
+/* Phone frame: the prototype renders at phone width; on a desktop it sits centered. */
+html { background: #e1d8d4; }
+body {
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: #fff8f5;
+  color: #1e1b18;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { display: none; }
+
+/* Fixed bars and sheets stay inside the phone frame. */
+.frame-x { left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; }
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+  user-select: none;
+}
+.icon-fill { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+
+/* Touch areas (fix A5). The visible control can be smaller; the tappable area is not.
+   In React Native this is hitSlop. */
+.hit, .hit-dense { position: relative; }
+.hit::before, .hit-dense::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.hit::before { width: max(100%, 48px); height: max(100%, 48px); }
+.hit-dense::before { width: max(100%, 32px); height: max(100%, 32px); }
+
+:focus-visible { outline: 2px solid #43654f; outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible { outline: none; } /* fields show focus with their border */
+
+/* Done items (fix A3): 75% keeps text at >= 4.5:1 */
+.done-text { text-decoration: line-through; opacity: 0.75; }
+
+/* Partial completion ring for "Habits at a glance" */
+.ring-partial { background: conic-gradient(#43654f 0 var(--p, 50%), #e9e1dc var(--p, 50%) 100%); }
+
+/* Hidden always wins over Tailwind display classes. Sheets open when the URL hash
+   matches data-sheet (see shell.js). */
+[hidden] { display: none !important; }
+.sheet-in { animation: sheet-in 220ms ease-out; }
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Fix A8: respect reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Month</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Sample data: October 2024, today Wed Oct 23. States: default (grid), #agenda. -->
+<body data-tab="month" data-title="Month" data-fab="add" data-add-for="Wednesday, Oct 23">
+<main class="pt-16 pb-44 px-margin flex flex-col gap-space-md">
+
+  <!-- Title, view switch, navigation (MO-01..03) -->
+  <section class="pt-space-sm flex flex-col gap-space-sm">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <h1 class="font-serif text-display-lg-mobile text-on-surface">October 2024</h1>
+        <span class="rounded-full bg-secondary-fixed text-on-secondary-fixed px-2.5 py-0.5 text-label-sm">Autumn</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center bg-surface-container-lowest rounded-full shadow-card">
+        <a href="#" aria-label="Previous month" class="w-12 h-12 flex items-center justify-center"><span class="material-symbols-outlined">chevron_left</span></a>
+        <span class="text-label-md text-primary px-1">Today</span>
+        <a href="#" aria-label="Next month" class="w-12 h-12 flex items-center justify-center"><span class="material-symbols-outlined">chevron_right</span></a>
+      </div>
+      <!-- Grid / Agenda -->
+      <div role="tablist" aria-label="Month view" class="flex items-center bg-surface-container p-1 rounded-full">
+        <a role="tab" href="#grid" data-hide-on="agenda" aria-selected="true" class="h-10 px-3 rounded-full bg-surface-container-lowest text-primary shadow-card text-label-md flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">grid_view</span>Grid</a>
+        <a role="tab" href="#grid" data-show-on="agenda" hidden aria-selected="false" class="h-10 px-3 rounded-full text-on-surface-variant text-label-md flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">grid_view</span>Grid</a>
+        <a role="tab" href="#agenda" data-hide-on="agenda" aria-selected="false" class="h-10 px-3 rounded-full text-on-surface-variant text-label-md flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">view_agenda</span>Agenda</a>
+        <a role="tab" href="#agenda" data-show-on="agenda" hidden aria-selected="true" class="h-10 px-3 rounded-full bg-surface-container-lowest text-primary shadow-card text-label-md flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">view_agenda</span>Agenda</a>
+      </div>
+    </div>
+    <p class="flex items-center gap-space-md text-body-md text-on-surface-variant">
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>3 urgent</span>
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span>12 busy days</span>
+    </p>
+  </section>
+
+  <!-- Month grid (MO-04, MO-05). Labels 11px; one label per day + "+n". -->
+  <section data-hide-on="agenda" class="-mx-3 rounded-2xl bg-surface-container-lowest shadow-card px-1 py-space-sm" aria-label="October 2024">
+    <div class="grid grid-cols-7 text-center text-label-sm text-on-surface-variant mb-1">
+      <span class="py-1">SUN</span><span class="py-1">MON</span><span class="py-1">TUE</span><span class="py-1">WED</span><span class="py-1">THU</span><span class="py-1">FRI</span><span class="py-1">SAT</span>
+    </div>
+    <div class="grid grid-cols-7 gap-0.5">
+      <!-- Week 1 -->
+      <span class="min-h-[64px] rounded-lg bg-surface-container-low/50 p-1 flex justify-center text-label-md text-outline/70">29</span>
+      <span class="min-h-[64px] rounded-lg bg-surface-container-low/50 p-1 flex justify-center text-label-md text-outline/70">30</span>
+      <button aria-label="October 1, nothing planned" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">1</button>
+      <button aria-label="October 2, nothing planned" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">2</button>
+      <button aria-label="October 3, nothing planned" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">3</button>
+      <button aria-label="October 4, Book club" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">4<span class="w-full text-center rounded px-1 py-px truncate bg-social-container text-on-social-container text-label-xs">Book club</span></button>
+      <button aria-label="October 5, nothing planned" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">5</button>
+      <!-- Week 2 -->
+      <button aria-label="October 6" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">6</button>
+      <button aria-label="October 7" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">7</button>
+      <button aria-label="October 8" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">8</button>
+      <button aria-label="October 9" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">9</button>
+      <button aria-label="October 10" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">10</button>
+      <button aria-label="October 11" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">11</button>
+      <button aria-label="October 12, Maya's birthday" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">12<span class="w-full text-center rounded px-1 py-px truncate bg-social-container text-on-social-container text-label-xs">Maya 🎉</span></button>
+      <!-- Week 3 -->
+      <button aria-label="October 13" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">13</button>
+      <button aria-label="October 14" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">14</button>
+      <button aria-label="October 15" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">15</button>
+      <button aria-label="October 16" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">16</button>
+      <button aria-label="October 17" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">17</button>
+      <button aria-label="October 18, Budget review" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">18<span class="w-full text-center rounded px-1 py-px truncate bg-tertiary-fixed text-on-tertiary-fixed text-label-xs">Budget</span></button>
+      <button aria-label="October 19" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">19</button>
+      <!-- Week 4 (this week) -->
+      <button aria-label="October 20, Meal prep" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">20<span class="w-full text-center rounded px-1 py-px truncate bg-tertiary-fixed text-on-tertiary-fixed text-label-xs">Meal prep</span></button>
+      <button aria-label="October 21, Client kickoff and 4 more" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-0.5 text-label-md text-on-surface">21<span class="w-full text-center rounded px-1 py-px truncate bg-secondary-fixed text-on-secondary-fixed text-label-xs">Kickoff</span><span class="text-label-xs text-on-surface-variant">+4</span></button>
+      <button aria-label="October 22, nothing planned" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">22</button>
+      <button aria-current="date" aria-pressed="true" aria-label="October 23, today, selected, 11 plans, 1 urgent" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-0.5 bg-primary-fixed/40 outline outline-2 outline-primary">
+        <span class="w-7 h-7 rounded-full bg-primary text-on-primary text-label-md flex items-center justify-center">23</span>
+        <span class="w-full text-center rounded px-1 py-px truncate bg-secondary text-on-secondary text-label-xs">Tax papers</span>
+        <span class="text-label-xs text-on-surface-variant">+10</span>
+      </button>
+      <button aria-label="October 24, Editorial draft, urgent" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">24<span class="w-full text-center rounded px-1 py-px truncate bg-secondary text-on-secondary text-label-xs">Editorial</span></button>
+      <button aria-label="October 25, Budget check-in and 1 more" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-0.5 text-label-md text-on-surface">25<span class="w-full text-center rounded px-1 py-px truncate bg-tertiary-fixed text-on-tertiary-fixed text-label-xs">Budget</span><span class="text-label-xs text-on-surface-variant">+1</span></button>
+      <button aria-label="October 26, Farmers market" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">26<span class="w-full text-center rounded px-1 py-px truncate bg-tertiary-fixed text-on-tertiary-fixed text-label-xs">Market</span></button>
+      <!-- Week 5 -->
+      <button aria-label="October 27" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">27</button>
+      <button aria-label="October 28, Renew passport" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">28<span class="w-full text-center rounded px-1 py-px truncate bg-tertiary-fixed text-on-tertiary-fixed text-label-xs">Passport</span></button>
+      <button aria-label="October 29" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center text-label-md text-on-surface">29</button>
+      <button aria-label="October 30, Portfolio submission, urgent" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">30<span class="w-full text-center rounded px-1 py-px truncate bg-secondary text-on-secondary text-label-xs">Portfolio</span></button>
+      <button aria-label="October 31, Halloween gathering" class="min-h-[64px] rounded-lg px-0.5 py-1 flex flex-col items-center gap-1 text-label-md text-on-surface">31<span class="w-full text-center rounded px-1 py-px truncate bg-social-container text-on-social-container text-label-xs">Halloween 🎃</span></button>
+      <span class="min-h-[64px] rounded-lg bg-surface-container-low/50 p-1 flex justify-center text-label-md text-outline/70">1</span>
+      <span class="min-h-[64px] rounded-lg bg-surface-container-low/50 p-1 flex justify-center text-label-md text-outline/70">2</span>
+    </div>
+  </section>
+
+  <!-- Selected day (MO-05, MO-06) -->
+  <section data-hide-on="agenda" class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-space-sm">
+        <span class="w-11 h-11 rounded-full bg-primary text-on-primary font-serif text-headline-sm flex items-center justify-center">23</span>
+        <div>
+          <h2 class="font-serif text-headline-md text-on-surface leading-tight">Wednesday, Oct 23</h2>
+          <p class="text-label-md text-on-surface-variant">Today · 7 events, 4 to-dos</p>
+        </div>
+      </div>
+      <a href="#add" aria-label="Add to October 23" class="w-12 h-12 flex items-center justify-center shrink-0">
+        <span class="w-10 h-10 rounded-full bg-surface-container text-primary flex items-center justify-center"><span class="material-symbols-outlined">add</span></span>
+      </a>
+    </div>
+    <ul class="mt-space-md flex flex-col gap-1.5">
+      <li class="flex items-stretch gap-3 rounded-xl bg-secondary-fixed/50 p-2.5">
+        <span class="w-1.5 rounded-full bg-secondary"></span>
+        <span class="w-16 shrink-0 text-label-md text-secondary pt-0.5">Due<br/>5:00 PM</span>
+        <span class="flex-1 min-w-0 text-body-md font-semibold text-on-surface">Submit quarterly tax paperwork</span>
+        <span class="self-start inline-flex items-center pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm shrink-0"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span>
+      </li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-social-container/60 p-2.5"><span class="w-1.5 rounded-full bg-social"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">All day</span><span class="flex-1 text-body-md text-on-surface">Mom's birthday 🎂</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-primary"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">8:30 AM</span><span class="flex-1 text-body-md text-on-surface">Morning walk &amp; coffee</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-secondary"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">10:00 AM</span><span class="flex-1 text-body-md text-on-surface">Client strategy sync</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-tertiary"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">12:30 PM</span><span class="flex-1 text-body-md text-on-surface">Lunch &amp; read</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-secondary"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">2:00 PM</span><span class="flex-1 text-body-md text-on-surface">Team project review</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-outline-variant"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">Due<br/>2:00 PM</span><span class="flex-1 text-body-md text-on-surface">Review team project submission</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-on-surface-variant"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">4:30 PM</span><span class="flex-1 text-body-md text-on-surface">Design system refinement</span></li>
+      <li class="flex items-stretch gap-3 rounded-xl bg-surface-container-low p-2.5"><span class="w-1.5 rounded-full bg-primary"></span><span class="w-16 shrink-0 text-label-md text-on-surface-variant pt-0.5">6:30 PM</span><span class="flex-1 text-body-md text-on-surface">Pilates class</span></li>
+    </ul>
+    <a href="../today/code.html" class="mt-1 min-h-touch flex items-center gap-1 text-label-lg text-primary">2 to-dos without a time · Open the whole day<span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+  </section>
+
+  <!-- Agenda view (MO-03) -->
+  <section data-show-on="agenda" hidden class="flex flex-col gap-space-md" aria-label="October agenda">
+    <a href="#" class="min-h-touch rounded-full bg-surface-container-low text-label-lg text-on-surface-variant flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[18px]">expand_less</span>Show earlier days (Oct 1 – 22)</a>
+    <div>
+      <h2 class="text-label-md text-primary uppercase mb-1.5">Today · Wed, Oct 23</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+        <li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-secondary"></span><span class="w-16 text-label-md text-secondary">Due 5 PM</span><span class="flex-1 text-body-md font-semibold text-on-surface">Submit quarterly tax paperwork</span></li>
+        <li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-social"></span><span class="w-16 text-label-md text-on-surface-variant">All day</span><span class="flex-1 text-body-md text-on-surface">Mom's birthday 🎂</span></li>
+        <li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-secondary"></span><span class="w-16 text-label-md text-on-surface-variant">2:00 PM</span><span class="flex-1 text-body-md text-on-surface">Team project review</span></li>
+        <li><a href="../today/code.html" class="min-h-touch px-3 flex items-center text-label-lg text-primary">8 more today</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Thu, Oct 24</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card"><li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-secondary"></span><span class="w-16 text-label-md text-secondary">End of day</span><span class="flex-1 text-body-md font-semibold text-on-surface">Editorial draft</span><span class="inline-flex items-center pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span></li></ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Fri, Oct 25</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+        <li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-tertiary"></span><span class="w-16 text-label-md text-on-surface-variant">5:00 PM</span><span class="flex-1 text-body-md text-on-surface">Weekly budget check-in</span></li>
+        <li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-social"></span><span class="w-16 text-label-md text-on-surface-variant">7:30 PM</span><span class="flex-1 text-body-md text-on-surface">Dinner with Maya</span></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Sat, Oct 26</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card"><li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-tertiary"></span><span class="w-16 text-label-md text-on-surface-variant">9:00 AM</span><span class="flex-1 text-body-md text-on-surface">Farmers market &amp; garden planting</span></li></ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Mon, Oct 28</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card"><li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-tertiary"></span><span class="w-16 text-label-md text-on-surface-variant">End of day</span><span class="flex-1 text-body-md text-on-surface">Renew passport</span></li></ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Wed, Oct 30</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card"><li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-secondary"></span><span class="w-16 text-label-md text-secondary">11:59 PM</span><span class="flex-1 text-body-md font-semibold text-on-surface">Quarterly portfolio submission</span><span class="inline-flex items-center pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span></li></ul>
+    </div>
+    <div>
+      <h2 class="text-label-md text-on-surface-variant uppercase mb-1.5">Thu, Oct 31</h2>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card"><li class="flex items-center gap-3 p-3"><span class="w-1.5 h-8 rounded-full bg-social"></span><span class="w-16 text-label-md text-on-surface-variant">7:00 PM</span><span class="flex-1 text-body-md text-on-surface">Halloween gathering 🎃</span></li></ul>
+    </div>
+  </section>
+
+  <!-- This month's goal (MO-06: goals belong to the month, not a day) -->
+  <a href="../budget/code.html" class="rounded-2xl bg-surface-container-low p-space-md flex items-stretch gap-3">
+    <span class="w-1.5 rounded-full bg-tertiary"></span>
+    <span class="flex-1">
+      <span class="flex items-center justify-between"><span class="text-label-sm text-tertiary uppercase">This month's goal</span><span class="text-label-md text-tertiary">50%</span></span>
+      <span class="block text-body-lg font-semibold text-on-surface mt-0.5">Save $800 this month</span>
+      <span class="block text-body-sm text-on-surface-variant">$400 saved so far</span>
+      <span class="block h-2 rounded-full bg-surface-container-high mt-2 overflow-hidden"><span class="block h-full w-1/2 rounded-full bg-tertiary"></span></span>
+    </span>
+  </a>
+
+  <!-- Coming up this month (MO-07) -->
+  <section data-hide-on="agenda" class="flex flex-col gap-space-sm">
+    <div class="flex items-end justify-between">
+      <h2 class="font-serif text-headline-sm text-on-surface">Coming up this month</h2>
+      <span class="text-label-md text-on-surface-variant">Deadlines</span>
+    </div>
+    <a href="#" class="rounded-2xl bg-surface-container-lowest shadow-card p-3 flex items-center gap-space-sm">
+      <span class="w-12 h-12 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex flex-col items-center justify-center shrink-0"><span class="text-[11px] font-bold leading-none">OCT</span><span class="font-serif text-headline-sm font-bold leading-none mt-0.5">24</span></span>
+      <span class="flex-1 min-w-0"><span class="flex items-center gap-1.5"><span class="inline-flex items-center pl-0.5 pr-1.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span><span class="text-label-md text-on-surface-variant">Thu · End of day</span></span><span class="block text-body-lg text-on-surface truncate mt-0.5">Editorial draft</span></span>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+    <a href="#" class="rounded-2xl bg-surface-container-lowest shadow-card p-3 flex items-center gap-space-sm">
+      <span class="w-12 h-12 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed flex flex-col items-center justify-center shrink-0"><span class="text-[11px] font-bold leading-none">OCT</span><span class="font-serif text-headline-sm font-bold leading-none mt-0.5">28</span></span>
+      <span class="flex-1 min-w-0"><span class="text-label-md text-on-surface-variant">Mon · End of day</span><span class="block text-body-lg text-on-surface truncate mt-0.5">Renew passport</span></span>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+    <a href="#" class="rounded-2xl bg-surface-container-lowest shadow-card p-3 flex items-center gap-space-sm">
+      <span class="w-12 h-12 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex flex-col items-center justify-center shrink-0"><span class="text-[11px] font-bold leading-none">OCT</span><span class="font-serif text-headline-sm font-bold leading-none mt-0.5">30</span></span>
+      <span class="flex-1 min-w-0"><span class="flex items-center gap-1.5"><span class="inline-flex items-center pl-0.5 pr-1.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span><span class="text-label-md text-on-surface-variant">Wed · 11:59 PM</span></span><span class="block text-body-lg text-on-surface truncate mt-0.5">Quarterly portfolio submission</span></span>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

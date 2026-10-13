@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Reminders</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Design spec: how reminders look in the phone's notification shade (NT-01, G16).
+     Rules: time + title first; place or details second; at most two actions; urgent gets the rose accent.
+     Post-MVP the pet's picture and voice join the second line (MS-03). -->
+<body data-header="none" style="background:#e1d8d4">
+<main class="min-h-[100dvh] px-3 pt-3 pb-10 flex flex-col gap-2" style="background:#e1d8d4">
+
+  <!-- Status bar + a hint of quick settings -->
+  <div class="flex items-center justify-between px-3 h-8 text-label-md text-on-surface"><span>1:50</span><span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">signal_cellular_alt</span><span class="material-symbols-outlined text-[18px]">wifi</span><span class="material-symbols-outlined text-[18px]">battery_5_bar</span></span></div>
+  <div class="grid grid-cols-2 gap-2 mb-2" aria-hidden="true">
+    <span class="h-14 rounded-full bg-surface-container-lowest/70 flex items-center gap-2 px-4 text-label-md text-on-surface"><span class="material-symbols-outlined">wifi</span>Home Wi-Fi</span>
+    <span class="h-14 rounded-full bg-surface-container-lowest/70 flex items-center gap-2 px-4 text-label-md text-on-surface"><span class="material-symbols-outlined">do_not_disturb_on</span>Do not disturb</span>
+  </div>
+
+  <p class="px-2 text-label-sm text-on-surface-variant uppercase">Event · 10 min before</p>
+  <article class="rounded-[24px] bg-surface-container-lowest p-4 shadow-card">
+    <header class="flex items-center gap-2 text-label-md text-on-surface-variant">
+      <span class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center"><svg viewBox="0 0 100 100" class="w-4 h-4" aria-hidden="true"><path d="M50 14 C50 14 66 32 66 50 C66 60 58 68 50 68 C42 68 34 60 34 50 C34 32 50 14 50 14 Z" fill="#fff"/><path d="M50 66 L50 88" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg></span>
+      Daybloom · now
+    </header>
+    <p class="mt-2 text-body-lg font-semibold text-on-surface">2:00 PM · Team project review</p>
+    <p class="text-body-md text-on-surface-variant">In 10 minutes · Studio Lab 4</p>
+    <div class="mt-3 flex gap-2"><span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-primary flex items-center">Snooze 10 min</span><span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-primary flex items-center">Open</span></div>
+  </article>
+
+  <p class="px-2 pt-2 text-label-sm text-on-surface-variant uppercase">Urgent to-do · due soon</p>
+  <article class="rounded-[24px] bg-surface-container-lowest p-4 shadow-card border-l-4 border-secondary">
+    <header class="flex items-center gap-2 text-label-md text-on-surface-variant">
+      <span class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center"><svg viewBox="0 0 100 100" class="w-4 h-4" aria-hidden="true"><path d="M50 14 C50 14 66 32 66 50 C66 60 58 68 50 68 C42 68 34 60 34 50 C34 32 50 14 50 14 Z" fill="#fff"/><path d="M50 66 L50 88" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg></span>
+      Daybloom · 4:00 PM
+    </header>
+    <p class="mt-2 text-body-lg font-semibold text-on-surface">Due 5:00 PM · Submit quarterly tax paperwork</p>
+    <p class="text-body-md text-on-surface-variant">Urgent · Finances</p>
+    <div class="mt-3 flex gap-2"><span class="h-10 px-4 rounded-full bg-primary text-on-primary text-label-lg flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">check</span>Done</span><span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-primary flex items-center">In 30 min</span></div>
+  </article>
+
+  <p class="px-2 pt-2 text-label-sm text-on-surface-variant uppercase">Routine</p>
+  <article class="rounded-[24px] bg-surface-container-lowest p-4 shadow-card">
+    <header class="flex items-center gap-2 text-label-md text-on-surface-variant">
+      <span class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center"><svg viewBox="0 0 100 100" class="w-4 h-4" aria-hidden="true"><path d="M50 14 C50 14 66 32 66 50 C66 60 58 68 50 68 C42 68 34 60 34 50 C34 32 50 14 50 14 Z" fill="#fff"/><path d="M50 66 L50 88" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg></span>
+      Daybloom · 9:30 PM
+    </header>
+    <p class="mt-2 text-body-lg font-semibold text-on-surface">9:30 PM · Evening Wind-Down</p>
+    <p class="text-body-md text-on-surface-variant">Skin care · Read 20 minutes · Lights out by 10:30</p>
+    <div class="mt-3 flex gap-2"><span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-primary flex items-center">Open checklist</span></div>
+  </article>
+
+  <p class="px-2 pt-2 text-label-sm text-on-surface-variant uppercase">Bill · 3 days before</p>
+  <article class="rounded-[24px] bg-surface-container-lowest p-4 shadow-card">
+    <header class="flex items-center gap-2 text-label-md text-on-surface-variant">
+      <span class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center"><svg viewBox="0 0 100 100" class="w-4 h-4" aria-hidden="true"><path d="M50 14 C50 14 66 32 66 50 C66 60 58 68 50 68 C42 68 34 60 34 50 C34 32 50 14 50 14 Z" fill="#fff"/><path d="M50 66 L50 88" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg></span>
+      Daybloom · 9:00 AM
+    </header>
+    <p class="mt-2 text-body-lg font-semibold text-on-surface">Friday · Car insurance, $420.00</p>
+    <p class="text-body-md text-on-surface-variant">Due in 3 days · needs paying</p>
+    <div class="mt-3 flex gap-2"><span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-primary flex items-center">Mark as paid</span></div>
+  </article>
+
+  <section class="mt-space-md rounded-2xl bg-surface p-space-md text-body-md text-on-surface">
+    <h2 class="font-serif text-headline-sm mb-1">Rules for every reminder</h2>
+    <ul class="list-disc pl-5 space-y-1 text-on-surface-variant">
+      <li>Time and title come first, so it makes sense at a glance.</li>
+      <li>Second line: place, details, or how soon.</li>
+      <li>At most two buttons. Snooze never goes past the event's start.</li>
+      <li>Small icon is the Daybloom leaf; urgent to-dos use the rose color.</li>
+      <li>No marketing or "come back" messages, ever.</li>
+    </ul>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

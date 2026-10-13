@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Habit</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- New / Edit habit (HB-07). States: #new (default), #edit ("Morning journal"). Same layout as the event form. -->
+<body data-header="none">
+
+<header class="fixed top-0 frame-x z-40 bg-surface/95 backdrop-blur-xl border-b border-surface-variant">
+  <div class="h-16 px-1 flex items-center justify-between">
+    <a href="../habits/code.html" class="h-12 px-4 rounded-full text-label-lg text-on-surface-variant flex items-center">Cancel</a>
+    <h1 class="font-serif text-headline-sm text-on-surface"><span data-show-on="new">New habit</span><span data-show-on="edit" hidden>Edit habit</span></h1>
+    <a href="../habits/code.html" class="mr-3 h-10 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center hit">Save</a>
+  </div>
+</header>
+
+<main class="pt-20 pb-12 px-margin flex flex-col gap-space-md">
+  <div>
+    <label for="name" class="sr-only">Habit name</label>
+    <input id="name" type="text" autocomplete="off" placeholder="What's the habit?" class="w-full bg-transparent font-serif text-headline-lg text-on-surface placeholder:text-outline border-b-[1.5px] border-primary pb-2 outline-none"/>
+    <div data-show-on="new" class="mt-space-sm">
+      <p class="text-body-sm text-on-surface-variant mb-2">Small and daily beats big and rare. Need an idea?</p>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">Drink water</button>
+        <button type="button" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">Stretch 5 minutes</button>
+        <button type="button" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">Read 10 pages</button>
+        <button type="button" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface hit">Walk outside</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- How often -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">repeat</span>How often</h2>
+    <div role="radiogroup" aria-label="How often" class="grid grid-cols-2 p-1 bg-surface-container rounded-full">
+      <button role="radio" aria-checked="true" class="h-11 rounded-full bg-primary text-on-primary text-label-lg">Every day</button>
+      <button role="radio" aria-checked="false" class="h-11 rounded-full text-on-surface-variant text-label-lg">Once a week</button>
+    </div>
+  </section>
+
+  <!-- When: part of a routine (D1) -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">schedule</span>When</h2>
+    <div role="radiogroup" aria-label="When" class="flex flex-col gap-space-sm" id="when">
+      <button type="button" role="radio" data-value="morning" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span class="material-symbols-outlined text-primary">wb_twilight</span>
+        <span><span class="block text-body-lg text-on-surface">Morning Ritual</span><span class="block text-body-sm text-on-surface-variant">7:00 AM · 3 habits</span></span>
+      </button>
+      <button type="button" role="radio" data-value="evening" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span class="material-symbols-outlined text-secondary">bedtime</span>
+        <span><span class="block text-body-lg text-on-surface">Evening Wind-Down</span><span class="block text-body-sm text-on-surface-variant">9:30 PM · 3 habits</span></span>
+      </button>
+      <button type="button" role="radio" data-value="anytime" class="group flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-3 text-left min-h-touch aria-checked:border-primary aria-checked:bg-primary-fixed/40">
+        <span class="w-6 h-6 rounded-full border-2 border-outline group-aria-checked:border-primary flex items-center justify-center shrink-0"><span class="w-3 h-3 rounded-full group-aria-checked:bg-primary"></span></span>
+        <span class="material-symbols-outlined text-on-surface-variant">all_inclusive</span>
+        <span><span class="block text-body-lg text-on-surface">Anytime</span><span class="block text-body-sm text-on-surface-variant">No set time</span></span>
+      </button>
+      <a href="#" class="min-h-touch flex items-center gap-1.5 text-label-lg text-primary"><span class="material-symbols-outlined text-[20px]">add</span>New routine</a>
+    </div>
+  </section>
+
+  <!-- Reminder: routine habits share the routine's reminder -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card px-space-md min-h-[72px] flex items-center justify-between gap-3">
+    <span class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+      <span>
+        <span class="block text-body-lg text-on-surface">Remind me</span>
+        <span class="block text-body-sm text-on-surface-variant" id="remind-note">At a time you choose</span>
+      </span>
+    </span>
+    <button type="button" id="remind-time" class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-on-surface shrink-0">6:00 PM</button>
+  </section>
+
+  <!-- Note -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <label for="note" class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">notes</span>Short note <span class="text-body-sm text-on-surface-variant">(optional)</span></label>
+    <input id="note" type="text" placeholder="e.g. 750 ml, or why it matters" class="w-full h-12 px-3 rounded-xl bg-surface border-[1.5px] border-outline-variant text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-primary"/>
+  </section>
+
+  <!-- Edit only -->
+  <div data-show-on="edit" hidden class="flex flex-col gap-space-sm">
+    <a href="../habits/code.html" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[20px]">inventory_2</span>Archive habit</a>
+    <p class="text-body-sm text-on-surface-variant text-center">Archiving hides it and keeps its history. You can bring it back any time.</p>
+    <a href="../habits/code.html" class="h-12 rounded-full text-label-lg text-secondary flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[20px]">delete</span>Delete habit and its history</a>
+  </div>
+</main>
+<script src="../_shared/shell.js"></script>
+<script>
+  const when = document.getElementById("when");
+  function choose(value) {
+    when.querySelectorAll("[role=radio]").forEach((b) => b.setAttribute("aria-checked", b.dataset.value === value));
+    const routine = value !== "anytime";
+    document.getElementById("remind-note").textContent = routine
+      ? `With ${value === "morning" ? "Morning Ritual at 7:00 AM" : "Evening Wind-Down at 9:30 PM"}`
+      : "At a time you choose";
+    document.getElementById("remind-time").hidden = routine;
+  }
+  when.addEventListener("click", (e) => { const b = e.target.closest("[role=radio]"); if (b) choose(b.dataset.value); });
+  function applyMode() {
+    const edit = location.hash === "#edit";
+    document.getElementById("name").value = edit ? "Morning journal" : "";
+    document.getElementById("note").value = edit ? "Mind" : "";
+    choose(edit ? "morning" : "anytime");
+    if (!edit) document.getElementById("name").focus();
+  }
+  window.addEventListener("hashchange", applyMode);
+  applyMode();
+</script>
+</body>
+</html>

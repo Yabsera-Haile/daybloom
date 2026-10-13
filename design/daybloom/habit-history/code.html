@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Habit history</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Habit history (HB-09): one habit's month. Opened from the calendar button on Habits.
+     Sample: "Warm lemon water", October 2024; done every day except Oct 2 and Oct 5 (18-day streak). -->
+<body data-back="../habits/code.html" data-title="Habit history">
+<main class="pt-16 pb-16 px-margin flex flex-col gap-space-md">
+
+  <div class="flex gap-2 overflow-x-auto -mx-margin px-margin pt-space-sm" role="tablist" aria-label="Choose a habit">
+    <button role="tab" aria-selected="true" class="h-10 px-3.5 rounded-full bg-primary text-on-primary text-label-lg shrink-0 hit">Warm lemon water</button>
+    <button role="tab" aria-selected="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-lg shrink-0 hit">Gentle stretch</button>
+    <button role="tab" aria-selected="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-lg shrink-0 hit">Morning journal</button>
+    <button role="tab" aria-selected="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-lg shrink-0 hit">Skin care</button>
+    <button role="tab" aria-selected="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-lg shrink-0 hit">Read 20 minutes</button>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <h2 class="font-serif text-headline-lg text-on-surface">October 2024</h2>
+    <div class="flex items-center bg-surface-container-lowest rounded-full shadow-card">
+      <a href="#" aria-label="Previous month" class="w-12 h-12 flex items-center justify-center"><span class="material-symbols-outlined">chevron_left</span></a>
+      <a href="#" aria-label="Next month" class="w-12 h-12 flex items-center justify-center"><span class="material-symbols-outlined">chevron_right</span></a>
+    </div>
+  </div>
+
+  <section class="grid grid-cols-3 gap-space-sm">
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3">
+      <p class="font-serif text-display-lg-mobile text-on-surface">21<span class="text-label-md font-sans text-on-surface-variant">/23</span></p>
+      <p class="text-label-sm text-on-surface-variant">Days done</p>
+    </div>
+    <div class="rounded-2xl bg-primary-fixed shadow-card p-3">
+      <p class="font-serif text-display-lg-mobile text-on-primary-fixed">18<span class="text-label-md font-sans"> days</span></p>
+      <p class="text-label-sm text-on-primary-fixed-variant">Streak now</p>
+    </div>
+    <div class="rounded-2xl bg-surface-container-lowest shadow-card p-3">
+      <p class="font-serif text-display-lg-mobile text-on-surface">18<span class="text-label-md font-sans text-on-surface-variant"> days</span></p>
+      <p class="text-label-sm text-on-surface-variant">Best streak</p>
+    </div>
+  </section>
+
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-sm" aria-label="October 2024, day by day">
+    <div class="grid grid-cols-7 text-center text-label-sm text-on-surface-variant mb-1">
+      <span class="py-1">S</span><span class="py-1">M</span><span class="py-1">T</span><span class="py-1">W</span><span class="py-1">T</span><span class="py-1">F</span><span class="py-1">S</span>
+    </div>
+    <div class="grid grid-cols-7 gap-y-1" id="days"></div>
+  </section>
+
+  <p class="flex items-center gap-space-md text-body-sm text-on-surface-variant">
+    <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded-full bg-primary"></span>Done</span>
+    <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded-full border-[1.5px] border-outline"></span>Missed</span>
+    <span class="ml-auto">Tap a day to change it</span>
+  </p>
+
+  <section class="rounded-2xl bg-primary-fixed/40 p-space-md flex items-center gap-space-sm">
+    <img src="../_shared/stickers/spring.svg" alt="" class="w-12 h-12 -rotate-6"/>
+    <p class="text-body-md text-on-surface">Your longest run yet. Keep it gentle: one glass at a time.</p>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+<script>
+  // October 2024 starts on a Tuesday (2 blank cells before it, Sunday start). Today is the 23rd.
+  const missed = [2, 5];
+  let html = '<span></span><span></span>';
+  for (let d = 1; d <= 31; d++) {
+    const future = d > 23, today = d === 23, done = !future && !missed.includes(d);
+    const label = `October ${d}, ${future ? "not yet" : done ? "done" : "missed"}${today ? ", today" : ""}`;
+    html += future
+      ? `<span class="h-11 flex items-center justify-center text-label-md text-outline/60" aria-label="${label}">${d}</span>`
+      : `<button type="button" aria-label="${label}" class="h-11 flex items-center justify-center">
+          <span class="w-9 h-9 rounded-full flex items-center justify-center text-label-md ${done ? "bg-primary text-on-primary" : "border-[1.5px] border-outline text-on-surface"} ${today ? "outline outline-2 outline-offset-2 outline-primary/50" : ""}">${d}</span></button>`;
+  }
+  document.getElementById("days").innerHTML = html;
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Welcome</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Onboarding (ON-01): 4 short steps, all skippable. States: default (step 1), #2, #3, #4.
+     Post-MVP: a "Choose your pet" step goes between 2 and 3. -->
+<body data-header="none">
+<main class="min-h-[100dvh] px-margin pt-6 pb-10 flex flex-col">
+
+  <!-- Progress + skip -->
+  <div class="flex items-center justify-between h-12">
+    <div class="flex gap-1.5" aria-hidden="true">
+      <span class="h-2 rounded-full bg-primary w-6"></span>
+      <span class="h-2 rounded-full w-2" data-hide-on="2 3 4" style="background:#e9e1dc"></span><span class="h-2 rounded-full bg-primary w-6" data-show-on="2 3 4" hidden></span>
+      <span class="h-2 rounded-full w-2" data-hide-on="3 4" style="background:#e9e1dc"></span><span class="h-2 rounded-full bg-primary w-6" data-show-on="3 4" hidden></span>
+      <span class="h-2 rounded-full w-2" data-hide-on="4" style="background:#e9e1dc"></span><span class="h-2 rounded-full bg-primary w-6" data-show-on="4" hidden></span>
+    </div>
+    <a href="../today-empty/code.html" data-hide-on="4" class="h-12 px-3 text-label-lg text-on-surface-variant flex items-center">Skip</a>
+  </div>
+
+  <!-- Step 1: welcome -->
+  <section data-hide-on="2 3 4" class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col items-center justify-center text-center gap-space-lg">
+      <div class="relative w-72 h-60" aria-hidden="true">
+        <img src="../_shared/stickers/spring.svg" alt="" class="absolute left-0 top-2 w-24 h-24 -rotate-12"/>
+        <img src="../_shared/stickers/summer.svg" alt="" class="absolute right-0 top-0 w-24 h-24 rotate-12"/>
+        <img src="../_shared/stickers/autumn.svg" alt="" class="absolute left-3 bottom-0 w-24 h-24 rotate-6"/>
+        <img src="../_shared/stickers/winter.svg" alt="" class="absolute right-3 bottom-1 w-24 h-24 -rotate-6"/>
+        <svg viewBox="0 0 100 100" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 drop-shadow-md">
+        <rect width="100" height="100" rx="24" fill="#5B7E67"/>
+        <path d="M50 20 C50 20 62 34 62 48 C62 56 56 62 50 62 C44 62 38 56 38 48 C38 34 50 20 50 20 Z" fill="#FDFBF7"/>
+        <circle cx="50" cy="50" r="7" fill="#E08D79"/>
+        <path d="M32 60 C38 55 45 66 50 62 C55 66 62 55 68 60 C72 64 68 74 60 76 C52 78 48 76 40 76 C32 74 28 64 32 60 Z" fill="#F4EAE0" opacity="0.9"/>
+        <path d="M50 62 L50 82" fill="none" stroke="#FDFBF7" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M50 72 C44 70 40 72 38 75" fill="none" stroke="#FDFBF7" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M50 68 C56 66 60 68 62 71" fill="none" stroke="#FDFBF7" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      </div>
+      <div>
+        <h1 class="font-serif text-display-lg-mobile text-on-surface">Welcome to Daybloom</h1>
+        <p class="text-body-lg text-on-surface-variant mt-space-sm">A calm planner that feels like paper<br/>and remembers like a calendar.</p>
+      </div>
+    </div>
+    <a href="#2" class="h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Get started</a>
+  </section>
+
+  <!-- Step 2: name (optional) -->
+  <section data-show-on="2" hidden class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col justify-center gap-space-lg">
+      <span class="w-16 h-16 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">waving_hand</span></span>
+      <div>
+        <h1 class="font-serif text-display-lg-mobile text-on-surface">What should we call you?</h1>
+        <p class="text-body-lg text-on-surface-variant mt-space-sm">Only used inside the app, to say hello.</p>
+      </div>
+      <div>
+        <label for="ob-name" class="sr-only">Your name</label>
+        <input id="ob-name" value="Rose" class="w-full h-14 px-4 rounded-xl bg-surface-container-lowest border-[1.5px] border-primary font-serif text-headline-md text-on-surface outline-none"/>
+      </div>
+    </div>
+    <div class="flex flex-col gap-space-sm">
+      <a href="#3" class="h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Continue</a>
+      <a href="#3" class="h-12 rounded-full text-label-lg text-on-surface-variant flex items-center justify-center">Skip this</a>
+    </div>
+  </section>
+
+  <!-- Step 3: reminders permission, explained first (FR-12) -->
+  <section data-show-on="3" hidden class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col justify-center gap-space-lg">
+      <span class="w-16 h-16 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">notifications</span></span>
+      <div>
+        <h1 class="font-serif text-display-lg-mobile text-on-surface">Never miss what matters</h1>
+        <p class="text-body-lg text-on-surface-variant mt-space-sm">Daybloom can gently remind you before events and to-dos. You choose when, for each one.</p>
+      </div>
+      <!-- Preview of a reminder -->
+      <div class="rounded-2xl bg-surface-container-lowest shadow-float p-space-md flex gap-3" aria-label="Example reminder">
+        <svg viewBox="0 0 100 100" class="w-10 h-10 shrink-0" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#5B7E67"/><path d="M50 20 C50 20 62 34 62 48 C62 56 56 62 50 62 C44 62 38 56 38 48 C38 34 50 20 50 20 Z" fill="#FDFBF7"/><circle cx="50" cy="50" r="7" fill="#E08D79"/></svg>
+        <div class="flex-1 min-w-0">
+          <p class="flex justify-between text-label-md text-on-surface-variant"><span>Daybloom</span><span>now</span></p>
+          <p class="text-body-lg font-semibold text-on-surface">3:00 PM · Dentist</p>
+          <p class="text-body-md text-on-surface-variant">In 10 minutes · Dr. Soren</p>
+        </div>
+      </div>
+      <p class="text-body-sm text-on-surface-variant">Your phone will ask next. You can change this any time.</p>
+    </div>
+    <div class="flex flex-col gap-space-sm">
+      <a href="#4" class="h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Allow reminders</a>
+      <a href="#4" class="h-12 rounded-full text-label-lg text-on-surface-variant flex items-center justify-center">Not now</a>
+    </div>
+  </section>
+
+  <!-- Step 4: done; defaults come from the phone -->
+  <section data-show-on="4" hidden class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col justify-center gap-space-lg">
+      <span class="w-16 h-16 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">local_florist</span></span>
+      <div>
+        <h1 class="font-serif text-display-lg-mobile text-on-surface">You're all set, Rose</h1>
+        <p class="text-body-lg text-on-surface-variant mt-space-sm">We set things up from your phone. Change them any time in Settings.</p>
+      </div>
+      <ul class="rounded-2xl bg-surface-container-lowest shadow-card divide-y divide-surface-variant">
+        <li class="flex items-center gap-space-md px-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-primary">first_page</span>Weeks start on Sunday</li>
+        <li class="flex items-center gap-space-md px-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-primary">schedule</span>Times look like 1:15 PM</li>
+        <li class="flex items-center gap-space-md px-space-md min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-primary">notifications</span>Reminders 10 minutes before</li>
+      </ul>
+    </div>
+    <a href="../today-empty/code.html" class="h-14 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Open my planner</a>
+  </section>
+</main>
+<script src="../_shared/shell.js"></script>
+</body>
+</html>

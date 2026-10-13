@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Event</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Add / Edit Event (EV-01..05, G1). States: #new (default), #edit, #edit-scope.
+     Opened from "+ Add" (date preset to the day being viewed, time = next whole hour),
+     from an empty hour on Today (that hour preset), or from an event's Edit button. -->
+<body data-header="none">
+
+<!-- Top bar: Cancel and Save always visible (EV-03) -->
+<header class="fixed top-0 frame-x z-40 bg-surface/95 backdrop-blur-xl border-b border-surface-variant">
+  <div class="h-16 px-1 flex items-center justify-between">
+    <a href="../today/code.html" class="h-12 px-4 rounded-full text-label-lg text-on-surface-variant flex items-center">Cancel</a>
+    <h1 class="font-serif text-headline-sm text-on-surface">
+      <span data-show-on="new">New event</span><span data-show-on="edit edit-scope" hidden>Edit event</span>
+    </h1>
+    <a id="save" href="../today/code.html" class="mr-3 h-10 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center hit">Save</a>
+  </div>
+</header>
+
+<main class="pt-20 pb-12 px-margin flex flex-col gap-space-md">
+
+  <!-- Title: the only required field -->
+  <div>
+    <label for="title" class="sr-only">Event title</label>
+    <input id="title" type="text" autocomplete="off" placeholder="What's happening?"
+      class="w-full bg-transparent font-serif text-headline-lg text-on-surface placeholder:text-outline border-b-[1.5px] border-primary pb-2 outline-none"/>
+    <p data-show-on="new" class="text-body-sm text-on-surface-variant mt-1.5">Only a title is needed. Everything else is optional.</p>
+  </div>
+
+  <!-- Category (FR-06) -->
+  <section aria-labelledby="cat-label">
+    <h2 id="cat-label" class="text-label-md text-on-surface-variant mb-2">Category</h2>
+    <div class="flex flex-wrap gap-2" data-chips="category">
+      <button type="button" data-value="wellness" aria-pressed="false" class="h-10 pl-2 pr-3.5 rounded-full border-[1.5px] border-outline-variant bg-surface-container-lowest text-label-lg text-on-surface flex items-center gap-1.5 aria-pressed:bg-primary-fixed aria-pressed:border-primary aria-pressed:text-on-primary-fixed hit"><span class="w-3 h-3 rounded-full bg-primary"></span>Wellness</button>
+      <button type="button" data-value="work" aria-pressed="false" class="h-10 pl-2 pr-3.5 rounded-full border-[1.5px] border-outline-variant bg-surface-container-lowest text-label-lg text-on-surface flex items-center gap-1.5 aria-pressed:bg-secondary-fixed aria-pressed:border-secondary aria-pressed:text-on-secondary-fixed hit"><span class="w-3 h-3 rounded-full bg-secondary"></span>Work</button>
+      <button type="button" data-value="personal" aria-pressed="false" class="h-10 pl-2 pr-3.5 rounded-full border-[1.5px] border-outline-variant bg-surface-container-lowest text-label-lg text-on-surface flex items-center gap-1.5 aria-pressed:bg-tertiary-fixed aria-pressed:border-tertiary aria-pressed:text-on-tertiary-fixed hit"><span class="w-3 h-3 rounded-full bg-tertiary"></span>Personal</button>
+      <button type="button" data-value="social" aria-pressed="false" class="h-10 pl-2 pr-3.5 rounded-full border-[1.5px] border-outline-variant bg-surface-container-lowest text-label-lg text-on-surface flex items-center gap-1.5 aria-pressed:bg-social-container aria-pressed:border-social aria-pressed:text-on-social-container hit"><span class="w-3 h-3 rounded-full bg-social"></span>Social</button>
+      <button type="button" data-value="creative" aria-pressed="false" class="h-10 pl-2 pr-3.5 rounded-full border-[1.5px] border-outline-variant bg-surface-container-lowest text-label-lg text-on-surface flex items-center gap-1.5 aria-pressed:bg-surface-variant aria-pressed:border-on-surface-variant hit"><span class="w-3 h-3 rounded-full bg-on-surface-variant"></span>Creative</button>
+    </div>
+  </section>
+
+  <!-- When (EV-01, EV-02). Date and times open the phone's own pickers. -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card" aria-label="When">
+    <div class="flex items-center justify-between px-space-md min-h-[56px]">
+      <span class="flex items-center gap-3 text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">wb_sunny</span>All day</span>
+      <button type="button" id="allday" role="switch" aria-checked="false" aria-label="All day" class="group w-14 h-8 rounded-full bg-surface-container-highest border-[1.5px] border-outline aria-checked:bg-primary aria-checked:border-primary flex items-center px-1 hit">
+        <span class="w-5 h-5 rounded-full bg-outline group-aria-checked:bg-on-primary group-aria-checked:translate-x-6 transition-transform"></span>
+      </button>
+    </div>
+    <div class="border-t border-surface-variant mx-space-md"></div>
+    <button type="button" class="w-full flex items-center justify-between px-space-md min-h-[56px]">
+      <span class="flex items-center gap-3 text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>Date</span>
+      <span class="h-10 px-4 rounded-full bg-surface-container text-label-lg text-on-surface flex items-center">Wed, Oct 23</span>
+    </button>
+    <div id="times" class="grid grid-cols-2 gap-space-sm px-space-md pb-space-md">
+      <button type="button" class="flex flex-col items-start gap-1 rounded-xl bg-surface-container-low p-3 min-h-touch">
+        <span class="text-label-md text-on-surface-variant">Starts</span>
+        <span class="text-headline-sm font-semibold text-on-surface">2:00 PM</span>
+      </button>
+      <button type="button" class="flex flex-col items-start gap-1 rounded-xl bg-surface-container-low p-3 min-h-touch">
+        <span class="text-label-md text-on-surface-variant">Ends · 1 hour</span>
+        <span class="text-headline-sm font-semibold text-on-surface">3:00 PM</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Reminders (FR-04): several allowed; default comes from Settings -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md" aria-labelledby="remind-label">
+    <h2 id="remind-label" class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">notifications</span>Remind me</h2>
+    <div class="flex flex-wrap gap-2" data-chips="reminder" data-multi="true">
+      <button type="button" data-value="at" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">When it starts</button>
+      <button type="button" data-value="10" aria-pressed="true" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">10 min before</button>
+      <button type="button" data-value="30" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">30 min before</button>
+      <button type="button" data-value="60" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">1 hour before</button>
+      <button type="button" data-value="1d" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">1 day before</button>
+    </div>
+  </section>
+
+  <!-- Urgent flag (FR-06, fix I4) -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card px-space-md min-h-[72px] flex items-center justify-between gap-3">
+    <span class="flex items-center gap-3">
+      <span class="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined">priority_high</span></span>
+      <span>
+        <span class="block text-body-lg text-on-surface">Mark as urgent</span>
+        <span class="block text-body-sm text-on-surface-variant">Shows in rose and stays at the top</span>
+      </span>
+    </span>
+    <button type="button" role="switch" aria-checked="false" aria-label="Mark as urgent" class="group w-14 h-8 rounded-full bg-surface-container-highest border-[1.5px] border-outline aria-checked:bg-secondary aria-checked:border-secondary flex items-center px-1 shrink-0 hit">
+      <span class="w-5 h-5 rounded-full bg-outline group-aria-checked:bg-on-secondary group-aria-checked:translate-x-6 transition-transform"></span>
+    </button>
+  </section>
+
+  <!-- More options: repeat, place, notes (EV-03, EV-05) -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card">
+    <button type="button" id="more-toggle" aria-expanded="false" aria-controls="more" class="w-full flex items-center justify-between px-space-md min-h-[64px] text-left">
+      <span>
+        <span class="block text-body-lg text-on-surface">More options</span>
+        <span class="block text-body-sm text-on-surface-variant" id="more-summary">Repeat, place, notes</span>
+      </span>
+      <span class="material-symbols-outlined text-on-surface-variant" id="more-icon">expand_more</span>
+    </button>
+    <div id="more" hidden class="px-space-md pb-space-md flex flex-col gap-space-md">
+      <div class="border-t border-surface-variant"></div>
+      <div>
+        <h2 class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">repeat</span>Repeat</h2>
+        <div class="flex flex-wrap gap-2" data-chips="repeat">
+          <button type="button" data-value="none" aria-pressed="true" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Doesn't repeat</button>
+          <button type="button" data-value="daily" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every day</button>
+          <button type="button" data-value="weekly" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every Wednesday</button>
+          <button type="button" data-value="monthly" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every month on the 23rd</button>
+          <button type="button" data-value="yearly" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Every year on Oct 23</button>
+          <button type="button" data-value="custom" aria-pressed="false" class="h-10 px-3.5 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface aria-pressed:bg-primary aria-pressed:border-primary aria-pressed:text-on-primary hit">Custom…</button>
+        </div>
+        <div id="repeat-end" hidden class="mt-space-sm rounded-xl bg-surface-container-low p-3 flex items-center justify-between">
+          <span class="text-body-md text-on-surface-variant">Stops</span>
+          <button type="button" class="h-10 px-4 rounded-full bg-surface-container-lowest border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center gap-1">Never<span class="material-symbols-outlined text-[18px]">expand_more</span></button>
+        </div>
+      </div>
+      <div>
+        <label for="place" class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">location_on</span>Place</label>
+        <input id="place" type="text" placeholder="Add a place or a link" class="w-full h-12 px-3 rounded-xl bg-surface border-[1.5px] border-outline-variant text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-primary"/>
+      </div>
+      <div>
+        <label for="notes" class="flex items-center gap-3 text-body-lg text-on-surface mb-space-sm"><span class="material-symbols-outlined text-on-surface-variant">notes</span>Notes</label>
+        <textarea id="notes" rows="3" placeholder="Anything to remember?" class="w-full px-3 py-2.5 rounded-xl bg-surface border-[1.5px] border-outline-variant text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-primary resize-none"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- Edit only: delete (with Undo afterwards, FR-02) -->
+  <a data-show-on="edit edit-scope" hidden href="../today/code.html" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-secondary flex items-center justify-center gap-1.5">
+    <span class="material-symbols-outlined text-[20px]">delete</span>Delete event
+  </a>
+</main>
+
+<!-- Saving a change to a repeating event (FR-05) -->
+<div data-sheet="edit-scope" hidden class="fixed inset-0 z-50">
+  <a href="#edit" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="scope-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float px-margin pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-md"></div>
+    <h2 id="scope-title" class="font-serif text-headline-md text-on-surface">This event repeats</h2>
+    <p class="text-body-md text-on-surface-variant mb-space-md">Which ones should change?</p>
+    <div role="radiogroup" aria-labelledby="scope-title" class="flex flex-col gap-space-sm">
+      <button type="button" role="radio" aria-checked="true" class="flex items-center gap-3 rounded-2xl border-[1.5px] border-primary bg-primary-fixed/40 p-space-md text-left min-h-touch">
+        <span class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center"><span class="w-3 h-3 rounded-full bg-primary"></span></span>
+        <span><span class="block text-body-lg text-on-surface">Just this one</span><span class="block text-body-sm text-on-surface-variant">Wednesday, Oct 23</span></span>
+      </button>
+      <button type="button" role="radio" aria-checked="false" class="flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-space-md text-left min-h-touch">
+        <span class="w-6 h-6 rounded-full border-2 border-outline"></span>
+        <span><span class="block text-body-lg text-on-surface">This one and the ones after</span><span class="block text-body-sm text-on-surface-variant">From Oct 23 onward</span></span>
+      </button>
+      <button type="button" role="radio" aria-checked="false" class="flex items-center gap-3 rounded-2xl border-[1.5px] border-outline-variant p-space-md text-left min-h-touch">
+        <span class="w-6 h-6 rounded-full border-2 border-outline"></span>
+        <span><span class="block text-body-lg text-on-surface">All of them</span><span class="block text-body-sm text-on-surface-variant">Every Wednesday, past and future</span></span>
+      </button>
+    </div>
+    <div class="grid grid-cols-2 gap-space-sm mt-space-lg">
+      <a href="#edit" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center">Go back</a>
+      <a href="../today/code.html" class="h-12 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center">Save</a>
+    </div>
+  </div>
+</div>
+
+<script src="../_shared/shell.js"></script>
+<script>
+  // Prototype behavior only: chips, switches, "More options", and filling the edit sample.
+  document.querySelectorAll("[data-chips]").forEach((group) => {
+    group.addEventListener("click", (e) => {
+      const chip = e.target.closest("button");
+      if (!chip) return;
+      if (group.dataset.multi) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") !== "true");
+      else group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b === chip));
+      if (group.dataset.chips === "repeat") document.getElementById("repeat-end").hidden = chip.dataset.value === "none";
+    });
+  });
+  const select = (name, value) => document.querySelectorAll(`[data-chips="${name}"] button`).forEach((b) => b.setAttribute("aria-pressed", b.dataset.value === value));
+
+  document.querySelectorAll('[role="switch"]').forEach((sw) => sw.addEventListener("click", () => {
+    sw.setAttribute("aria-checked", sw.getAttribute("aria-checked") !== "true");
+    if (sw.id === "allday") document.getElementById("times").hidden = sw.getAttribute("aria-checked") === "true";
+  }));
+
+  const toggle = document.getElementById("more-toggle");
+  function setMore(open) {
+    toggle.setAttribute("aria-expanded", open);
+    document.getElementById("more").hidden = !open;
+    document.getElementById("more-icon").textContent = open ? "expand_less" : "expand_more";
+  }
+  toggle.addEventListener("click", () => setMore(toggle.getAttribute("aria-expanded") !== "true"));
+
+  function applyMode() {
+    const edit = location.hash.startsWith("#edit");
+    document.getElementById("title").value = edit ? "Team project review" : "";
+    select("category", edit ? "work" : "personal");
+    select("repeat", edit ? "weekly" : "none");
+    document.getElementById("repeat-end").hidden = !edit;
+    document.getElementById("place").value = edit ? "Studio Lab 4" : "";
+    document.getElementById("notes").value = edit ? "Bring the printed mockups and the timeline." : "";
+    document.getElementById("more-summary").textContent = edit ? "Every Wednesday · Studio Lab 4 · Notes" : "Repeat, place, notes";
+    document.getElementById("save").href = edit ? "#edit-scope" : "../today/code.html";
+    setMore(edit);
+    if (!edit) document.getElementById("title").focus();
+  }
+  window.addEventListener("hashchange", () => { if (location.hash !== "#edit-scope") applyMode(); });
+  applyMode();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Spring blossom">
+  <circle cx="60" cy="60" r="58" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="52" fill="#c5ecd0"/>
+  <path d="M60 74 C60 84 58 92 54 98" stroke="#43654f" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M57 88 C46 90 38 84 36 76 C46 74 54 79 57 88 Z" fill="#5b7e67"/>
+  <path d="M59 82 C68 78 78 80 82 87 C74 92 64 90 59 82 Z" fill="#5b7e67"/>
+  <g fill="#fda590">
+    <circle cx="60" cy="40" r="13"/><circle cx="75.2" cy="51.1" r="13"/><circle cx="69.4" cy="68.9" r="13"/>
+    <circle cx="50.6" cy="68.9" r="13"/><circle cx="44.8" cy="51.1" r="13"/>
+  </g>
+  <g fill="#ffdad2"><circle cx="60" cy="43" r="5"/><circle cx="72" cy="52" r="5"/><circle cx="67.5" cy="66" r="5"/><circle cx="52.5" cy="66" r="5"/><circle cx="48" cy="52" r="5"/></g>
+  <circle cx="60" cy="56" r="8" fill="#e3a857"/>
+</svg>

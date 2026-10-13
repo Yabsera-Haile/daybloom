@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Daybloom · Today</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="../_shared/theme.js"></script>
+<link rel="stylesheet" href="../_shared/base.css"/>
+</head>
+<!-- Sample data: Wednesday Oct 23 2024, 1:15 PM, northern hemisphere. Same fixture as Week, Month, Habits. -->
+<body data-tab="today" data-title="Today" data-fab="add" data-add-for="Wednesday, Oct 23">
+<main class="pt-16 pb-44 px-margin flex flex-col gap-space-md">
+
+  <!-- Date header (TD-01). Seasonal sticker instead of a photo (D7); no weather (D2). -->
+  <section class="rounded-2xl bg-surface-container-low shadow-card mt-space-sm p-space-md flex items-start justify-between gap-space-sm">
+    <div class="min-w-0">
+      <h1 class="font-serif text-headline-lg text-on-surface">Wednesday, Oct 23</h1>
+      <p class="text-label-md text-on-surface-variant mt-0.5">Autumn · Day 297 of 366</p>
+      <div class="mt-space-sm -ml-1 inline-flex items-center bg-surface-container-lowest rounded-full shadow-card">
+        <a href="#" aria-label="Previous day" class="w-12 h-12 flex items-center justify-center text-on-surface"><span class="material-symbols-outlined">chevron_left</span></a>
+        <span class="text-label-md text-primary px-1" aria-current="date">Today</span>
+        <a href="#" aria-label="Next day" class="w-12 h-12 flex items-center justify-center text-on-surface"><span class="material-symbols-outlined">chevron_right</span></a>
+      </div>
+    </div>
+    <img src="../_shared/stickers/autumn.svg" alt="" class="w-20 h-20 shrink-0 -mr-1 -mt-1 rotate-6"/>
+  </section>
+
+  <!-- Unfinished from yesterday (D11, FR-15) -->
+  <section aria-label="Unfinished from yesterday" class="rounded-2xl bg-tertiary-fixed/50 p-space-md flex flex-col gap-space-sm">
+    <div class="flex items-start gap-3">
+      <span class="w-10 h-10 rounded-full bg-surface-container-lowest text-tertiary flex items-center justify-center shrink-0"><span class="material-symbols-outlined">history</span></span>
+      <div class="min-w-0">
+        <p class="text-body-lg font-semibold text-on-surface">2 things left from yesterday</p>
+        <p class="text-body-md text-on-surface-variant">Book dentist appointment · Reply to Sam</p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-space-sm">
+      <a href="#" class="h-10 px-4 rounded-full text-label-lg text-on-surface-variant flex items-center hit">Not now</a>
+      <a href="#" class="h-10 px-5 rounded-full bg-primary text-on-primary text-label-lg flex items-center hit">Move to today</a>
+    </div>
+  </section>
+
+  <!-- Up next (new, TD-19) -->
+  <a href="#event-detail" class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md flex items-center gap-3">
+    <span class="w-1.5 self-stretch rounded-full bg-secondary"></span>
+    <span class="flex-1 min-w-0">
+      <span class="block text-label-sm text-primary uppercase">Up next · in 45 min</span>
+      <span class="block text-body-lg font-semibold text-on-surface">Team project review</span>
+      <span class="block text-body-md text-on-surface-variant">2:00 – 3:00 PM · Studio Lab 4</span>
+    </span>
+    <span class="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined">groups</span></span>
+  </a>
+
+  <!-- Routines (TD-05..07). Each item is a habit (D1). -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-space-sm">
+        <span class="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined">wb_twilight</span></span>
+        <div>
+          <h2 class="font-serif text-headline-sm text-on-surface">Morning Ritual</h2>
+          <p class="text-label-md text-primary">7:00 AM · 2 of 3 done</p>
+        </div>
+      </div>
+      <button type="button" aria-label="Collapse Morning Ritual" aria-expanded="true" class="w-12 h-12 flex items-center justify-center">
+        <span class="w-9 h-9 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center"><span class="material-symbols-outlined">keyboard_arrow_up</span></span>
+      </button>
+    </div>
+    <div class="h-2 rounded-full bg-surface-container mt-space-sm overflow-hidden"><div class="h-full w-2/3 rounded-full bg-primary-container"></div></div>
+    <ul class="mt-space-sm flex flex-col">
+      <li><label class="flex items-center gap-3 min-h-touch cursor-pointer">
+        <span class="w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">check</span></span>
+        <span class="text-body-lg text-on-surface-variant done-text">Warm lemon water</span>
+      </label></li>
+      <li><label class="flex items-center gap-3 min-h-touch cursor-pointer">
+        <span class="w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">check</span></span>
+        <span class="text-body-lg text-on-surface-variant done-text">Gentle stretch, 15 min</span>
+      </label></li>
+      <li><label class="flex items-center gap-3 min-h-touch cursor-pointer">
+        <span class="w-6 h-6 rounded-md border-[1.5px] border-outline bg-surface-container-lowest"></span>
+        <span class="text-body-lg text-on-surface">Morning journal</span>
+      </label></li>
+    </ul>
+  </section>
+
+  <a href="../habits/code.html" class="rounded-2xl bg-surface-container p-space-md block">
+    <span class="flex items-center justify-between">
+      <span class="flex items-center gap-space-sm">
+        <span class="w-10 h-10 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined">bedtime</span></span>
+        <span>
+          <span class="block font-serif text-headline-sm text-on-surface">Evening Wind-Down</span>
+          <span class="block text-label-md text-secondary">Starts 9:30 PM · 3 habits</span>
+        </span>
+      </span>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </span>
+    <span class="grid grid-cols-3 gap-2 mt-space-sm">
+      <span class="rounded-xl bg-surface-container-lowest/90 p-2 flex flex-col gap-1"><span class="material-symbols-outlined text-[20px] text-primary">clean_hands</span><span class="text-body-sm text-on-surface">Skin care</span></span>
+      <span class="rounded-xl bg-surface-container-lowest/90 p-2 flex flex-col gap-1"><span class="material-symbols-outlined text-[20px] text-tertiary">menu_book</span><span class="text-body-sm text-on-surface">Read 20 minutes</span></span>
+      <span class="rounded-xl bg-surface-container-lowest/90 p-2 flex flex-col gap-1"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">nightlight</span><span class="text-body-sm text-on-surface">Lights out by 10:30</span></span>
+    </span>
+  </a>
+
+  <!-- Daily Intentions (TD-08..12) -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-space-sm min-w-0">
+        <span class="material-symbols-outlined text-primary">checklist</span>
+        <div class="min-w-0">
+          <h2 class="font-serif text-headline-md text-on-surface">Daily Intentions</h2>
+          <p class="text-body-sm text-on-surface-variant">Your to-dos for today</p>
+        </div>
+      </div>
+      <a href="#add-task" data-hide-on="add-task" class="h-10 pl-3 pr-4 rounded-full bg-primary text-on-primary text-label-md flex items-center gap-1 shrink-0 hit">
+        <span class="material-symbols-outlined text-[20px]">add</span>Add to-do
+      </a>
+    </div>
+
+    <!-- Inline add (TD-10): time comes from a time picker, not typing -->
+    <div data-show-on="add-task" data-reveal hidden class="mt-space-md rounded-2xl bg-surface-container p-space-sm flex flex-col gap-space-sm">
+      <label class="sr-only" for="new-task">New to-do</label>
+      <input id="new-task" type="text" placeholder="What do you want to get done?" class="w-full h-12 px-3 rounded-xl bg-surface-container-lowest text-body-lg text-on-surface placeholder:text-outline border-[1.5px] border-primary outline-none"/>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="h-10 px-3 rounded-full border-[1.5px] border-outline text-label-md text-on-surface flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">priority_high</span>Urgent</button>
+        <button type="button" class="h-10 px-3 rounded-full border-[1.5px] border-outline text-label-md text-on-surface flex items-center gap-1 hit"><span class="material-symbols-outlined text-[18px]">schedule</span>Add a time</button>
+        <span class="ml-auto flex items-center gap-1">
+          <a href="#close" class="h-10 px-3 rounded-full text-label-lg text-on-surface-variant flex items-center hit">Cancel</a>
+          <a href="#close" class="h-10 px-4 rounded-full bg-primary text-on-primary text-label-lg flex items-center hit">Save</a>
+        </span>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mt-space-md overflow-x-auto" role="tablist" aria-label="Filter to-dos">
+      <button role="tab" aria-selected="true" class="h-9 px-3 rounded-full bg-primary text-on-primary text-label-md shrink-0 hit">All (4)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-md shrink-0 hit">Urgent (1)</button>
+      <button role="tab" aria-selected="false" class="h-9 px-3 rounded-full border-[1.5px] border-outline-variant text-on-surface text-label-md shrink-0 hit">Not urgent (3)</button>
+    </div>
+
+    <ul class="mt-space-md flex flex-col gap-space-sm">
+      <li class="flex items-start gap-1 rounded-xl bg-surface-container-low pl-1 pr-0 py-1">
+        <button type="button" aria-label="Mark Submit quarterly tax paperwork as done" class="w-12 h-12 flex items-center justify-center shrink-0"><span class="w-6 h-6 rounded-md border-[1.5px] border-outline bg-surface-container-lowest"></span></button>
+        <div class="flex-1 min-w-0 py-2">
+          <p class="text-body-lg font-medium text-on-surface">Submit quarterly tax paperwork</p>
+          <p class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+            <span class="inline-flex items-center gap-0.5 pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span>
+            <span class="text-body-sm text-on-surface-variant flex items-center gap-0.5"><span class="material-symbols-outlined text-[16px]">schedule</span>Due 5:00 PM · Finances</span>
+          </p>
+        </div>
+        <a href="#task-menu" aria-label="More options for Submit quarterly tax paperwork" class="w-12 h-12 flex items-center justify-center text-on-surface-variant shrink-0"><span class="material-symbols-outlined">more_vert</span></a>
+      </li>
+      <li class="flex items-start gap-1 rounded-xl bg-surface-container-low pl-1 py-1">
+        <button type="button" aria-label="Mark Review team project submission as done" class="w-12 h-12 flex items-center justify-center shrink-0"><span class="w-6 h-6 rounded-md border-[1.5px] border-outline bg-surface-container-lowest"></span></button>
+        <div class="flex-1 min-w-0 py-2">
+          <p class="text-body-lg font-medium text-on-surface">Review team project submission</p>
+          <p class="flex flex-wrap items-center gap-x-2 mt-1">
+            <span class="text-body-sm text-on-surface-variant flex items-center gap-0.5"><span class="material-symbols-outlined text-[16px]">schedule</span>Due 2:00 PM · Work</span>
+          </p>
+        </div>
+        <a href="#task-menu" aria-label="More options for Review team project submission" class="w-12 h-12 flex items-center justify-center text-on-surface-variant shrink-0"><span class="material-symbols-outlined">more_vert</span></a>
+      </li>
+      <li class="flex items-start gap-1 rounded-xl bg-surface-container-low pl-1 py-1">
+        <button type="button" aria-label="Mark Order refill cartridges for the fountain pen as done" class="w-12 h-12 flex items-center justify-center shrink-0"><span class="w-6 h-6 rounded-md border-[1.5px] border-outline bg-surface-container-lowest"></span></button>
+        <div class="flex-1 min-w-0 py-2">
+          <p class="text-body-lg text-on-surface">Order refill cartridges for the fountain pen</p>
+          <p class="text-body-sm text-on-surface-variant mt-1">Stationery</p>
+        </div>
+        <a href="#task-menu" aria-label="More options for Order refill cartridges" class="w-12 h-12 flex items-center justify-center text-on-surface-variant shrink-0"><span class="material-symbols-outlined">more_vert</span></a>
+      </li>
+      <li class="flex items-start gap-1 rounded-xl bg-surface-container-low pl-1 py-1">
+        <button type="button" aria-label="Mark Water the parlor palm as done" class="w-12 h-12 flex items-center justify-center shrink-0"><span class="w-6 h-6 rounded-md border-[1.5px] border-outline bg-surface-container-lowest"></span></button>
+        <div class="flex-1 min-w-0 py-2">
+          <p class="text-body-lg text-on-surface">Water the parlor palm</p>
+          <p class="text-body-sm text-on-surface-variant mt-1">Home</p>
+        </div>
+        <a href="#task-menu" aria-label="More options for Water the parlor palm" class="w-12 h-12 flex items-center justify-center text-on-surface-variant shrink-0"><span class="material-symbols-outlined">more_vert</span></a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Hourly timeline (TD-13..17). Events sit under their start hour; due to-dos appear too. -->
+  <section class="rounded-2xl bg-surface-container-lowest shadow-card p-space-md">
+    <div class="flex items-center justify-between mb-space-md">
+      <div class="flex items-center gap-space-sm">
+        <span class="material-symbols-outlined text-primary">schedule</span>
+        <h2 class="font-serif text-headline-md text-on-surface">Hourly Timeline</h2>
+      </div>
+      <span class="flex items-center gap-1.5 rounded-full bg-surface-container px-3 h-8 text-label-md text-on-surface-variant">
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>1:15 PM now
+      </span>
+    </div>
+
+    <ol class="flex flex-col gap-1.5">
+      <!-- All day (TD-16) -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-sm text-outline pt-2 leading-tight">All day</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-social-container px-3 min-h-touch flex items-center justify-between gap-2">
+          <span class="text-body-lg font-medium text-on-social-container">Mom's birthday 🎂</span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-on-social-container shrink-0">Social</span>
+        </a>
+      </li>
+      <!-- 7 AM: routine marker -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">7 AM</span>
+        <span class="flex-1 rounded-xl bg-primary-fixed/30 px-3 min-h-touch flex items-center gap-2 text-body-md text-on-surface">
+          <span class="material-symbols-outlined text-[20px] text-primary">wb_twilight</span>Morning Ritual · 2 of 3 done
+        </span>
+      </li>
+      <!-- 8 AM: event -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">8 AM</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-primary-fixed/60 p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-[20px] text-primary mt-0.5">directions_walk</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-body-lg font-medium text-on-primary-fixed">Morning walk &amp; coffee</span>
+            <span class="block text-body-sm text-primary">8:30 – 9:30 AM · Neighborhood trail</span>
+          </span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-primary shrink-0">Wellness</span>
+        </a>
+      </li>
+      <!-- 9 AM: hour note (fix A1: readable color) -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">9 AM</span>
+        <span class="flex-1 rounded-xl bg-surface-container-low px-3 min-h-touch flex items-center text-body-md italic text-on-surface-variant">Buffer &amp; focus prep</span>
+      </li>
+      <!-- 10 AM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">10 AM</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-secondary-fixed/60 p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary mt-0.5">videocam</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-body-lg font-medium text-on-secondary-fixed">Client strategy sync</span>
+            <span class="block text-body-sm text-secondary">10:00 – 11:30 AM · Zoom</span>
+          </span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-secondary shrink-0">Work</span>
+        </a>
+      </li>
+      <!-- 11 AM: ticked hour note -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">11 AM</span>
+        <span class="flex-1 rounded-xl bg-surface-container-low pl-3 flex items-center justify-between min-h-touch">
+          <span class="text-body-md italic text-on-surface-variant done-text">Strategy wrap-up &amp; inbox zero</span>
+          <button type="button" aria-label="Done. Tap to undo" class="w-12 h-12 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">check_circle</span></button>
+        </span>
+      </li>
+      <!-- 12 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">12 PM</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-tertiary-fixed/60 p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-[20px] text-tertiary mt-0.5">restaurant</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-body-lg font-medium text-on-tertiary-fixed">Lunch &amp; read</span>
+            <span class="block text-body-sm text-tertiary">12:30 – 1:30 PM · Terrace garden</span>
+          </span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-tertiary shrink-0">Personal</span>
+        </a>
+      </li>
+      <!-- 1 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">1 PM</span>
+        <span class="flex-1 rounded-xl bg-surface-container-low px-3 min-h-touch flex items-center text-body-md italic text-on-surface-variant">Midday check-in &amp; herbal tea</span>
+      </li>
+      <!-- Now line at 1:15, between the 1 PM and 2 PM rows (TD-14; the original drew it at 11 AM) -->
+      <li class="flex gap-2 items-center" aria-label="Now, 1:15 PM">
+        <span class="w-12 shrink-0 text-right text-label-sm text-secondary">1:15</span>
+        <span class="flex-1 flex items-center" aria-hidden="true">
+          <span class="w-3 h-3 rounded-full bg-secondary -ml-1.5 shadow-card"></span>
+          <span class="flex-1 h-[2px] bg-secondary"></span>
+        </span>
+      </li>
+      <!-- 2 PM: event + due to-do stacked (TD-16) -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">2 PM</span>
+        <span class="flex-1 flex flex-col gap-1.5">
+          <a href="#event-detail" class="rounded-xl bg-secondary-fixed/60 p-3 flex items-start gap-2">
+            <span class="material-symbols-outlined text-[20px] text-secondary mt-0.5">groups</span>
+            <span class="flex-1 min-w-0">
+              <span class="block text-body-lg font-medium text-on-secondary-fixed">Team project review</span>
+              <span class="block text-body-sm text-secondary">2:00 – 3:00 PM · Studio Lab 4</span>
+            </span>
+            <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-secondary shrink-0">Work</span>
+          </a>
+          <span class="rounded-xl border-[1.5px] border-dashed border-outline-variant px-3 min-h-touch flex items-center gap-2 text-body-md text-on-surface">
+            <span class="material-symbols-outlined text-[20px] text-on-surface-variant">task_alt</span>
+            <span><span class="text-on-surface-variant">Due:</span> Review team project submission</span>
+          </span>
+        </span>
+      </li>
+      <!-- 3 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">3 PM</span>
+        <span class="flex-1 rounded-xl bg-surface-container-low px-3 min-h-touch flex items-center text-body-md italic text-on-surface-variant">Solo deep-focus block</span>
+      </li>
+      <!-- 4 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">4 PM</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-surface-variant p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-[20px] text-on-surface mt-0.5">brush</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-body-lg font-medium text-on-surface">Design system refinement</span>
+            <span class="block text-body-sm text-on-surface-variant">4:30 – 5:30 PM</span>
+          </span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-on-surface-variant shrink-0">Creative</span>
+        </a>
+      </li>
+      <!-- 5 PM: urgent due to-do + note -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">5 PM</span>
+        <span class="flex-1 flex flex-col gap-1.5">
+          <span class="rounded-xl border-[1.5px] border-secondary bg-secondary-fixed/40 px-3 py-2 min-h-touch flex items-center gap-2 text-body-md text-on-surface">
+            <span class="material-symbols-outlined text-[20px] text-secondary">task_alt</span>
+            <span class="flex-1"><span class="text-secondary font-semibold">Due:</span> Submit quarterly tax paperwork</span>
+            <span class="inline-flex items-center pl-1 pr-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm shrink-0"><span class="material-symbols-outlined text-[14px]">priority_high</span>Urgent</span>
+          </span>
+          <span class="rounded-xl bg-surface-container-low px-3 min-h-touch flex items-center text-body-md italic text-on-surface-variant">Desk tidy &amp; shutdown</span>
+        </span>
+      </li>
+      <!-- 6 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">6 PM</span>
+        <a href="#event-detail" class="flex-1 rounded-xl bg-primary-fixed/60 p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-[20px] text-primary mt-0.5">self_improvement</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-body-lg font-medium text-on-primary-fixed">Pilates class</span>
+            <span class="block text-body-sm text-primary">6:30 – 7:20 PM · Studio Bloom</span>
+          </span>
+          <span class="rounded-full bg-surface-container-lowest/80 px-2 py-0.5 text-label-sm text-primary shrink-0">Wellness</span>
+        </a>
+      </li>
+      <!-- 7 PM -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">7 PM</span>
+        <span class="flex-1 rounded-xl bg-surface-container-low px-3 min-h-touch flex items-center text-body-md italic text-on-surface-variant">Slow dinner</span>
+      </li>
+      <!-- 8 PM: empty hour, tap to add (TD-15) -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">8 PM</span>
+        <a href="#add" aria-label="Add something at 8 PM" class="flex-1 rounded-xl border-[1.5px] border-dashed border-outline-variant/70 min-h-touch"></a>
+      </li>
+      <!-- 9 PM: routine marker -->
+      <li class="flex gap-2">
+        <span class="w-12 shrink-0 text-right text-label-md text-outline pt-3">9 PM</span>
+        <span class="flex-1 rounded-xl bg-secondary-fixed/30 px-3 min-h-touch flex items-center gap-2 text-body-md text-on-surface">
+          <span class="material-symbols-outlined text-[20px] text-secondary">bedtime</span>Evening Wind-Down · 9:30 PM
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Daily quote (TD-18) -->
+  <section class="rounded-2xl bg-surface-container-high/60 p-space-md flex items-center gap-space-sm">
+    <span class="material-symbols-outlined text-secondary text-[24px]">spa</span>
+    <p class="font-serif italic text-body-lg text-on-surface-variant">“Small seeds of mindful consistency harvest the calmest autumn days.”</p>
+  </section>
+</main>
+
+<!-- Task options sheet (TD-12, G4) -->
+<div data-sheet="task-menu" hidden class="fixed inset-0 z-50">
+  <a href="#close" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="task-menu-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-sm"></div>
+    <div class="px-margin pb-space-sm">
+      <p class="text-label-sm text-on-surface-variant uppercase">To-do · Due 5:00 PM</p>
+      <h2 id="task-menu-title" class="font-serif text-headline-md text-on-surface">Submit quarterly tax paperwork</h2>
+    </div>
+    <ul class="flex flex-col">
+      <li><a href="#close" class="flex items-center gap-space-md px-margin min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">edit</span>Edit</a></li>
+      <li><a href="#close" class="flex items-center gap-space-md px-margin min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">arrow_forward</span>Move to tomorrow</a></li>
+      <li><a href="#close" class="flex items-center gap-space-md px-margin min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">calendar_month</span>Move to another day…</a></li>
+      <li><a href="#close" class="flex items-center gap-space-md px-margin min-h-[56px] text-body-lg text-on-surface"><span class="material-symbols-outlined text-on-surface-variant">low_priority</span>Mark as not urgent</a></li>
+      <li class="border-t border-surface-variant mt-1"><a href="#close" class="flex items-center gap-space-md px-margin min-h-[56px] text-body-lg text-secondary"><span class="material-symbols-outlined">delete</span>Delete</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Event detail sheet (EV-04, G2) -->
+<div data-sheet="event-detail" hidden class="fixed inset-0 z-50">
+  <a href="#close" aria-label="Close" class="absolute inset-0 bg-scrim/30"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="event-title" class="absolute bottom-0 frame-x bg-surface-container-lowest rounded-t-2xl shadow-float px-margin pt-3 pb-8 sheet-in">
+    <div class="w-12 h-1.5 rounded-full bg-surface-variant mx-auto mb-space-md"></div>
+    <div class="flex items-start justify-between gap-2">
+      <div class="min-w-0">
+        <span class="inline-flex items-center gap-1 rounded-full bg-secondary-fixed text-on-secondary-fixed px-2.5 py-0.5 text-label-sm"><span class="w-2 h-2 rounded-full bg-secondary"></span>Work</span>
+        <h2 id="event-title" class="font-serif text-headline-lg text-on-surface mt-space-sm">Team project review</h2>
+      </div>
+      <a href="#close" aria-label="Close" class="w-12 h-12 flex items-center justify-center shrink-0">
+        <span class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">close</span></span>
+      </a>
+    </div>
+    <ul class="mt-space-md flex flex-col gap-space-md text-body-lg text-on-surface">
+      <li class="flex gap-space-md"><span class="material-symbols-outlined text-on-surface-variant">schedule</span><span>Wednesday, October 23<br/><span class="text-on-surface-variant">2:00 – 3:00 PM</span></span></li>
+      <li class="flex gap-space-md"><span class="material-symbols-outlined text-on-surface-variant">repeat</span>Every Wednesday</li>
+      <li class="flex gap-space-md"><span class="material-symbols-outlined text-on-surface-variant">location_on</span>Studio Lab 4</li>
+      <li class="flex gap-space-md"><span class="material-symbols-outlined text-on-surface-variant">notifications</span>10 minutes before</li>
+      <li class="flex gap-space-md"><span class="material-symbols-outlined text-on-surface-variant">notes</span><span class="text-on-surface-variant">Bring the printed mockups and the timeline.</span></li>
+    </ul>
+    <div class="grid grid-cols-3 gap-space-sm mt-space-lg">
+      <a href="#close" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-secondary flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">delete</span>Delete</a>
+      <a href="#close" class="h-12 rounded-full border-[1.5px] border-outline-variant text-label-lg text-on-surface flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">content_copy</span>Copy</a>
+      <a href="../event/code.html#edit" class="h-12 rounded-full bg-primary text-on-primary text-label-lg flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[20px]">edit</span>Edit</a>
+    </div>
+  </div>
+</div>
+
+<script src="../_shared/shell.js"></script>
+</body>
+</html>
