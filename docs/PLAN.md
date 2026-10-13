@@ -152,7 +152,7 @@ Each milestone ends with an installable build on a real phone.
 
 | Milestone | Contents | Requirements |
 |---|---|---|
-| **M1 Core planner** | App shell; Today (date header, tasks, timeline, hour notes); event sheet + detail; Week; Month (grid, day sheet, agenda, deadlines); reminders; repeats; onboarding; basic Settings; empty states; search (events + tasks) | SH, TD (except routines), WK (except habits), MO, EV, ON, ST-01, SR-01, FR-01…14 |
+| **M1 Core planner** | App shell; Today (date header, tasks, timeline, hour notes); event sheet + detail; Week; Month (grid, day sheet, agenda, deadlines); reminders (with the notification look and the "Reminders not arriving?" help screen); repeats; onboarding; basic Settings; empty states; search (events + tasks) | SH, TD (except routines), WK (except habits), MO, EV, ON, ST-01, ST-03, NT-01, SR-01, FR-01…14 |
 | **M2 Routines & habits** | Habits tab; routines on Today; habits at a glance on Week; streaks | HB, TD-05…07, WK-11 |
 | **M3 Money & goals** | More tab; Budget; Record Entry; savings goals; bills; monthly goal on Month | MR, BU, MO-06 (goals) |
 | **M4 Finishing** | Move-unfinished-tasks prompt, quotes, seasonal images, data export, polish | FR-15, TD-18, ST-02, S items |
