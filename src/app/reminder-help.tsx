@@ -46,7 +46,7 @@ function CheckRow({
           </Text>
         ) : null}
       </View>
-      {children}
+      {children ? <View className="ml-10">{children}</View> : null}
     </View>
   );
 }
