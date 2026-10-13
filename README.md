@@ -45,7 +45,7 @@ cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
 # → android/app/build/outputs/apk/release/app-release.apk; copy it to the phone and open it
 ```
 
-On Windows, build from a short path (`subst R: "<project folder>"`, then run Gradle from `R:\android`): native builds can fail on long paths or paths with spaces.
+On Windows, the native build fails ("build.ninja still dirty") when the project's path contains spaces. Build from a copy at a path without spaces, e.g. `robocopy "<project folder>" C:\dev\daybloom-build /MIR /XD .git`, then run Gradle in `C:\dev\daybloom-build\android`. A mapped drive (`subst`) or a junction doesn't help.
 
 ## Check your work
 
