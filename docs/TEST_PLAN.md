@@ -198,6 +198,7 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-HB05.1 | HB-05 | Unit | October 2024, Sunday start | 5 week columns (the design shows 4) |
 | T-HB06.1 | HB-06 | Unit | Done every day up to yesterday, not yet today | Streak unchanged until midnight; broken the next day if still not done |
 | T-HB07.1 | HB-07 | E2E | Add weekly habit "Call grandma", archive "Vitamins" | New row in weekly section; Vitamins gone, history kept |
+| T-HB07.2 | HB-07 | Unit | "Drink water", reminded every hour from 7 AM to 6 PM; tick it at 1:15 PM | 12 reminders a day; none left today after the tick; at most 24 waiting for one habit |
 | T-HB08.1 | HB-08 | Component | "10,000 Daily Steps" on 360dp at default and max font size | Full name visible (wraps), no "…" |
 
 ### More and Budget

@@ -165,7 +165,7 @@ Each milestone ends with an installable build on a real phone.
 
 **M2 status (2026-10-14):** built and tried on the emulator. Covers HB-01…09, TD-05…07 and WK-11. Notes:
 - Morning Ritual (7:00 AM) and Evening Wind-Down (9:30 PM) exist from the first start; Today invites people to add a first habit to one of them.
-- A routine reminds at its time, listing its habits; an Anytime habit can have its own time. Reminders go one week ahead and skip a day (or week) that is already done.
+- A routine reminds at its time, listing its habits; an Anytime habit can have its own time, or several times a day (e.g. every hour from 7 AM to 6 PM). Reminders go one week ahead, at most 24 per habit, and skip a day (or week) that is already done.
 - Days before a habit was added aren't shown as missed in its history; ticking an earlier day starts the history there.
 - Reordering uses Move up / Move down, as categories do.
 

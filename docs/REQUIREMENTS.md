@@ -160,7 +160,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | HB-04 | Daily habits, grouped by routine (Morning Ritual, Evening Wind-Down, Anytime): last 7 days (today on the right, highlighted); each row has name, a streak (only when 2+ days) or a short note, and 7 circles; tapping toggles; future days are not shown | M |
 | HB-05 | Weekly habits: one circle per week of the month (4, 5 or 6 weeks, per week-start setting) | M |
 | HB-06 | Streaks: consecutive completed days (weeks for weekly habits). Today not being done yet doesn't break a streak until the day ends. | M |
-| HB-07 | Add, edit, reorder, archive habits: name, how often (daily/weekly), routine (Morning, Evening, Anytime or a new one), reminder (shared with the routine, or its own time), short note | M |
+| HB-07 | Add, edit, reorder, archive habits: name, how often (daily/weekly), routine (Morning, Evening, Anytime or a new one), reminder (shared with the routine, or its own: once, or for daily habits several times a day, every 30 min to 4 hours between two times), short note | M |
 | HB-08 | Habit names wrap to 2 lines instead of being cut off (A6) | M |
 | HB-09 | Calendar button (top right) shows a month history per habit | S |
 
