@@ -2,10 +2,20 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { ensureDefaultCategories } from '@/planner/categories';
 import { Text } from '@/ui';
 
 import migrations from '../../drizzle/migrations';
 import { db } from './client';
+
+let seeded = false;
+
+/** First-run data (the starter categories), once the tables exist. Safe to repeat. */
+function seedOnce() {
+  if (seeded) return;
+  ensureDefaultCategories(db);
+  seeded = true;
+}
 
 /** Brings the on-device database up to date before the app shows anything that reads it. */
 export function DatabaseProvider({ children }: { children: ReactNode }) {
@@ -23,5 +33,6 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
     );
   }
   if (!success) return null;
+  seedOnce();
   return <>{children}</>;
 }
