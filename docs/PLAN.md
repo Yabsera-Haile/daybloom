@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.5, 2026-10-13. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner) built:** Today, the event form and details, Week, Month, reminders, onboarding, Settings and search, checked on the Android emulator. Next: try it on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android; then M2.
+**Status:** v0.6, 2026-10-14. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner) and M2 (routines and habits) built** and checked on the Android emulator. Next: try both on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android; then M3 (money and goals).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -162,6 +162,12 @@ Each milestone ends with an installable build on a real phone.
 - Reminders are local notifications kept as a rolling window (section 5.4). **Expo Go on Android can't show them** (Expo removed its notification channels in SDK 53), so the app skips them there and says so on the help screen. They work in the installed app.
 - Categories are reordered with Move up / Move down in their edit sheet (works with a screen reader; no drag library needed).
 - Changing the time or the repeat of several occurrences drops changes made to single ones, as Google Calendar does.
+
+**M2 status (2026-10-14):** built and tried on the emulator. Covers HB-01…09, TD-05…07 and WK-11. Notes:
+- Morning Ritual (7:00 AM) and Evening Wind-Down (9:30 PM) exist from the first start; Today invites people to add a first habit to one of them.
+- A routine reminds at its time, listing its habits; an Anytime habit can have its own time. Reminders go one week ahead and skip a day (or week) that is already done.
+- Days before a habit was added aren't shown as missed in its history; ticking an earlier day starts the history there.
+- Reordering uses Move up / Move down, as categories do.
 
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 
