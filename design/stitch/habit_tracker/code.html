@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "error-container": "#ffdad6", "outline": "#727972", "secondary-fixed-dim": "#ffb4a3", "surface-variant": "#e9e1dc", "on-primary-fixed": "#002111", "surface-container-lowest": "#ffffff", "tertiary": "#815404", "on-secondary-fixed": "#3a0a02", "inverse-primary": "#aacfb5", "surface": "#fff8f5", "outline-variant": "#c1c8c1", "primary-fixed": "#c5ecd0", "on-tertiary-container": "#ffffff", "primary-container": "#5b7e67", "on-surface": "#1e1b18", "on-secondary-container": "#783929", "on-primary-container": "#ffffff", "secondary-container": "#fda590", "on-tertiary-fixed": "#2a1800", "surface-container-low": "#fbf2ed", "on-tertiary-fixed-variant": "#643f00", "surface-dim": "#e1d8d4", "inverse-surface": "#34302c", "primary": "#43654f", "inverse-on-surface": "#f8efea", "surface-container": "#f5ece7", "on-surface-variant": "#424843", "background": "#fff8f5", "tertiary-fixed-dim": "#f9bb68", "on-secondary-fixed-variant": "#723425", "on-tertiary": "#ffffff", "error": "#ba1a1a", "on-background": "#1e1b18", "on-error-container": "#93000a", "surface-tint": "#446650", "on-primary-fixed-variant": "#2c4e39", "on-primary": "#ffffff", "on-error": "#ffffff", "secondary": "#8f4b3b", "on-secondary": "#ffffff", "primary-fixed-dim": "#aacfb5", "surface-container-high": "#efe6e2", "tertiary-container": "#9e6c20", "surface-bright": "#fff8f5", "tertiary-fixed": "#ffddb5", "surface-container-highest": "#e9e1dc", "secondary-fixed": "#ffdad2" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-lg": "2rem", "margin-sm": "1rem", "space-sm": "0.5rem", "margin": "1.25rem", "gutter": "1rem", "gutter-sm": "0.75rem", "space-xl": "2rem", "space-md": "1rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, fontFamily: { "headline-md": ["Literata"], "label-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Literata"], "body-sm": ["Plus Jakarta Sans"], "display-lg-mobile": ["Literata"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Literata"], "display-lg": ["Literata"], "label-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"] }, fontSize: { "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "500" }], "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Daybloom Planner Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WiV_7RKeLvsfU2b5oyasdzarEIQnZYZSrtqOzHGsLkghd_duO6XeEXSc1tY8ufFVRp99bwo9aGVQAoYWV_jfZsjUTFbM55_Z_jOf-301M7aBwSwzSY4Tr9mBgb4uW43WBZSfa7HBMPNuPl0eCJeRh9OuC2qEI24MR2yxpKvGxo9uvwb7__pGglDpZ4E2OtzvB9ObEUhmGF5XV5tP9AqzYJP2hY1gUcF5fDAuIhHW9YS4TvtjwHmYrGjA"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-tight leading-none">Daybloom</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Habits</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Search notes and events" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="Account and profile" class="w-11 h-11 flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP_C2DAd6c3TLZNEPCX2-lZT8z1FU8FZexOq2dI3_aYdAmq9bw0pW3MekMGrkQ8Qyt0B8Go3K86hXe_MtV5mzQp9RtsDn_z_6T96LTzy8ZRLpUDv2GM8tK4uQZUmO4Z3KCnEz7k-obkQJhmf6ZevD9WwOAVc5WTO0xBXhyialvErW4ssKwswvPyRZZNjBWh5zzBp3Z2j1n6mVjGVWHslnifdouN4TvvAH40eVwRVsfynIctGWo_AwR"/></button></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface"><div class="flex flex-col w-full px-margin pb-space-xl gap-space-lg">
+<!-- Overview Section -->
+<section class="flex flex-col gap-space-sm pt-space-md">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Habit Tracker • October 2024</span>
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">eco</span>
+          Day 23 of 31 • 78% consistency rate
+        </span>
+</div>
+<button aria-label="Month options" class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</button>
+</div>
+<!-- Soft Progress Bar -->
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden mt-space-xs">
+<div class="bg-primary h-full rounded-full transition-all duration-700 ease-out" style="width: 74%;"></div>
+</div>
+</section>
+<!-- Streak & Momentum Cards (Bento) -->
+<section class="grid grid-cols-3 gap-space-sm">
+<div class="flex flex-col p-space-sm rounded-xl bg-surface-container-lowest shadow-sm gap-0.5">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface font-semibold leading-tight mt-1">18<span class="text-label-sm font-normal text-on-surface-variant">d</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-none">Best Streak</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-xl bg-surface-container-lowest shadow-sm gap-0.5">
+<span class="material-symbols-outlined text-tertiary text-[18px]">spa</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface font-semibold leading-tight mt-1">7</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-none">Active Habits</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-xl bg-primary-fixed p-space-sm rounded-xl shadow-sm gap-0.5">
+<span class="material-symbols-outlined text-on-primary-fixed text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-primary-fixed font-semibold leading-tight mt-1">5<span class="text-label-sm text-on-primary-fixed-variant">/7</span></span>
+<span class="font-label-sm text-label-sm text-on-primary-fixed-variant leading-none font-bold">Today Done</span>
+</div>
+</section>
+<!-- Interactive Hint Callout -->
+<div class="flex items-center justify-between px-space-md py-space-sm bg-surface-container-low rounded-xl text-on-surface-variant shadow-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">touch_app</span>
+<span class="font-body-sm text-body-sm">Tap any circle to mark complete</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded-full bg-primary-fixed/50">Oct 17 - 23</span>
+</div>
+<!-- Daily Habits Section -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">sunny</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Daily Rituals</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Past 7 Days</span>
+</div>
+<!-- Daily Habit Grid Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<!-- Date Column Header Strip -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 pb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">Habit</span>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>T</span><span class="text-[10px] opacity-70">17</span></div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>F</span><span class="text-[10px] opacity-70">18</span></div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>S</span><span class="text-[10px] opacity-70">19</span></div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>S</span><span class="text-[10px] opacity-70">20</span></div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>M</span><span class="text-[10px] opacity-70">21</span></div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant flex flex-col"><span>T</span><span class="text-[10px] opacity-70">22</span></div>
+<div class="text-center font-label-sm text-label-sm text-primary font-bold flex flex-col bg-primary-fixed/40 rounded-lg py-0.5">
+<span>W</span><span class="text-[10px]">23</span>
+</div>
+</div>
+<!-- Habit 1 -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 py-1">
+<div class="flex flex-col min-w-0 pr-1">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">Morning Hydration</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">750ml • 18d streak</span>
+</div>
+<button aria-label="Day 17 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 18 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 19 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 20 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 21 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 22 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button aria-label="Day 23 done" class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[16px]">check</span></button>
+</div>
+<!-- Habit 2 -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 py-1">
+<div class="flex flex-col min-w-0 pr-1">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">10,000 Daily Steps</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Walk • 12d streak</span>
+</div>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[16px]">check</span></button>
+</div>
+<!-- Habit 3 -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 py-1">
+<div class="flex flex-col min-w-0 pr-1">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">20-Min Reading</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Mind • 9d streak</span>
+</div>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[16px]">check</span></button>
+</div>
+<!-- Habit 4 -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 py-1">
+<div class="flex flex-col min-w-0 pr-1">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">No Screen 30m Bed</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Sleep hygiene</span>
+</div>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[16px]">check</span></button>
+</div>
+<!-- Habit 5 -->
+<div class="grid grid-cols-[1fr,repeat(7,28px)] items-center gap-1.5 py-1">
+<div class="flex flex-col min-w-0 pr-1">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">Vitamins &amp; Supplements</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Wellness stack</span>
+</div>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[16px]">check</span></button>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[16px]">check</span></button>
+</div>
+</div>
+</section>
+<!-- Weekly Habits Section -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">calendar_view_week</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Weekly Milestones</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">October 4 Weeks</span>
+</div>
+<!-- Weekly Habit Cards -->
+<div class="flex flex-col gap-space-sm">
+<!-- Weekly Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between">
+<div class="flex flex-col min-w-0 pr-2">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">Deep Clean Studio</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Focus space maintenance</span>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W1</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W2</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W3</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W4</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+</div>
+</div>
+<!-- Weekly Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between">
+<div class="flex flex-col min-w-0 pr-2">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">Budget &amp; Reconciliation</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Personal finances</span>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W1</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W2</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W3</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W4</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+</div>
+</div>
+<!-- Weekly Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between">
+<div class="flex flex-col min-w-0 pr-2">
+<span class="font-body-md text-body-md text-on-surface font-medium truncate">Meal Prep Sunday</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Nutritious batch cooking</span>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W1</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W2</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W3</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">W4</span>
+<button class="habit-toggle w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-transparent transition-transform active:scale-90"><span class="material-symbols-outlined text-[15px]">check</span></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Future Expansion Teaser Banner -->
+<section class="rounded-xl p-space-md bg-surface-container-high shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">auto_awesome</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-secondary font-bold tracking-wide uppercase">In the Notebook</span>
+<span class="font-headline-sm text-headline-sm text-on-surface leading-tight mt-0.5">Coming Soon</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+        Skincare Routine, Language Learning &amp; Weight Tracker logs are preparing for next season.
+      </p>
+</div>
+</section>
+</div>
+<script>
+  // Simple micro-interaction for tactile habit circles
+  document.querySelectorAll('.habit-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const isChecked = button.classList.contains('bg-primary');
+      if (isChecked) {
+        button.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        button.classList.add('bg-surface-container', 'text-transparent');
+      } else {
+        button.classList.remove('bg-surface-container', 'text-transparent');
+        button.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+      }
+    });
+  });
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(45,41,38,0.05)]" data-active-classes="text-primary bg-primary-fixed/40"><div class="flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center w-14 h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-all gap-0.5" data-path="today" href="#"><span class="material-symbols-outlined text-[20px]">today</span><span class="font-label-sm text-label-sm">Today</span></a><a class="flex flex-col items-center justify-center w-14 h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-all gap-0.5" data-path="week" href="#"><span class="material-symbols-outlined text-[20px]">view_week</span><span class="font-label-sm text-label-sm">Week</span></a><a class="flex flex-col items-center justify-center w-14 h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-all gap-0.5" data-path="month" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-label-sm text-label-sm">Month</span></a><a aria-current="page" class="flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all gap-0.5 text-primary bg-primary-fixed/40" data-path="habits" href="#"><span class="material-symbols-outlined text-[20px]">spa</span><span class="font-label-sm text-label-sm">Habits</span></a><a class="flex flex-col items-center justify-center w-14 h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-all gap-0.5" data-path="planner-hub" href="#"><span class="material-symbols-outlined text-[20px]">auto_stories</span><span class="font-label-sm text-label-sm">Hub</span></a></div></nav></body></html>
