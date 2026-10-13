@@ -3,7 +3,15 @@
 import { and, eq, gt, gte, inArray, isNotNull, isNull, lt } from 'drizzle-orm';
 
 import { toDayKey } from '@/calendar/dates';
-import { addDaysToKey, dayKeyInZone, floating, fromFloating, fromWallTime, localDayStart, toWallTime } from '@/calendar/timezone';
+import {
+  addDaysToKey,
+  dayKeyInZone,
+  floating,
+  fromFloating,
+  fromWallTime,
+  localDayStart,
+  toWallTime,
+} from '@/calendar/timezone';
 import { events, reminders } from '@/db/schema';
 import { newId, type Db, type Undo } from '@/db/types';
 import { countBefore, expandSeries, formatRuleParts, parseRuleParts, stopBefore, type Series } from '@/recurrence';
@@ -96,7 +104,9 @@ export function getEvent(db: Db, id: string): EventRow | undefined {
 export function createEvent(db: Db, input: EventInput, reminderMinutes: number[] = []): string {
   const id = newId();
   db.transaction((tx) => {
-    tx.insert(events).values({ id, ...clean(input) }).run();
+    tx.insert(events)
+      .values({ id, ...clean(input) })
+      .run();
     setReminderOffsets(tx, 'event', id, reminderMinutes);
   });
   return id;
@@ -105,7 +115,13 @@ export function createEvent(db: Db, input: EventInput, reminderMinutes: number[]
 // ---------------------------------------------------------------------------------------------
 // Reading
 
-function daysOf(e: { allDay: boolean; timeZone: string }, startAt: number, endAt: number, firstDay: string, lastDay: string): string[] {
+function daysOf(
+  e: { allDay: boolean; timeZone: string },
+  startAt: number,
+  endAt: number,
+  firstDay: string,
+  lastDay: string,
+): string[] {
   // All-day events keep their date wherever the phone is (T-11.1); timed ones follow the phone's clock.
   const dayOf = (ms: number) => (e.allDay ? dayKeyInZone(ms, e.timeZone) : toDayKey(new Date(ms)));
   const first = dayOf(startAt);
@@ -147,7 +163,15 @@ export function eventsBetween(db: Db, firstDay: string, lastDay: string): EventO
   const oneOffs = db
     .select()
     .from(events)
-    .where(and(isNull(events.rrule), isNull(events.seriesId), isNull(events.deletedAt), lt(events.startAt, to), gt(events.endAt, from)))
+    .where(
+      and(
+        isNull(events.rrule),
+        isNull(events.seriesId),
+        isNull(events.deletedAt),
+        lt(events.startAt, to),
+        gt(events.endAt, from),
+      ),
+    )
     .all();
   for (const e of oneOffs) out.push(occurrence(e, e.startAt, e.endAt, null, range));
 
@@ -160,7 +184,12 @@ export function eventsBetween(db: Db, firstDay: string, lastDay: string): EventO
     const changed = db
       .select()
       .from(events)
-      .where(inArray(events.seriesId, series.map((s) => s.id)))
+      .where(
+        inArray(
+          events.seriesId,
+          series.map((s) => s.id),
+        ),
+      )
       .all();
     const changedKeys = new Set(changed.map((x) => `${x.seriesId}:${x.originalStartAt}`));
     const byId = new Map(series.map((s) => [s.id, s]));
@@ -174,11 +203,40 @@ export function eventsBetween(db: Db, firstDay: string, lastDay: string): EventO
     for (const x of changed) {
       if (x.deletedAt !== null || x.startAt >= to || x.endAt <= from) continue;
       const s = byId.get(x.seriesId!)!;
-      out.push(occurrence(x, x.startAt, x.endAt, { id: s.id, rrule: s.rrule, originalStartAt: x.originalStartAt! }, range));
+      out.push(
+        occurrence(x, x.startAt, x.endAt, { id: s.id, rrule: s.rrule, originalStartAt: x.originalStartAt! }, range),
+      );
     }
   }
 
   return out.filter((o) => o.days.length > 0).sort((a, b) => a.startAt - b.startAt || a.title.localeCompare(b.title));
+}
+
+/** Finds one occurrence again from what identifies it (for the edit screen's link). */
+export function findOccurrence(
+  db: Db,
+  ref: { eventId: string; seriesId?: string | null; originalStartAt?: number | null },
+): EventOccurrence | null {
+  const all: [string, string] = ['0000-01-01', '9999-12-31'];
+  const row = getEvent(db, ref.eventId);
+  if (!row || row.deletedAt !== null) return null;
+  if (!ref.seriesId) return occurrence(row, row.startAt, row.endAt, null, all);
+  const series = getEvent(db, ref.seriesId);
+  if (!series?.rrule || series.deletedAt !== null) return null;
+  if (row.id !== series.id) {
+    return occurrence(
+      row,
+      row.startAt,
+      row.endAt,
+      { id: series.id, rrule: series.rrule, originalStartAt: row.originalStartAt! },
+      all,
+    );
+  }
+  const slot = ref.originalStartAt ?? series.startAt;
+  const o = expandSeries(series as Series, slot, slot + 1).find((x) => x.startAt === slot);
+  return o
+    ? occurrence(series, o.startAt, o.endAt, { id: series.id, rrule: series.rrule, originalStartAt: o.startAt }, all)
+    : null;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -226,7 +284,15 @@ function seriesTimes(series: EventRow, firstSlot: number, slot: number, next: Cl
  * changed (as Google Calendar does); otherwise they keep their own changes, take the edits to
  * details they hadn't changed, and the edited one takes the form's details.
  */
-function settleChanged(db: Db, own: EventRow | undefined, others: EventRow[], before: EventRow, next: Clean, seriesId: string, timingChanged: boolean) {
+function settleChanged(
+  db: Db,
+  own: EventRow | undefined,
+  others: EventRow[],
+  before: EventRow,
+  next: Clean,
+  seriesId: string,
+  timingChanged: boolean,
+) {
   if (timingChanged) {
     removeRows(db, own ? [own, ...others] : others);
     return;
@@ -250,7 +316,13 @@ function settleChanged(db: Db, own: EventRow | undefined, others: EventRow[], be
  * Saves the event form for an occurrence of a repeating event.
  * Returns the id of the row that now holds the edited occurrence.
  */
-export function updateOccurrence(db: Db, occ: EventOccurrence, input: EventInput, scope: EditScope, reminderMinutes?: number[]): string {
+export function updateOccurrence(
+  db: Db,
+  occ: EventOccurrence,
+  input: EventInput,
+  scope: EditScope,
+  reminderMinutes?: number[],
+): string {
   if (!occ.seriesId) {
     updateEvent(db, occ.eventId, input, reminderMinutes);
     return occ.eventId;
@@ -273,7 +345,10 @@ export function updateOccurrence(db: Db, occ: EventOccurrence, input: EventInput
       const values = { ...next, rrule: null, seriesId: series.id, originalStartAt: slot, updatedAt: Date.now() };
       const id = own?.id ?? newId();
       if (own) tx.update(events).set(values).where(eq(events.id, id)).run();
-      else tx.insert(events).values({ id, ...values }).run();
+      else
+        tx.insert(events)
+          .values({ id, ...values })
+          .run();
       setReminderOffsets(tx, 'event', id, minutes);
       return id;
     }
