@@ -7,6 +7,7 @@ import { db } from '@/db/client';
 import { events as eventsTable, tasks as tasksTable } from '@/db/schema';
 import { useNow, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { RoutineCards, useRoutineMarkers } from '@/features/habits/RoutineCards';
 import { DateCard } from '@/features/today/DateCard';
 import { Intentions } from '@/features/today/Intentions';
 import { Timeline } from '@/features/today/Timeline';
@@ -43,6 +44,7 @@ export default function TodayScreen() {
   const tasks = useLive(() => tasksOn(db, day), [day]);
   const notes = useLive(() => hourNotesOn(db, day), [day]);
   const fresh = useLive(isFreshStart, []);
+  const markers = useRoutineMarkers(day, isToday, now);
   const upNext = isToday ? events.find((e) => !e.allDay && e.startAt > now) : undefined;
 
   // bring the inline "Add to-do" form into view (also when opened from the + Add chooser)
@@ -75,10 +77,11 @@ export default function TodayScreen() {
         </View>
       ) : null}
       {upNext ? <UpNext occurrence={upNext} now={now} /> : null}
+      <RoutineCards day={day} isToday={isToday} now={now} />
       <View onLayout={(e) => (intentionsY.current = e.nativeEvent.layout.y)}>
         <Intentions day={day} isToday={isToday} tasks={tasks} />
       </View>
-      <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} />
+      <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} markers={markers} />
     </TabScreen>
   );
 }

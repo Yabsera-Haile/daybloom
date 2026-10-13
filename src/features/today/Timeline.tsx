@@ -12,8 +12,17 @@ import type { HourNote } from '@/planner/notes';
 import { updateHourNote } from '@/planner/notes';
 import type { TaskRow } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { lookFor } from '@/theme';
-import { Card, Icon, IconButton, Text, UrgentBadge } from '@/ui';
+import { lookFor, type ColorName } from '@/theme';
+import { Card, Icon, IconButton, Text, UrgentBadge, type IconName } from '@/ui';
+
+export type TimelineMarker = {
+  key: string;
+  hour: number;
+  icon: IconName;
+  iconColor: ColorName;
+  card: string;
+  text: string;
+};
 
 type TimelineProps = {
   day: string;
@@ -22,6 +31,8 @@ type TimelineProps = {
   events: EventOccurrence[];
   tasks: TaskRow[];
   notes: HourNote[];
+  /** Routines at their hour (TD-13) */
+  markers?: TimelineMarker[];
 };
 
 const urgentFirst = (a: EventOccurrence, b: EventOccurrence) =>
@@ -148,7 +159,7 @@ function HourRow({
 }
 
 /** Hourly timeline (TD-13..17): events under their start hour, due to-dos, notes, all-day row, the Now line. */
-export function Timeline({ day, isToday, now, events, tasks, notes }: TimelineProps) {
+export function Timeline({ day, isToday, now, events, tasks, notes, markers = [] }: TimelineProps) {
   const settings = useSettings();
   const openSheet = useUi((s) => s.openSheet);
   const [wholeDay, setWholeDay] = useState(false);
@@ -163,6 +174,7 @@ export function Timeline({ day, isToday, now, events, tasks, notes }: TimelinePr
     ...timed.map((e) => hourOf(e.startAt)),
     ...due.map((x) => Number(x.dueTime!.slice(0, 2))),
     ...notes.map((n) => n.hour),
+    ...markers.map((m) => m.hour),
   ];
   const nowHour = hourOf(now);
   const empty = usedHours.length === 0 && allDay.length === 0;
@@ -230,11 +242,20 @@ export function Timeline({ day, isToday, now, events, tasks, notes }: TimelinePr
           const hourEvents = timed.filter((e) => hourOf(e.startAt) === h).sort(urgentFirst);
           const hourDue = due.filter((x) => Number(x.dueTime!.slice(0, 2)) === h);
           const hourNotes = notes.filter((n) => n.hour === h);
-          const isEmpty = !hourEvents.length && !hourDue.length && !hourNotes.length;
+          const hourMarkers = markers.filter((m) => m.hour === h);
+          const isEmpty = !hourEvents.length && !hourDue.length && !hourNotes.length && !hourMarkers.length;
           const showHint = isEmpty && empty && !tapHintShown && (!isToday || h > nowHour);
           if (showHint) tapHintShown = true;
           return [
             <HourRow key={h} label={hourLabel(h, tf)}>
+              {hourMarkers.map((m) => (
+                <View key={m.key} className={`min-h-touch flex-row items-center gap-2 rounded-xl px-3 ${m.card}`}>
+                  <Icon name={m.icon} size={20} color={m.iconColor} />
+                  <Text variant="bodyMd" style={{ flex: 1 }}>
+                    {m.text}
+                  </Text>
+                </View>
+              ))}
               {hourEvents.map((e) => (
                 <EventCard key={e.key} occurrence={e} />
               ))}
