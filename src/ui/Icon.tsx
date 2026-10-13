@@ -10,12 +10,21 @@ type IconProps = {
   name: IconName;
   size?: number;
   color?: ColorName;
+  /** A color outside the palette names, e.g. a category accent. */
+  tint?: string;
   filled?: boolean;
   /** Only for icons that carry meaning on their own; decorative icons stay silent. */
   accessibilityLabel?: string;
 };
 
-export function Icon({ name, size = 24, color = 'onSurfaceVariant', filled = false, accessibilityLabel }: IconProps) {
+export function Icon({
+  name,
+  size = 24,
+  color = 'onSurfaceVariant',
+  tint,
+  filled = false,
+  accessibilityLabel,
+}: IconProps) {
   const d = (filled && filledIconPaths[name]) || iconPaths[name];
   return (
     <Svg
@@ -25,7 +34,7 @@ export function Icon({ name, size = 24, color = 'onSurfaceVariant', filled = fal
       accessible={!!accessibilityLabel}
       accessibilityLabel={accessibilityLabel}
       importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}>
-      <Path d={d} fill={colors[color]} />
+      <Path d={d} fill={tint ?? colors[color]} />
     </Svg>
   );
 }

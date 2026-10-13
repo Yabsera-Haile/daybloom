@@ -14,11 +14,21 @@ type CardProps = ViewProps & {
   className?: string;
 };
 
-const toneClass = { lowest: 'bg-surface-container-lowest', low: 'bg-surface-container-low', container: 'bg-surface-container' };
+const toneClass = {
+  lowest: 'bg-surface-container-lowest',
+  low: 'bg-surface-container-low',
+  container: 'bg-surface-container',
+};
 
 /** Paper card: 16 radius, warm shadow on white cards. */
 export function Card({ tone = 'lowest', shadow = tone === 'lowest', className = '', style, ...rest }: CardProps) {
-  return <View className={`rounded-2xl p-space-md ${toneClass[tone]} ${className}`} style={[shadow && shadows.card, style]} {...rest} />;
+  return (
+    <View
+      className={`rounded-2xl p-space-md ${toneClass[tone]} ${className}`}
+      style={[shadow && shadows.card, style]}
+      {...rest}
+    />
+  );
 }
 
 type SectionHeaderProps = {
@@ -30,7 +40,14 @@ type SectionHeaderProps = {
   size?: 'md' | 'sm';
 };
 
-export function SectionHeader({ title, icon, iconColor = 'primary', subtitle, right, size = 'md' }: SectionHeaderProps) {
+export function SectionHeader({
+  title,
+  icon,
+  iconColor = 'primary',
+  subtitle,
+  right,
+  size = 'md',
+}: SectionHeaderProps) {
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-space-sm">
@@ -55,18 +72,37 @@ type DateNavigatorProps = {
   label: string;
   onPrevious?: () => void;
   onNext?: () => void;
+  /** The middle label jumps back to today/this week/this month (FR-08). */
+  onLabelPress?: () => void;
+  /** The label names what is on screen (no need to press it). */
+  current?: boolean;
   previousLabel?: string;
   nextLabel?: string;
 };
 
 /** ‹ Today › pill used on Today, Week and Month. */
-export function DateNavigator({ label, onPrevious, onNext, previousLabel = 'Previous', nextLabel = 'Next' }: DateNavigatorProps) {
+export function DateNavigator({
+  label,
+  onPrevious,
+  onNext,
+  onLabelPress,
+  current = true,
+  previousLabel = 'Previous',
+  nextLabel = 'Next',
+}: DateNavigatorProps) {
   return (
     <View className="flex-row items-center self-start rounded-full bg-surface-container-lowest" style={shadows.card}>
       <IconButton icon="chevron_left" accessibilityLabel={previousLabel} onPress={onPrevious} iconColor="onSurface" />
-      <Text variant="labelMd" color="primary">
-        {label}
-      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ selected: current }}
+        disabled={!onLabelPress}
+        onPress={onLabelPress}
+        className={`h-12 justify-center rounded-full ${current ? 'px-1' : 'bg-primary-fixed/60 px-3'}`}>
+        <Text variant="labelMd" color="primary">
+          {label}
+        </Text>
+      </Pressable>
       <IconButton icon="chevron_right" accessibilityLabel={nextLabel} onPress={onNext} iconColor="onSurface" />
     </View>
   );

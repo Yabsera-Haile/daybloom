@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 
-import { categoryColors, colors, type CategoryKey, type ColorName } from '@/theme';
+import { categoryColors, colors, lookFor, type CategoryKey, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
 import { Text } from './Text';
@@ -30,7 +30,9 @@ export function FilterChip({ label, selected = false, onPress }: FilterChipProps
 /** The one "Urgent" style used everywhere (DESIGN_REVIEW I4). */
 export function UrgentBadge() {
   return (
-    <View className="flex-row items-center self-start rounded-full bg-secondary py-0.5 pl-1 pr-2" accessibilityLabel="Urgent">
+    <View
+      className="flex-row items-center self-start rounded-full bg-secondary py-0.5 pl-1 pr-2"
+      accessibilityLabel="Urgent">
       <Icon name="priority_high" size={14} color="onSecondary" />
       <Text variant="labelSm" color="onSecondary">
         Urgent
@@ -39,15 +41,23 @@ export function UrgentBadge() {
   );
 }
 
-/** Category label in the category's own colors. */
-export function CategoryTag({ category, tone = 'container' }: { category: CategoryKey; tone?: 'container' | 'onCard' }) {
-  const c = categoryColors[category];
+/** Category label in the category's own colors. `name` is the user's name for it (categories can be renamed). */
+export function CategoryTag({
+  category,
+  name,
+  tone = 'container',
+}: {
+  category: CategoryKey;
+  name?: string;
+  tone?: 'container' | 'onCard';
+}) {
+  const c = categoryColors[category] ?? categoryColors.personal;
   return (
     <View
-      className="self-start rounded-full px-2 py-0.5"
+      className="shrink-0 self-start rounded-full px-2 py-0.5"
       style={{ backgroundColor: tone === 'container' ? c.container : 'rgba(255,255,255,0.8)' }}>
-      <Text variant="labelSm" style={{ color: tone === 'container' ? c.onContainer : c.accent }}>
-        {c.label}
+      <Text variant="labelSm" style={{ color: tone === 'container' ? c.onContainer : lookFor(category).detail }}>
+        {name ?? c.label}
       </Text>
     </View>
   );

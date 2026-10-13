@@ -29,18 +29,21 @@ type ButtonProps = Omit<PressableProps, 'children'> & {
   size?: 'md' | 'lg' | 'xl';
   icon?: IconName;
   fullWidth?: boolean;
+  /** How it sits in its parent when not full width: start (default), center or end. */
+  align?: 'start' | 'center' | 'end';
   className?: string;
 };
 
 const sizeClass = { md: 'h-10 pl-3 pr-4', lg: 'h-12 px-5', xl: 'h-14 px-6' };
+const alignClass = { start: 'self-start', center: 'self-center', end: 'self-end' };
 
-export function Button({ label, variant = 'primary', size = 'lg', icon, fullWidth, className = '', ...rest }: ButtonProps) {
+export function Button({ label, variant = 'primary', size = 'lg', icon, fullWidth, align = 'start', className = '', ...rest }: ButtonProps) {
   const color = variantText[variant];
   return (
     <Pressable
       accessibilityRole="button"
       hitSlop={size === 'md' ? 4 : 0}
-      className={`flex-row items-center justify-center gap-1.5 rounded-full active:opacity-80 ${sizeClass[size]} ${variantClass[variant]} ${fullWidth ? 'w-full' : 'self-start'} ${className}`}
+      className={`flex-row items-center justify-center gap-1.5 rounded-full active:opacity-80 ${sizeClass[size]} ${variantClass[variant]} ${fullWidth ? 'w-full' : alignClass[align]} ${className}`}
       {...rest}>
       {icon ? <Icon name={icon} size={20} color={color} /> : null}
       <Text variant={size === 'md' ? 'labelMd' : 'labelLg'} color={color}>

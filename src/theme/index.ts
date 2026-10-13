@@ -16,6 +16,67 @@ export const categoryColors: Record<CategoryKey, CategoryColor> = {
   creative: tokens.categoryColor.creative,
 };
 
+/** How each category looks on timeline cards and choice chips (design/daybloom/today, event). */
+export type CategoryLook = {
+  /** Card background class */
+  card: string;
+  /** Selected choice chip classes */
+  chipOn: string;
+  dot: string;
+  title: string;
+  detail: string;
+  icon: IconNameForCategory;
+};
+type IconNameForCategory = 'spa' | 'laptop_mac' | 'event' | 'groups' | 'brush';
+const c = tokens.color;
+export const categoryLooks: Record<CategoryKey, CategoryLook> = {
+  wellness: {
+    card: 'bg-primary-fixed/60',
+    chipOn: 'border-primary bg-primary-fixed',
+    dot: c.primary,
+    title: c.onPrimaryFixed,
+    detail: c.primary,
+    icon: 'spa',
+  },
+  work: {
+    card: 'bg-secondary-fixed/60',
+    chipOn: 'border-secondary bg-secondary-fixed',
+    dot: c.secondary,
+    title: c.onSecondaryFixed,
+    detail: c.secondary,
+    icon: 'laptop_mac',
+  },
+  personal: {
+    card: 'bg-tertiary-fixed/60',
+    chipOn: 'border-tertiary bg-tertiary-fixed',
+    dot: c.tertiary,
+    title: c.onTertiaryFixed,
+    detail: c.tertiary,
+    icon: 'event',
+  },
+  social: {
+    card: 'bg-social-container',
+    chipOn: 'border-social bg-social-container',
+    dot: tokens.categoryColor.social.accent,
+    title: tokens.categoryColor.social.onContainer,
+    detail: tokens.categoryColor.social.onContainer,
+    icon: 'groups',
+  },
+  creative: {
+    card: 'bg-surface-variant',
+    chipOn: 'border-on-surface-variant bg-surface-variant',
+    dot: c.onSurfaceVariant,
+    title: c.onSurface,
+    detail: c.onSurfaceVariant,
+    icon: 'brush',
+  },
+};
+
+/** A stored color key, or Personal's look if it's unknown. */
+export function lookFor(colorKey: string | null | undefined): CategoryLook {
+  return categoryLooks[(colorKey ?? 'personal') as CategoryKey] ?? categoryLooks.personal;
+}
+
 export const spacing = tokens.spacing;
 export const radius = tokens.radius;
 export const layout = tokens.layout;
