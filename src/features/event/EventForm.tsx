@@ -91,16 +91,26 @@ export function EventForm({ initial }: { initial: Initial }) {
   );
   const [allDay, setAllDay] = useState(editing?.allDay ?? false);
   const [day, setDay] = useState(() => {
-    if (!editing) return initial.mode === 'new' ? initial.day : toDayKey(new Date());
-    return editing.allDay ? dayKeyInZone(editing.startAt, editing.timeZone) : toDayKey(new Date(editing.startAt));
+    if (editing) {
+      return editing.allDay ? dayKeyInZone(editing.startAt, editing.timeZone) : toDayKey(new Date(editing.startAt));
+    }
+    const preset = initial.mode === 'new' ? initial.day : toDayKey(new Date());
+    // after 11 PM the next whole hour (midnight) is tomorrow's
+    const lateToday =
+      initial.mode === 'new' &&
+      initial.hour === undefined &&
+      preset === toDayKey(new Date()) &&
+      new Date().getHours() === 23;
+    return lateToday ? addDaysToKey(preset, 1) : preset;
   });
   const [start, setStart] = useState(() => {
     if (editing && !editing.allDay) return localClock(editing.startAt);
     if (initial.mode === 'new' && initial.hour !== undefined) return `${pad(initial.hour)}:00`;
-    return `${pad((new Date().getHours() + 1) % 24)}:00`; // the next whole hour
+    return `${pad((new Date().getHours() + 1) % 24)}:00`; // the next whole hour (EV-07)
   });
+  // an hour long, but not past midnight (an 11 PM start ends at 11:59 PM)
   const [end, setEnd] = useState(() =>
-    editing && !editing.allDay ? localClock(editing.endAt) : fromMinutes(toMinutes(start) + 60),
+    editing && !editing.allDay ? localClock(editing.endAt) : fromMinutes(Math.min(toMinutes(start) + 60, 23 * 60 + 59)),
   );
   // multi-day events keep how many days they span
   const spanDays = editing
