@@ -135,8 +135,11 @@ export const habits = sqliteTable('habits', {
   /** daily | weekly */
   frequency: text('frequency').notNull().default('daily'),
   routineId: text('routine_id').references(() => routines.id),
-  /** Own reminder time 'HH:mm' for habits outside a routine */
+  /** Own reminder time 'HH:mm' for habits outside a routine; the first one when it repeats */
   reminderTime: text('reminder_time'),
+  /** Several times a day (daily habits): again every this many minutes, up to reminderUntil 'HH:mm' */
+  reminderEvery: integer('reminder_every'),
+  reminderUntil: text('reminder_until'),
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: createdAt(),
   archivedAt: integer('archived_at'),

@@ -129,17 +129,42 @@ export interface HabitInput {
   routineId: string | null;
   /** Own reminder 'HH:mm' for habits outside a routine (in a routine they share its reminder) */
   reminderTime?: string | null;
+  /** Several times a day: every this many minutes from reminderTime until reminderUntil */
+  reminderEvery?: number | null;
+  reminderUntil?: string | null;
 }
 
+/** "How often" choices for a reminder that repeats during the day, in minutes */
+export const REMIND_EVERY = [30, 60, 120, 180, 240] as const;
+
 function clean(input: HabitInput) {
+  const time = input.routineId ? null : cleanTime(input.reminderTime);
+  const until = cleanTime(input.reminderUntil);
+  const every = input.reminderEvery && input.reminderEvery >= 15 ? Math.round(input.reminderEvery) : null;
+  // only daily habits repeat, and only up to a time after the first
+  const repeats = !!time && !!every && !!until && until > time && input.frequency === 'daily';
   return {
     name: cleanName(input.name, 'habit'),
     note: input.note?.trim() ? input.note.trim() : null,
     frequency: input.frequency,
     routineId: input.routineId,
-    reminderTime: input.routineId ? null : cleanTime(input.reminderTime),
+    reminderTime: time,
+    reminderEvery: repeats ? every : null,
+    reminderUntil: repeats ? until : null,
     icon: habitIcon(input.name),
   };
+}
+
+const toMinutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3));
+const toClock = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+
+/** When a habit's own reminder rings on a day: once, or every so often between two times. */
+export function reminderTimes(h: Pick<Habit, 'reminderTime' | 'reminderEvery' | 'reminderUntil'>): string[] {
+  if (!h.reminderTime) return [];
+  if (!h.reminderEvery || !h.reminderUntil) return [h.reminderTime];
+  const out: string[] = [];
+  for (let m = toMinutes(h.reminderTime); m <= toMinutes(h.reminderUntil); m += h.reminderEvery) out.push(toClock(m));
+  return out;
 }
 
 export function listHabits(db: Db): Habit[] {

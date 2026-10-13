@@ -166,4 +166,25 @@ describe('reminders', () => {
     setHabitDone(db, { id: plants, frequency: 'weekly' }, '2024-10-29', true, 1);
     expect(weekly()).toEqual([]);
   });
+
+  it('T-HB07.2 an hourly reminder rings through the day until the habit is ticked, 24 at most waiting', () => {
+    const water = createHabit(db, {
+      name: 'Drink water',
+      frequency: 'daily',
+      routineId: null,
+      reminderTime: '07:00',
+      reminderEvery: 60,
+      reminderUntil: '18:00',
+    });
+    // 1:15 PM now: 2 PM…6 PM today (5), all 12 tomorrow, then the first 7 the day after
+    const rs = plan(db);
+    expect(rs).toHaveLength(24);
+    expect(rs.slice(0, 2).map((r) => [r.fireAt, r.title])).toEqual([
+      [at(23, 14), '2:00 PM · Drink water'],
+      [at(23, 15), '3:00 PM · Drink water'],
+    ]);
+    expect(rs[23].fireAt).toBe(at(25, 13));
+    setHabitDone(db, { id: water, frequency: 'daily' }, '2024-10-23', true, 1);
+    expect(plan(db)[0].fireAt).toBe(at(24, 7));
+  });
 });

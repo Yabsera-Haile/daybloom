@@ -9,7 +9,7 @@ import type { Db } from '@/db/types';
 import { t } from '@/i18n';
 import { clockText, timeOf, type TimeFormat } from '@/i18n/format';
 import { doneOn, donePeriods, periodOf } from '@/habits/stats';
-import { checksBetween, listHabits, listRoutines, weekOf } from '@/habits/store';
+import { checksBetween, listHabits, listRoutines, reminderTimes, weekOf } from '@/habits/store';
 import { eventsBetween } from '@/planner/events';
 
 import { reminderOffsets } from './store';
@@ -19,6 +19,8 @@ export const MAX_SCHEDULED = 60;
 const HORIZON_DAYS = 45;
 /** Routines and habits remind this many days ahead. */
 const HABIT_DAYS = 7;
+/** At most this many waiting reminders per habit; opening Daybloom tops them up. */
+const HABIT_MAX = 24;
 /** All-day events and their reminders are anchored to 9 AM. */
 const ALL_DAY_HOUR = 9;
 
@@ -167,24 +169,30 @@ export function plannedReminders(
     }
   }
   for (const h of habits) {
-    if (h.routineId || !h.reminderTime) continue;
-    const title = t.notify.eventTitle(clockText(h.reminderTime, timeFormat), h.name);
+    const times = h.routineId ? [] : reminderTimes(h);
+    if (times.length === 0) continue;
     const body = h.note ?? t.notify.habitBody;
     const done = donePeriods(h, ticks, weekStart);
+    let left = HABIT_MAX; // a habit that repeats every half hour can't fill the whole window
     for (const day of habitDays) {
       // weekly habits are reminded on the first day of their week
       if (h.frequency === 'weekly' && weekOf(day, weekStart).start !== day) continue;
-      const fireAt = clockToMs(day, h.reminderTime);
-      if (fireAt <= now || done.has(periodOf(h, day, weekStart))) continue;
-      out.push({
-        id: `h.${h.id}.${day}`.replace(/[^A-Za-z0-9.]/g, '_'),
-        fireAt,
-        title,
-        body,
-        urgent: false,
-        atStart: true,
-        data: { kind: 'habit', day, habitId: h.id, at: fireAt, sig: `${fireAt}|${title}|${body}` },
-      });
+      if (done.has(periodOf(h, day, weekStart))) continue;
+      for (const time of times) {
+        const fireAt = clockToMs(day, time);
+        if (fireAt <= now || left === 0) continue;
+        left -= 1;
+        const title = t.notify.eventTitle(clockText(time, timeFormat), h.name);
+        out.push({
+          id: `h.${h.id}.${day}.${time}`.replace(/[^A-Za-z0-9.]/g, '_'),
+          fireAt,
+          title,
+          body,
+          urgent: false,
+          atStart: true,
+          data: { kind: 'habit', day, habitId: h.id, at: fireAt, sig: `${fireAt}|${title}|${body}` },
+        });
+      }
     }
   }
 

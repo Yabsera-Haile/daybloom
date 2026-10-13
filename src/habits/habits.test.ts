@@ -18,9 +18,11 @@ import {
   listHabits,
   listRoutines,
   moveHabit,
+  reminderTimes,
   restoreHabit,
   setHabitDone,
   type Habit,
+  type HabitInput,
 } from './store';
 
 const today = '2024-10-23'; // Wednesday
@@ -190,5 +192,35 @@ describe('editing habits', () => {
     ).toEqual(['B', 'A']);
     expect(a.icon).toBe('spa');
     expect(make('Read 10 pages', null).icon).toBe('menu_book');
+  });
+
+  it('T-HB07.2 a reminder several times a day: every hour from 7 AM to 6 PM is 12 a day', () => {
+    const water = (over: Partial<HabitInput>) =>
+      getHabit(
+        db,
+        createHabit(db, {
+          name: 'Drink water',
+          frequency: 'daily',
+          routineId: null,
+          reminderTime: '07:00',
+          reminderEvery: 60,
+          reminderUntil: '18:00',
+          ...over,
+        }),
+      )!;
+    const hourly = reminderTimes(water({}));
+    expect(hourly).toHaveLength(12);
+    expect([hourly[0], hourly[1], hourly[11]]).toEqual(['07:00', '08:00', '18:00']);
+    // the last one is the last step that fits before the end
+    expect(reminderTimes(water({ reminderEvery: 180, reminderUntil: '17:30' }))).toEqual([
+      '07:00',
+      '10:00',
+      '13:00',
+      '16:00',
+    ]);
+    // once a day when it can't repeat: an end before the start, a weekly habit, or part of a routine
+    expect(reminderTimes(water({ reminderUntil: '06:00' }))).toEqual(['07:00']);
+    expect(water({ frequency: 'weekly' }).reminderEvery).toBeNull();
+    expect(reminderTimes(water({ routineId: 'morning' }))).toEqual([]);
   });
 });
