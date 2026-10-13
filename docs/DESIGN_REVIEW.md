@@ -1,0 +1,182 @@
+# Daybloom: Design Review of the Stitch Export
+
+**Status:** v1, 2026-10-12. All fixes and decisions below are applied in the **v2 designs: [design/daybloom/](../design/daybloom/)**.
+**Source:** `design/stitch/` (Stitch export: 5 screens, logo, avatar image, DESIGN.md)
+**Outputs:** [design/tokens.json](../design/tokens.json) · screen requirements in [REQUIREMENTS.md section B](REQUIREMENTS.md#b-screen-by-screen-requirements) · screen tests in [TEST_PLAN.md section 4](TEST_PLAN.md#4-screen-tests)
+
+---
+
+## 1. What's in the export
+
+| Folder | What it is | Notes |
+|---|---|---|
+| `daily_planner/` | **Today** tab | Date header with hero image and weather, Morning/Evening routines, Daily Intentions (tasks) with quick-add, hourly timeline, quote |
+| `weekly_planner/` | **Week** tab | Week strip, weekly intention, 7 day cards, weekly priorities, habits at a glance, "Add Entry" button |
+| `monthly_calendar/` | **Month** tab | Month grid, Grid/Agenda switch, selected-day sheet, upcoming deadlines |
+| `habit_tracker/` | **Habits** tab | Stats, 7-day daily habit grid, weekly habits (W1–W4), "Coming soon" teaser |
+| `budget_planner/` | **Budget** (opened from another screen, has a back button) | Monthly balance, savings goals, upcoming bills, recent entries, "Record Entry" bottom sheet (in the code, not the screenshot) |
+| `daybloom_planner_logo/` | Logo as SVG | Copied to `design/stitch/_assets/logo.svg` |
+| `warm_friendly_portrait_…/` | Placeholder profile photo | Stock-style AI portrait, not a real user |
+| `warm_paper_planner/DESIGN.md` | Design system ("Warm Paper Planner") | Colors, type, radius, spacing, component rules |
+
+The screen code loads 5 images from Google-hosted links that can expire. Four were saved to `design/stitch/_assets/` (daily hero, weekly intention, budget hero, avatar). The header logo link is private (403), so the SVG logo is used instead.
+
+**Fonts:** Literata (serif, headings and dates) and Plus Jakarta Sans (interface text), both free (OFL). **Icons:** about 60 Material Symbols Outlined icons (Apache 2.0). React Native's standard icon sets don't include several of them (e.g. `shield_with_heart`, `candle`, `clean_hands`), so we'll ship just the icons we use as SVG components.
+
+## 2. App structure
+
+```
+                ┌──────────────────────── Header: logo · section name · Search · Profile ─┐
+Bottom tabs:    Today        Week         Month          Habits          Hub (not designed)
+                  │            │            │               │               │
+                  │            │            │               │               ├── Budget  (designed)
+                  │            │            │               │               ├── Settings (not designed)
+                  │            │            │               │               └── …?
+                  └── all open: Add/Edit Event (not designed) · Task options (not designed) · Search (not designed)
+```
+
+The screens are long, scrolling "paper pages". The header and tab bar are translucent with a blur, and content scrolls underneath them.
+
+## 3. Shared components to build once
+
+| Component | Used on | Variants |
+|---|---|---|
+| App header | All | Tab version (logo, title, search, avatar); pushed-screen version (back button) |
+| Bottom tab bar | 4 tabs | Active item gets a soft sage pill |
+| Card / sheet | All | Surfaces: white, low, container; radius 12 or 16; warm shadow |
+| Section header | All | Icon + serif title + right-side meta or action |
+| Chip / badge | All | Urgency, category tag, status ("Completed", "3 done"), filter chip with count, date tile ("OCT 28") |
+| Checkbox + task row | Today, Week | Rounded square; done = filled sage + strikethrough; "more" menu |
+| Habit circle | Habits, Week | Toggle circle; today ringed |
+| Progress bar | Habits, Month, Budget | Thin (8) and thick (12) |
+| Stat tile | Habits | Bento grid of 3 |
+| Date navigator | Today, Month | ‹ Today › pill |
+| Segmented control | Month, Budget sheet | Grid/Agenda; Expense/Income |
+| Week strip | Week | 7 days with dots; selected day filled sage |
+| Day card | Week | Normal and "today" (left stripe, gradient) |
+| Timeline row + event block + hour note + now line | Today | Event block: icon, title, time • place, tag |
+| Month grid + day cell | Month | Number, dot, one label chip, today, other-month days faded |
+| Agenda item card | Month | Left stripe, kind label, time, title, notes, optional progress |
+| Deadline row | Month | Date tile, chips, title, chevron |
+| Hero banner | Today, Budget | Image, gradient, overlay text, optional weather chip |
+| Quote card | Today, Week | Italic serif quote |
+| Floating add button | Week, Budget | Pill with icon + label |
+| Bottom sheet | Budget (Record Entry), Today (quick add is inline) | Binder handle, title, close, form fields, full-width save |
+| Collapsible card | Today (Morning Ritual) | Chevron rotates |
+| Money row / goal card / bill card | Budget | Icon circle, amounts, progress, status label |
+
+## 4. Accessibility findings
+
+Measured from the design's own color tokens (WCAG 2.2; normal text needs 4.5:1).
+
+| # | Issue | Where | Measured | Proposed fix |
+|---|---|---|---|---|
+| A1 | Italic hour notes almost invisible | Today timeline ("Buffer & Focus prep") | **1.66:1** | Use `onSurfaceVariant` (8.5:1); keep italics |
+| A2 | Grey labels just under the minimum | Hour labels, ledger dates (`outline`) | 4.47:1 | Darken `outline` to `#676d67` (4.53:1) |
+| A3 | Faded "done" text too light | Done tasks (50–70% opacity) | 3.1–3.9:1 | Use 75% opacity + strikethrough (≥ 4.5:1) |
+| A4 | Text too small | Tab labels, chips, hour labels (10px); month cell labels (**8–9px**) | n/a | Minimum 12px for labels, 11px for month cell chips |
+| A5 | Tap targets too small | Checkboxes 20, habit circles 28, arrows 32, "more" 26 | n/a | 48dp touch area for every control (visual size can stay). Dense grids (habit circles, month cells) at least 32dp. 7 × 48dp circles don't fit on a 360dp phone. |
+| A6 | Habit names cut off | Habits tab: "Morning H…", "10,000 D…" | n/a | Allow names to wrap to 2 lines |
+| A7 | Meaning shown by color only | Dots in week strip and month cells | n/a | Screen reader labels ("3 plans, 1 urgent"); urgent also gets a shape or label |
+| A8 | Endless animations | Pulsing "Now" dot, pinging today dot, "In Rhythm" | n/a | Respect the phone's reduce-motion setting; stop after a few pulses |
+| A9 | Fixed heights | Rows, header and tab bar sized in px | n/a | Everything grows with system font size (test at 200%) |
+| A10 | Missing labels | Most habit circles and chips have no screen reader label | n/a | Label every control, e.g. "Morning Hydration, Thursday 17, done" |
+| A11 | Empty checkboxes and habit circles almost invisible (found while redesigning) | Unticked boxes and circles | 1.1–1.7:1 against white (controls need 3:1) | 1.5px `outline` border (5.3:1) |
+
+## 5. Inconsistencies to resolve before building
+
+| # | Inconsistency | Recommendation |
+|---|---|---|
+| I1 | DESIGN.md's written colors (primary `#5B7E67`, canvas `#FAF7F2`, blush `#E08D79`) differ from the tokens the screens use (primary `#43654f`, surface `#fff8f5`, secondary `#8f4b3b`) | **Follow the screens** (they're what the screenshots show). tokens.json uses them. |
+| I2 | Corner radius: DESIGN.md says cards 16 / sheets 24; screens use 8 / 12 / 16 | Follow the screens |
+| I3 | DESIGN.md says every card has a 1px border; screens use soft shadows, no borders | Follow the screens |
+| I4 | Seven different urgency words and three urgency colors: "Urgent", "Urgent Event", "High Priority", "Urgent Deadline", "Deadline", "Not Urgent", "Routine" | One **Urgent** flag (yes/no) with one style everywhere |
+| I5 | Category and priority share the same chip slot ("Wellness", "Rest" vs "High Priority") | Category = color + label; Urgent = separate badge |
+| I6 | "Today" is sage on Today/Week but terracotta on Month | Sage everywhere (terracotta stays for urgent) |
+| I7 | Four different "add" buttons: "Add Task" (in a card), "Add Entry" (terracotta, right), "+" (icon), "Add Expense / Income" (sage, centered) | One floating **+ Add** button on Today/Week/Month that opens the same chooser; Budget keeps its own |
+| I8 | Time format: "09:30 AM" (Week) vs "8:30 AM" (Today) | Format from the phone's locale settings |
+| I9 | "Ritual" means two things: Today's Morning Ritual is a routine, Habits' "Daily Rituals" is habits. Week's habits also differ from the Habits tab's. | Unify: a routine is a group of habits (decision D1) |
+| I10 | Timeline puts events under their start hour; blocks aren't sized by length (10:00–11:30 sits in one row) | Keep. It reads like a paper planner. Documented as intended behavior. |
+
+## 6. Missing screens and states
+
+The design covers the "full, happy" state of 5 screens. These are needed and not designed.
+
+> **Update (v2 designs):** G1–G17 are all designed in `design/daybloom/`. G18 (dark mode, tablet) stays out of the MVP.
+
+**Must exist before building the core (Phase 1, M1):**
+
+| # | Missing | Why it matters |
+|---|---|---|
+| G1 | **Add / Edit Event sheet** (title, date, all-day, start–end, repeat, reminder, category, urgent, place, notes) | The most important missing piece: it's where the "Google Calendar ease" lives. Nothing in the design creates an event. |
+| G2 | **Event detail** (tap an event) | View, edit, delete, duplicate |
+| G3 | **One "+ Add" entry point** and chooser (Event / Task) | Today has no way to add an event |
+| G4 | **Task options** (the ⋮ menu) | Edit, move to another day, urgent on/off, delete |
+| G5 | **Empty states** for every tab | A new user sees empty screens first; none are designed |
+| G6 | **Onboarding** (welcome, name, notifications permission, week start) | First impression and the reminder permission |
+| G7 | **Settings / Profile** (avatar tap) | Week start, time format, default reminder, categories, currency |
+| G8 | **Hub** tab | Is it a menu (Budget, Settings, …)? |
+
+**Can be designed during the build:**
+G9 habit add/edit/reorder/archive · G10 week back/forward and what tapping a day does · G11 Month **Agenda** view, a selected day other than today, days with several items ("+2") · G12 Search screen and results · G13 Budget: manage goals, add/edit bills, "View all" entries, edit/delete an entry, set monthly budget, switch month · G14 updating a goal's progress · G15 timeline: all-day events, overlapping events, events before 8 AM / after 8 PM · G16 notification appearance · G17 error states (reminders blocked by phone) · G18 dark mode and tablet (recommend: not in MVP)
+
+## 7. Plain-language copy review
+
+The cozy section names are part of the charm, so most stay. The ones below would confuse a non-technical user (UX-03), mostly in Budget.
+
+| Design says | Proposed | Screen |
+|---|---|---|
+| Remaining Net Cashflow | Left this month | Budget |
+| Monthly Inflow / Total Outflow | Money in / Money out | Budget |
+| Fixed + flexible | Bills + spending | Budget |
+| SAFE ZONE | On track | Budget |
+| Sanctuary Savings | Savings goals | Budget |
+| Upcoming Commitments | Upcoming bills | Budget |
+| Auto-Draft / Pending approval / Flexible | Paid automatically / Needs paying / Flexible | Budget |
+| Recent Ledger Entries | Recent spending | Budget |
+| Category Envelope | Category | Budget sheet |
+| 11 of 18 scheduled slots closed | 11 of 18 done this week | Week |
+| 82% Pace | 82% done so far | Week |
+| Today • 3 Focus Blocks | Today • 3 plans | Week |
+| Daily Rituals (habits) | Daily habits | Habits |
+| Weekly Milestones | Weekly habits | Habits |
+| 78% consistency rate | 78% of habits done | Habits |
+| Hub | More (or "Notebook") | Tab bar |
+| "e.g. 4:00 PM" (typed time) | A time picker, no typing | Today quick add |
+
+## 8. Demo-data errors (each one becomes a test)
+
+The sample numbers in the design contradict each other. This confirms every number must be **calculated from the data**, never stored or typed.
+
+| Design shows | Actually | Test |
+|---|---|---|
+| "Wednesday, Oct 23 • Day 296 of 365" (2024) | 2024 is a leap year: **Day 297 of 366** | T-TD01.2 |
+| "1:15 PM Now", but the line is drawn at the 11 AM row | Line must sit between 1 PM and 2 PM | T-TD13.1 |
+| "Active Habits 7" | 8 habits listed (5 daily + 3 weekly) | T-HB02.1 |
+| "Today Done 5/7" | Grid shows 4 of 5 daily habits done today | T-HB02.1 |
+| "64% of envelope preserved" | Spent is 64.3%, so about 36% is left | T-BU02.1 |
+| Weekly habits show W1–W4 for October 2024 | October 2024 touches **5** Sunday-start weeks | T-HB05.1 |
+| Budget "Upcoming Commitments • Next 14 Days" lists a bill on Nov 10 | Nov 10 is 18 days after Oct 23 | T-BU06.1 |
+
+## 9. Decisions
+
+**Accepted 2026-10-12:** every recommendation below, with these changes:
+- **D5:** Claude designed the missing screens instead of you doing it in Stitch (done, `design/daybloom/`).
+- **D7:** all AI-generated photos are removed. Small sticker illustrations drawn for Daybloom (`design/daybloom/_shared/stickers/`) replace them, so there's no image-rights question.
+- **D8:** no profile picture or initials in the header at all (there's no sign-in). Settings keeps an optional first name, used only for greetings.
+
+| # | Decision | Recommendation |
+|---|---|---|
+| D1 | Routines vs habits: separate, or a routine is a group of habits? | **Unify.** Ticking "Warm lemon water" in Morning Ritual also ticks it in Habits. One concept, one checkmark. |
+| D2 | Weather chip ("64°F Gentle Autumn") | **Optional, off by default, after MVP.** It's the only feature needing location + internet, and it conflicts with "nothing leaves the phone". |
+| D3 | Seasons ("Autumn" chip, autumn images and quotes) | **Automatic by hemisphere** (October is spring in Sydney or Johannesburg), with a setting to hide seasons |
+| D4 | Budget in the MVP? | **Yes, but built last (M3).** If time runs short, it ships in the first update without delaying launch. |
+| D5 | Who designs the missing screens (section 6)? | **You in Stitch** for G1 (event sheet), G5 (empty states), G6 (onboarding), since they set the first impression. I build the rest in code from the existing components for you to review on a phone. |
+| D6 | Hub: name and contents | Rename to **"More"**: Budget, Settings, Help & feedback (later: Google Calendar, your pet) |
+| D7 | Hero images are AI-generated by Stitch | Confirm you may use them commercially, or replace them. Ship a small seasonal set inside the app (no downloads). |
+| D8 | Profile photo (no accounts in MVP) | Local name + optional photo, else initials. Later, the pet can sit here. |
+| D9 | Currency | From the phone's region; changeable in Settings |
+| D10 | Dark mode | **Not in MVP** (the paper look is light); design it later |
+| D11 | Unfinished tasks from yesterday | **A gentle prompt:** "2 things left from yesterday. Move to today?" (paper planners call this migrating) |
+| D12 | Grey italic hour notes: user's notes or app suggestions? | **User's own notes**; the app makes no suggestions |
+| D13 | "Coming soon: Skincare, Language, Weight logs" teaser | **Remove from MVP.** Don't promise features that don't exist. |
