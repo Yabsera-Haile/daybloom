@@ -6,13 +6,12 @@ import { Platform } from 'react-native';
 
 import { db } from '@/db/client';
 import { t } from '@/i18n';
-import { readSettings } from '@/settings';
-import { colors } from '@/theme';
+import { readSettings, type ReminderSound } from '@/settings';
+import { defaultColors as colors } from '@/theme';
 
 import * as Notifications from './notifications';
 import { plannedReminders, reminderChanges, type PlannedReminder, type ReminderData } from './plan';
-
-export const CHANNEL = 'reminders';
+import { CHANNEL_PREFIX, channelFor, soundFor, VIBRATION } from './sounds';
 
 /**
  * Expo Go on Android can't show local reminders any more (its notification channels are gone since
@@ -31,14 +30,7 @@ export async function setUpNotifications(): Promise<void> {
       shouldSetBadge: false,
     }),
   });
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync(CHANNEL, {
-      name: t.notify.channel,
-      description: t.notify.channelText,
-      importance: Notifications.AndroidImportance.HIGH,
-      lightColor: colors.primary,
-    });
-  }
+  await ensureChannel(readSettings(db).reminderSound);
   // At most two buttons (NT-01). Snooze isn't offered once the event has started.
   await Notifications.setNotificationCategoryAsync('event', [
     { identifier: 'snooze', buttonTitle: t.notify.snooze, options: { opensAppToForeground: true } },
@@ -67,6 +59,37 @@ export async function setUpNotifications(): Promise<void> {
   ]);
 }
 
+/**
+ * The channel for a reminder sound (Android). Android fixes a channel's sound when it's made, so
+ * each sound has its own; the sound and vibration are set explicitly so they don't depend on the
+ * phone's defaults.
+ */
+async function ensureChannel(sound: ReminderSound): Promise<string> {
+  const id = channelFor(sound);
+  if (Platform.OS !== 'android') return id;
+  await Notifications.setNotificationChannelAsync(id, {
+    name: t.notify.channel,
+    description: t.notify.channelText,
+    importance: Notifications.AndroidImportance.HIGH,
+    lightColor: colors.primary,
+    enableVibrate: true,
+    vibrationPattern: VIBRATION,
+    // omitted = the phone's notification sound; null = silent (vibrate only)
+    ...(sound === 'phone' ? {} : { sound: soundFor(sound) }),
+  });
+  return id;
+}
+
+/** Removes Daybloom's channels for sounds no longer chosen (after their reminders have moved). */
+async function removeOtherChannels(keep: string): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  for (const channel of await Notifications.getNotificationChannelsAsync()) {
+    if (channel.id.startsWith(CHANNEL_PREFIX) && channel.id !== keep) {
+      await Notifications.deleteNotificationChannelAsync(channel.id);
+    }
+  }
+}
+
 export async function notificationsAllowed(): Promise<boolean> {
   return (await Notifications.getPermissionsAsync()).granted;
 }
@@ -80,6 +103,7 @@ export async function askForNotifications(): Promise<boolean> {
 
 function contentOf(
   r: Pick<PlannedReminder, 'title' | 'body' | 'urgent' | 'atStart' | 'data'>,
+  sound: ReminderSound,
 ): Notifications.NotificationContentInput {
   return {
     title: r.title,
@@ -95,7 +119,9 @@ function contentOf(
         : r.data.kind === 'bill' && !r.data.manual
           ? 'billAuto'
           : r.data.kind,
-    sound: 'default',
+    // iOS and Android before 8 read the sound here; newer Android takes it from the channel
+    sound: soundFor(sound) ?? false,
+    vibrate: VIBRATION,
   };
 }
 
@@ -115,7 +141,12 @@ export function syncReminders(): Promise<void> {
         again = false;
         if (!(await notificationsAllowed())) return;
         const settings = readSettings(db);
-        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart);
+        const sound = settings.reminderSound;
+        const channelId = await ensureChannel(sound);
+        // the sound is part of each reminder's signature: choosing another sound moves them all
+        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart).map(
+          (r) => ({ ...r, data: { ...r.data, sig: r.data.sig + '|' + sound } }),
+        );
         const scheduled = (await Notifications.getAllScheduledNotificationsAsync())
           .filter((n) => PLANNED.test(n.identifier))
           .map((n) => ({ id: n.identifier, sig: (n.content.data as Partial<ReminderData> | undefined)?.sig }));
@@ -124,10 +155,11 @@ export function syncReminders(): Promise<void> {
         for (const r of add) {
           await Notifications.scheduleNotificationAsync({
             identifier: r.id,
-            content: contentOf(r),
-            trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: r.fireAt, channelId: CHANNEL },
+            content: contentOf(r, sound),
+            trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: r.fireAt, channelId },
           });
         }
+        await removeOtherChannels(channelId);
       } while (again);
     } catch (e) {
       console.warn('Could not update reminders', e);
@@ -145,6 +177,8 @@ export async function remindAgain(content: Notifications.NotificationContent, mi
   let when = Date.now() + minutes * 60_000;
   if (data.kind === 'event') when = Math.min(when, data.at);
   if (when <= Date.now()) return;
+  const sound = readSettings(db).reminderSound;
+  const channelId = await ensureChannel(sound);
   await Notifications.scheduleNotificationAsync({
     identifier: `snooze.${Date.now()}`,
     content: {
@@ -153,20 +187,32 @@ export async function remindAgain(content: Notifications.NotificationContent, mi
       data: content.data,
       color: (content as { color?: string }).color,
       categoryIdentifier: data.kind === 'task' ? 'task' : 'eventNow',
-      sound: 'default',
+      sound: soundFor(sound) ?? false,
+      vibrate: VIBRATION,
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when, channelId: CHANNEL },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when, channelId },
   });
 }
 
-/** "Send a test reminder" on the help screen (ST-03): arrives in a minute. */
-export async function sendTestReminder(): Promise<boolean> {
+/**
+ * "Send a test reminder" (ST-03): arrives after a minute (the help screen), or after a few seconds
+ * to hear the reminder sound (Settings), with the sound chosen now.
+ */
+export async function sendTestReminder(inSeconds = 60): Promise<boolean> {
   if (!remindersAvailable) return false;
   if (!(await askForNotifications())) return false;
+  const sound = readSettings(db).reminderSound;
+  const channelId = await ensureChannel(sound);
   await Notifications.scheduleNotificationAsync({
     identifier: `test.${Date.now()}`,
-    content: { title: t.notify.testTitle, body: t.notify.testBody, color: colors.primary, sound: 'default' },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: Date.now() + 60_000, channelId: CHANNEL },
+    content: {
+      title: t.notify.testTitle,
+      body: t.notify.testBody,
+      color: colors.primary,
+      sound: soundFor(sound) ?? false,
+      vibrate: VIBRATION,
+    },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: Date.now() + inSeconds * 1000, channelId },
   });
   return true;
 }

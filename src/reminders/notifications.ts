@@ -3,8 +3,10 @@
 // was removed from Expo Go in SDK 53), taking every screen that imports it down. Daybloom only
 // schedules local reminders, which Expo Go still supports, so it never loads the push code.
 export { cancelScheduledNotificationAsync } from 'expo-notifications/build/cancelScheduledNotificationAsync';
+export { deleteNotificationChannelAsync } from 'expo-notifications/build/deleteNotificationChannelAsync';
 export { dismissNotificationAsync } from 'expo-notifications/build/dismissNotificationAsync';
 export { getAllScheduledNotificationsAsync } from 'expo-notifications/build/getAllScheduledNotificationsAsync';
+export { getNotificationChannelsAsync } from 'expo-notifications/build/getNotificationChannelsAsync';
 export { AndroidImportance } from 'expo-notifications/build/NotificationChannelManager.types';
 export { getPermissionsAsync, requestPermissionsAsync } from 'expo-notifications/build/NotificationPermissions';
 export {
