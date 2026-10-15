@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.7, 2026-10-15. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner), M2 (routines and habits) and the Budget tab of M3 built** and checked on the Android emulator. Next: the month's goal on Month (rest of M3), and a check on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android.
+**Status:** v0.8, 2026-10-15. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator; an installable build is with the owner for a check on a real phone (Samsung S24 Ultra), reminders included. Next: Phase 2 (polish and beta).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -169,11 +169,20 @@ Each milestone ends with an installable build on a real phone.
 - Days before a habit was added aren't shown as missed in its history; ticking an earlier day starts the history there.
 - Reordering uses Move up / Move down, as categories do.
 
-**M3 status (2026-10-15):** Budget built and tried on the emulator (D14: it's a tab, inspired by Cashew). Covers MR-01, BU-01…10; BU-11 (bank texts) is listed in More for the next version. Still to do in M3: the month's goal on Month (MO-06). Notes:
+**M3 status (2026-10-15):** Budget built and tried on the emulator (D14: it's a tab, inspired by Cashew). Covers MR-01, BU-01…10 and the month's goal (MO-06); BU-11 (bank texts) is listed in More for the next version. Notes:
 - The budget is monthly or weekly, the person's choice; a change counts from the current month or week on (table `budget_plans`), so earlier periods keep theirs. Expenses only, no income.
 - Over budget, the bar turns red and the card says by how much; "Careful" when spending runs 10 points ahead of the calendar.
 - Bills the bank pays are added to spending at 9 AM on their day (caught up when the app opens); bills paid by hand are added when marked paid, from the app or the reminder. Paid bills go under the Bills category.
 - Savings put into goals aren't counted as spending.
+
+**M4 status (2026-10-15):** built and tried on the emulator. Covers FR-15, TD-18, ST-02, SR-02, UX-05, SH-03 and NFR-10, plus leftovers from M1. Notes:
+- The month's goal can have a number to reach ("Save 800", progress added along the way) or none (ticked off). It's a `goals` row with kind 'general'.
+- Unfinished to-dos from the last two weeks are offered for today; "Not now" waits until tomorrow.
+- New events, to-dos, notes, expenses, habits and bills keep their typing (table `drafts`) until saved or cancelled, also when the app is closed; "Start fresh" throws it away.
+- The backup is one JSON file of every table, shared with the phone's share sheet (Drive, Files, email). Restoring from it comes later.
+- The header and tab bar are frosted glass on Android 12 and newer (expo-blur), plain paper before that.
+- The release build is shrunk (R8, resource shrinking, compressed native libraries) and built for one processor type per phone.
+- Screen tests render the real screens on an in-memory database (`src/__tests__`); end-to-end flows for Maestro are in `e2e/`.
 
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 

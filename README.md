@@ -15,13 +15,18 @@ A calm personal planner for Android (iOS later): the simplicity of a paper plann
 | `src/theme/` | Typed design tokens, fonts, shadows |
 | `src/db/` | SQLite schema (Drizzle) and database setup |
 | `src/calendar/` | Date logic: weeks, day of year, seasons, time zones |
-| `src/planner/` | Events (with repeats), to-dos, hour notes, categories, search |
+| `src/planner/` | Events (with repeats), to-dos, hour notes, categories, the month's goal, quotes, search |
+| `src/habits/` | Routines, habits, ticks and streaks |
+| `src/budget/` | Budget, expenses, spending categories, savings goals, bills |
+| `src/backup/` | Backing up all data to a file |
 | `src/recurrence/` | Repeat rules (the format Google Calendar uses) and their plain-words labels |
 | `src/reminders/` | Which reminders to schedule, and keeping the phone's notifications in step |
-| `src/features/` | Pieces of screens: Today's parts, sheets, the event form |
+| `src/features/` | Pieces of screens: Today's parts, sheets, the event, habit and money forms |
+| `src/__tests__/` | Screen tests (the real screens on an in-memory database) |
+| `e2e/` | End-to-end flows for Maestro, run on the installed app |
 | `src/i18n/` | All interface text (English) and date/time formatting |
 | `drizzle/` | Generated database migrations |
-| `scripts/` | `generate-ui-assets.mjs` builds the icon set and stickers from the designs |
+| `scripts/` | `generate-ui-assets.mjs` builds the icon set and stickers from the designs; `generate-app-icons.mjs` the app icons from the logo |
 
 ## Run it
 
@@ -33,7 +38,7 @@ npm start          # then scan the QR code with the Expo Go app on an Android ph
 npm run android    # or open it on a running Android emulator
 ```
 
-In the app: **More › Component gallery** shows every building block, to compare with `design/daybloom/`.
+In the app: **≡ (More) › Component gallery** shows every building block, to compare with `design/daybloom/`.
 
 **Reminders don't ring in Expo Go on Android** (Expo removed notification support there). Everything else works in Expo Go. To try reminders, install the app itself (below).
 
@@ -50,14 +55,15 @@ On Windows, the native build fails ("build.ninja still dirty") when the project'
 ## Check your work
 
 ```bash
-npm run check      # type check + lint + tests
+npm run check      # type check + lint + unit and screen tests
+maestro test e2e/  # end-to-end flows on the installed app (see e2e/README.md)
 ```
 
 ## Making changes
 
 - **Colors, type, spacing:** edit `design/tokens.json`. Tailwind classes such as `bg-surface-container-low` and `p-space-md` come from it, matching the class names in the HTML designs.
 - **Text:** use `<Text variant="headlineMd">` (from `@/ui`) so the right font file is used for each weight.
-- **Icons and stickers:** after adding an icon or sticker to the designs, run `npm run generate:ui`.
+- **Icons and stickers:** after adding an icon or sticker to the designs, run `npm run generate:ui`. The app icon comes from the logo: `npm run generate:icons` (needs Chrome).
 - **Database:** edit `src/db/schema.ts`, then run `npm run db:generate` to create a migration. The app applies migrations on start.
 - **Tests:** name tests after the test plan IDs (e.g. `it('T-TD01.2 …')`) so coverage can be traced.
 
