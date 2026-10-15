@@ -1,0 +1,16 @@
+# T-UX05 / T-BU08.3: typed text survives the app being closed.
+appId: com.daybloom.app
+name: Typed text comes back after closing the app
+---
+- runFlow: subflows/start.yaml
+- tapOn: "Budget"
+- tapOn: "Add expense"
+- inputText: "42"
+- stopApp
+- launchApp
+- tapOn: "Budget"
+- tapOn: "Add expense"
+- assertVisible: "Picked up where you left off"
+- assertVisible: "42"
+- tapOn: "Start fresh"
+- assertNotVisible: "Picked up where you left off"

@@ -1,0 +1,21 @@
+# T-MO06.1: set this month's goal on Month and add progress.
+appId: com.daybloom.app
+name: Set the month's goal
+---
+- runFlow: subflows/start.yaml
+- tapOn: "Month"
+- scrollUntilVisible:
+    element: "Set a goal for.*"
+- tapOn: "Set a goal for.*"
+- inputText: "Save 800 this month"
+- tapOn: "A number to reach"
+- inputText: "800"
+- hideKeyboard
+- tapOn: "Save"
+- assertVisible: "0 of 800 so far"
+- tapOn: "This month's goal.*"
+- tapOn: "How much?"
+- inputText: "400"
+- tapOn: "Add 400"
+- assertVisible: "400 of 800 so far"
+- assertVisible: "50%"

@@ -1,0 +1,12 @@
+# T-ST02.1: Settings › Back up your data opens the share sheet with the backup file.
+appId: com.daybloom.app
+name: Back up all data
+---
+- runFlow: subflows/start.yaml
+- tapOn: "More: settings and help"
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element: "Back up your data.*"
+- tapOn: "Back up your data.*"
+- assertVisible: "daybloom-backup-.*\.json"
+- back

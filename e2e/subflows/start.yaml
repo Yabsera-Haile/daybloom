@@ -1,0 +1,12 @@
+# Shared start: a fresh app, onboarding skipped, on Today.
+appId: com.daybloom.app
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Skip"
+    timeout: 20000
+- tapOn: "Skip"
+- extendedWaitUntil:
+    visible: "Daily Intentions"
+    timeout: 10000

@@ -1,0 +1,10 @@
+# T-01.1 / T-UX02: add an event from Today with "+ Add" and see it on Today.
+appId: com.daybloom.app
+name: Add an event from Today
+---
+- runFlow: subflows/start.yaml
+- tapOn: "Add"
+- tapOn: "Event.*"
+- inputText: "Dentist"
+- tapOn: "Save"
+- assertVisible: ".*Dentist.*"

@@ -1,0 +1,16 @@
+# T-BU08.1: add "6.25, Latte, Dining" on Budget; it shows in recent spending and where it went.
+appId: com.daybloom.app
+name: Add an expense on Budget
+---
+- runFlow: subflows/start.yaml
+- tapOn: "Budget"
+- tapOn: "Add expense"
+- inputText: "6.25"
+- tapOn: "What was it for?"
+- inputText: "Latte"
+- tapOn: "Dining"
+- hideKeyboard
+- tapOn: "Save"
+- assertVisible: ".*Latte.*"
+- assertVisible: "−6.25"
+- assertVisible: "Where it went"

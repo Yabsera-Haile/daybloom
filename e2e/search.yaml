@@ -1,0 +1,16 @@
+# T-SR02.1: search finds spending and habits.
+appId: com.daybloom.app
+name: Search spending and habits
+---
+- runFlow: subflows/start.yaml
+- tapOn: "Budget"
+- tapOn: "Add expense"
+- inputText: "6.25"
+- tapOn: "What was it for?"
+- inputText: "Oat latte"
+- hideKeyboard
+- tapOn: "Save"
+- tapOn: "Search your plans"
+- inputText: "latte"
+- assertVisible: "Spending \(1\)"
+- assertVisible: ".*Oat latte.*"
