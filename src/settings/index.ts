@@ -100,6 +100,30 @@ export function saveFlag(db: Db, name: string, on: boolean): void {
     .run();
 }
 
+/** A small remembered value, like the day a prompt was put off ("Not now"). Stored as `memo.<name>`. */
+export function readMemo(db: Db, name: string): string | null {
+  return (
+    db
+      .select()
+      .from(settings)
+      .where(eq(settings.key, `memo.${name}`))
+      .get()?.value ?? null
+  );
+}
+
+export function saveMemo(db: Db, name: string, value: string | null): void {
+  if (value === null) {
+    db.delete(settings)
+      .where(eq(settings.key, `memo.${name}`))
+      .run();
+    return;
+  }
+  db.insert(settings)
+    .values({ key: `memo.${name}`, value })
+    .onConflictDoUpdate({ target: settings.key, set: { value } })
+    .run();
+}
+
 export function saveSetting<K extends keyof Settings>(db: Db, key: K, value: Settings[K]): void {
   const v = typeof value === 'string' && key === 'name' ? value.trim() || null : value;
   if (!checks[key](v)) throw new Error(`Not a valid ${key}: ${String(value)}`);

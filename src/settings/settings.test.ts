@@ -2,7 +2,7 @@ import { settings } from '@/db/schema';
 import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
 
-import { phoneDefaults, readFlag, readSettings, saveFlag, saveSetting } from '.';
+import { phoneDefaults, readFlag, readMemo, readSettings, saveFlag, saveMemo, saveSetting } from '.';
 
 let db: Db;
 beforeEach(async () => {
@@ -70,5 +70,17 @@ describe('flags', () => {
     expect(readSettings(db)).toEqual(phoneDefaults());
     saveFlag(db, 'habitsHint.hidden', false);
     expect(readFlag(db, 'habitsHint.hidden')).toBe(false);
+  });
+});
+
+describe('memos', () => {
+  it('FR-15 remembers the day a prompt was put off, as one value', () => {
+    expect(readMemo(db, 'leftBehind.hiddenOn')).toBeNull();
+    saveMemo(db, 'leftBehind.hiddenOn', '2024-10-23');
+    saveMemo(db, 'leftBehind.hiddenOn', '2024-10-24');
+    expect(readMemo(db, 'leftBehind.hiddenOn')).toBe('2024-10-24');
+    expect(db.select().from(settings).all()).toHaveLength(1);
+    saveMemo(db, 'leftBehind.hiddenOn', null);
+    expect(readMemo(db, 'leftBehind.hiddenOn')).toBeNull();
   });
 });
