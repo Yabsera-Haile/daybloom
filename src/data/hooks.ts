@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 
 import { toDayKey } from '@/calendar/dates';
@@ -17,34 +17,62 @@ export function useCategories(): Category[] {
   return useLive(() => listCategories(db), []);
 }
 
-/** The current time, updated every minute and when the app comes back (TD-14). */
-export function useNow(): number {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    let every: ReturnType<typeof setInterval> | undefined;
-    // first tick on the next whole minute, then every minute
-    const first = setTimeout(
+// One clock for the whole app: a single timer and one app-state listener, however many screens
+// show the time (each tab used to run its own).
+let minute = Math.floor(Date.now() / 60_000) * 60_000;
+const clockListeners = new Set<() => void>();
+let stopClock: (() => void) | null = null;
+
+function tick() {
+  const now = Math.floor(Date.now() / 60_000) * 60_000;
+  if (now === minute) return;
+  minute = now;
+  clockListeners.forEach((l) => l());
+}
+
+function startClock(): () => void {
+  let timer: ReturnType<typeof setTimeout>;
+  // tick on each whole minute
+  const schedule = () => {
+    timer = setTimeout(
       () => {
         tick();
-        every = setInterval(tick, 60_000);
+        schedule();
       },
-      60_000 - (Date.now() % 60_000),
+      60_000 - (Date.now() % 60_000) + 50,
     );
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        refreshLocalTimeZone(); // the phone may have moved zones while away
-        notifyDataChanged();
-        tick();
-      }
-    });
-    return () => {
-      clearTimeout(first);
-      clearInterval(every);
-      sub.remove();
-    };
-  }, []);
-  return now;
+  };
+  schedule();
+  const sub = AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      refreshLocalTimeZone(); // the phone may have moved zones while away
+      notifyDataChanged();
+      tick();
+    }
+  });
+  return () => {
+    clearTimeout(timer);
+    sub.remove();
+  };
+}
+
+function subscribeClock(listener: () => void) {
+  clockListeners.add(listener);
+  stopClock ??= startClock();
+  return () => {
+    clockListeners.delete(listener);
+    if (clockListeners.size === 0) {
+      stopClock?.();
+      stopClock = null;
+    }
+  };
+}
+
+const readClock = () => minute;
+
+/** The current time to the minute, updated on each whole minute and when the app comes back (TD-14). */
+export function useNow(): number {
+  return useSyncExternalStore(subscribeClock, readClock);
 }
 
 /** Today's 'YYYY-MM-DD' on the phone's calendar; changes at midnight. */
