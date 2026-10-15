@@ -205,14 +205,14 @@ For every screen there's also one component test per state (filled, empty, permi
 
 | Test ID | Covers | Type | Scenario | Expected |
 |---|---|---|---|---|
-| T-MR01.1 | MR-01 | E2E | Open More → Budget → back | Budget opens; back returns to More |
-| T-BU01.1 | BU-01 | E2E | Switch to September | All sections show September data |
+| T-MR01.1 | MR-01 | E2E | Tap ≡ in the header → Spending categories → back; tap "Add expenses from bank texts" | More opens; back returns; the bank-texts row explains it is coming in the next version |
+| T-BU01.1 | BU-01 | E2E | Switch to September (or the previous week with a weekly budget) | All sections show that period's data |
 | T-BU02.1 | BU-02, FR-13 | Unit | Budget $4,850, spent $3,120, Oct 23 | "36% of your budget left • 9 days to go" (the design's "64% preserved" is wrong) |
-| T-BU03.1 | BU-03 | Unit | In $4,850, out $3,120 | "Left this month $1,730.00", spent 64.3% |
-| T-BU03.2 | BU-03, UX-08 | Unit | Spending ahead of the calendar (80% spent on day 15) | "Careful" chip, gentle wording |
+| T-BU03.1 | BU-03 | Unit | Budget $4,850, spent $3,120 | "Left to spend $1,730.00", spent 64.3% |
+| T-BU03.2 | BU-03, UX-08 | Unit | Spending ahead of the calendar (80% spent on day 15); then $1,120 of $1,000 | "Careful" chip, gentle wording; then "Over budget by $120.00", red bar |
 | T-BU05.1 | BU-05 | E2E | Add $100 to Emergency Fund ($8,200 / $10,000) | $8,300, 83% |
 | T-BU06.1 | BU-06 | Component | Bills on Oct 25, Oct 28, Nov 10 with today Oct 23 | Oct 25 "Due soon"; Nov 10 hidden (beyond 14 days) |
-| T-BU08.1 | BU-08 | E2E | Record expense $6.25 "Latte", Dining | Top of recent spending; money out +$6.25 |
+| T-BU08.1 | BU-08 | E2E | Add expense $6.25 "Latte", Dining | Top of recent spending; spent +$6.25; Dining in "Where it went" |
 | T-BU08.2 | BU-08 | Component | Save with amount 0 or empty | Not saved; friendly hint |
 | T-BU08.3 | BU-08, UX-05 | E2E | Type amount, tap outside sheet | Sheet closes; reopening restores the draft |
 | T-BU09.1 | BU-09 | E2E | Phone region Kenya, then UK | Amounts in KES, then GBP formatting |
@@ -251,9 +251,9 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MO02.1 | MO-02 | Unit | v2 month fixture | "3 urgent · 12 busy days" |
 | T-HB03.1 | HB-03 | E2E | Dismiss hint, restart app | Hint stays hidden |
 | T-HB09.1 | HB-09 | E2E | Tap calendar button | Month history per habit |
-| T-BU04.1 | BU-04 | E2E | Set monthly budget to $4,000 (spent $3,120) | Spent shows 78% |
+| T-BU04.1 | BU-04 | E2E | Set monthly budget to $4,000 (spent $3,120); then switch to $500 each week | Spent shows 78%; then the tab counts this week, earlier months keep theirs |
 | T-BU07.1 | BU-07 | E2E | View all → edit an entry's amount; delete another, Undo | Totals update; deleted entry restored |
-| T-BU10.1 | BU-10 | Unit | Bill with "1 day before" reminder | Reminder scheduled for the day before at the default time |
+| T-BU10.1 | BU-10 | Unit | Bill due Oct 25 with "1 day before" | Reminder at 9 AM on Oct 24: "Due tomorrow · Car insurance", "$420.00 · Needs paying" |
 | T-ST02.1 | ST-02 | E2E | Export data | File contains every event, task, habit, check and entry |
 | T-ST03.1 | ST-03 | E2E | Turn off Daybloom notifications in phone settings, open Reminder help | Notifications check shows "Off" with a button to fix it; "Send a test reminder" arrives within 1 minute once it's on |
 | T-NT01.1 | NT-01 | Component + manual | Reminders for an event, an urgent to-do, a routine and a bill | Each shows time + title first, at most two actions; urgent uses the rose accent; Snooze never moves past the event's start |

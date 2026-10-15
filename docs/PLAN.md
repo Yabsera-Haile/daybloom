@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.6, 2026-10-14. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner) and M2 (routines and habits) built** and checked on the Android emulator. Next: try both on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android; then M3 (money and goals).
+**Status:** v0.7, 2026-10-15. Every screen designed (`design/daybloom/`). **Phase 0 done. M1 (core planner), M2 (routines and habits) and the Budget tab of M3 built** and checked on the Android emulator. Next: the month's goal on Month (rest of M3), and a check on a real phone (Samsung S24 Ultra) with the installed app, since reminders don't ring in Expo Go on Android.
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -115,10 +115,10 @@ Routine        id, name, icon, time?, reminder?, sortOrder, archivedAt
 Habit          id, name, detail, icon, frequency ('daily'|'weekly'), routineId?, sortOrder, archivedAt
 HabitCheck     habitId + period (a date, or a week's first day)    ← one row per tick
 Goal           id, title, note, icon, kind ('savings'|'general'), targetAmount, currentAmount, month?
-Entry          id, type ('expense'|'income'), amountCents, currency, description, budgetCategoryId, occurredAt
-BudgetCategory id, name, icon, colorKey
-Bill           id, title, note, amountCents, dueDate, rrule?, payment ('auto'|'manual'|'flexible'), paidAt?
-MonthBudget    month, amountCents
+Entry          id, type ('expense'), amountCents, currency, description, budgetCategoryId, occurredAt
+BudgetCategory id, name, icon, colorKey, sortOrder, archivedAt
+Bill           id, title, amountCents, dueDate, dueDay, repeatMonths?, payment ('auto'|'manual'), lastPaidAt?
+BudgetPlan     period ('month'|'week'), startsOn, amountCents?   ← from that period on
 Settings       name, photo, weekStart, timeFormat, defaultReminder, seasons, hemisphere, currency, calm
 ```
 
@@ -155,7 +155,7 @@ Each milestone ends with an installable build on a real phone.
 |---|---|---|
 | **M1 Core planner** | App shell; Today (date header, tasks, timeline, hour notes); event sheet + detail; Week; Month (grid, day sheet, agenda, deadlines); reminders (with the notification look and the "Reminders not arriving?" help screen); repeats; onboarding; basic Settings; empty states; search (events + tasks) | SH, TD (except routines), WK (except habits), MO, EV, ON, ST-01, ST-03, NT-01, SR-01, FR-01…14 |
 | **M2 Routines & habits** | Habits tab; routines on Today; habits at a glance on Week; streaks | HB, TD-05…07, WK-11 |
-| **M3 Money & goals** | More tab; Budget; Record Entry; savings goals; bills; monthly goal on Month | MR, BU, MO-06 (goals) |
+| **M3 Money & goals** | Budget tab (D14); expense sheet; spending categories; savings goals; bills; More from the header; monthly goal on Month | MR, BU, MO-06 (goals) |
 | **M4 Finishing** | Move-unfinished-tasks prompt, quotes, seasonal images, data export, polish | FR-15, TD-18, ST-02, S items |
 
 **M1 status (2026-10-13):** built and tried on the emulator. Covers SH-01…06; TD-01, 03, 04, 08…17 (plus TD-02 swipe and TD-19 Up next); WK-01, 02, 04…10, 12 (plus WK-03 and WK-07); MO-01, 03…07 except the month's goal (M3) (plus MO-02); EV-01…07; FR-01…14; ON-01; ST-01; ST-03; NT-01; SR-01. Notes:
@@ -168,6 +168,12 @@ Each milestone ends with an installable build on a real phone.
 - A routine reminds at its time, listing its habits; an Anytime habit can have its own time, or several times a day (e.g. every hour from 7 AM to 6 PM). Reminders go one week ahead, at most 24 per habit, and skip a day (or week) that is already done.
 - Days before a habit was added aren't shown as missed in its history; ticking an earlier day starts the history there.
 - Reordering uses Move up / Move down, as categories do.
+
+**M3 status (2026-10-15):** Budget built and tried on the emulator (D14: it's a tab, inspired by Cashew). Covers MR-01, BU-01…10; BU-11 (bank texts) is listed in More for the next version. Still to do in M3: the month's goal on Month (MO-06). Notes:
+- The budget is monthly or weekly, the person's choice; a change counts from the current month or week on (table `budget_plans`), so earlier periods keep theirs. Expenses only, no income.
+- Over budget, the bar turns red and the card says by how much; "Careful" when spending runs 10 points ahead of the calendar.
+- Bills the bank pays are added to spending at 9 AM on their day (caught up when the app opens); bills paid by hand are added when marked paid, from the app or the reminder. Paid bills go under the Bills category.
+- Savings put into goals aren't counted as spending.
 
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 

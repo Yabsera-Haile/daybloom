@@ -77,8 +77,8 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| SH-01 | Header shows the logo, "Daybloom" and the current section name, with a search button on the right. No profile picture or account button (D8). | M |
-| SH-02 | Bottom tabs: Today, Week, Month, Habits, More (renamed from "Hub", D6). The active tab has the sage pill. Each tab keeps its scroll position and selected date when you switch away and back. | M |
+| SH-01 | Header shows the logo, "Daybloom" and the current section name, with a search button and a ≡ More button (settings and help) on the right. No profile picture or account button (D8). | M |
+| SH-02 | Bottom tabs: Today, Week, Month, Habits, Budget (D14: Budget took the place of More, which opens from the header). The active tab has the sage pill. Each tab keeps its scroll position and selected date when you switch away and back. | M |
 | SH-03 | Header and tab bar are translucent with blur; content scrolls underneath; notches and the gesture bar are respected | M |
 | SH-04 | Android back button: on a pushed screen it goes back; on a tab other than Today it goes to Today; on Today it leaves the app | M |
 | SH-05 | Floating "+ Add" on Today, Week and Month opens a chooser (Event / To-do; Week also offers Weekly priority) with the date preset to the day being viewed | M |
@@ -166,31 +166,32 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 
 The "Coming soon" teaser is removed (D13).
 
-### B.5 More tab (was "Hub")
+### B.5 More (was "Hub")
 
-**Design:** `design/daybloom/more/`
-
-| ID | Requirement | Priority |
-|---|---|---|
-| MR-01 | A simple list: Budget, Settings, Help & feedback (D6) | M |
-
-### B.6 Budget
-
-**Design:** `design/daybloom/budget/` (+ `budget-goals/`, `budget-entries/`, `budget-bill/`; opened from More; back button; no tab bar; original: `design/stitch/budget_planner/`)
-**Purpose:** a gentle monthly money page with manual entries; no bank connection.
+**Design:** `design/daybloom/more/`. Opens from the ≡ button in the header (D14), with a back button.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| BU-01 | Title "October Balance" with a month chip; tapping the chip switches month | M |
-| BU-02 | Quote card with the savings sticker and a calculated line: "36% of your budget left · 9 days to go" | S |
-| BU-03 | Summary: "Left this month" (money in − money out), spent amount and % of the monthly budget, progress bar, "On track" / "Careful" chip, "Money in" / "Money out" tiles (copy per DESIGN_REVIEW section 7) | M |
-| BU-04 | Monthly budget amount can be set (defaults to money in) | M |
-| BU-05 | Savings goals: icon, name, note, saved / target, % bar; "Manage" opens a list to add, edit and add money | M |
-| BU-06 | Upcoming bills (next 14 days): due-date chip ("Due soon" within 3 days), name, note, amount, payment label; bills can repeat monthly; add/edit | M |
-| BU-07 | Recent spending: category icon, description, category chip, date and time, amount (− expense, + income); "View all" opens the full list with edit/delete | M |
-| BU-08 | "Add Expense / Income" opens the Record Entry sheet: Expense/Income switch, amount (number keypad, local currency), description, category chips, Save. Amount must be > 0. Closes by ✕ or tapping outside; a typed draft is kept (UX-05). | M |
+| MR-01 | A simple list: Spending categories, Add expenses from bank texts (shown as "Coming in the next version"), Settings, Reminders not arriving? (D6, D14) | M |
+
+### B.6 Budget tab
+
+**Design:** `design/daybloom/budget/` (+ `budget-goals/`, `budget-entries/`, `budget-bill/`; original: `design/stitch/budget_planner/`). Since D14 it is a tab, with ideas from the Cashew app; it tracks spending only (no income).
+**Purpose:** a gentle money page with expenses entered by hand; no bank connection.
+
+| ID | Requirement | Priority |
+|---|---|---|
+| BU-01 | Title "October budget" (or "Week of Oct 12") with ‹ This month › to move between months or weeks; swiping does the same | M |
+| BU-02 | Quote card with the savings sticker and a calculated line: "36% of your budget left · 9 days to go" (hidden in calm mode and when over budget) | S |
+| BU-03 | Budget card: "Left to spend" (budget − spent), "Spent $3,120.00 of $4,850.00 (64%)", a progress bar that turns red past the budget with "Over budget by $120.00" and an icon, "On track" / "Careful" / "Over budget" chip, and "About $190 a day for the next 9 days" (copy per DESIGN_REVIEW section 7) | M |
+| BU-04 | The budget is set per month or per week (the person chooses) with an amount; a change counts from the current period on, earlier periods keep theirs | M |
+| BU-05 | Savings goals: icon, name, note, saved / target, % bar; "Manage" opens a list to add, edit, add or take out money, and see reached goals | M |
+| BU-06 | Upcoming bills (next 14 days): due-date chip ("Due soon" within 3 days, "Late"), name, how often, amount, "Paid automatically" / "Needs paying"; bills repeat every 1, 3, 6 or 12 months; add/edit; a paid bill is added to spending (automatically on its day, or when marked paid) | M |
+| BU-07 | Where it went: spending per category, biggest first, with a labelled bar and share. Recent spending: category icon, description, category, date and time, amount; "View all" opens the full list by day, filterable by category, with edit/delete and Undo | M |
+| BU-08 | "+ Add expense" (also in the "+ Add" chooser) opens the expense sheet: amount (number keypad, local currency), what it was for, category chips with "+ New category", day, Save. Amount must be > 0. Categories start as Groceries, Dining, Transport, Home, Bills, Health, Fun and Other, and can be added, renamed, re-iconed, recolored, reordered and deleted (More › Spending categories). | M |
 | BU-09 | Currency from the phone's region, changeable in Settings (D9); amounts stored in cents (NFR-12) | M |
-| BU-10 | Optional reminder for a bill's due date | S |
+| BU-10 | Optional reminder for a bill: on the day, 1 day or 3 days before, at 9 AM | S |
+| BU-11 | Add expenses automatically from bank texts: listed in More as coming in the next version | L |
 
 ### B.7 Add / Edit Event sheet and event detail
 
