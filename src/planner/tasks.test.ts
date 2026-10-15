@@ -2,7 +2,19 @@ import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
 import { reminderOffsets } from '@/reminders/store';
 
-import { createTask, deleteTask, getTask, moveTask, setTaskDone, tasksBetween, tasksOn, updateTask } from './tasks';
+import { quoteFor } from './quotes';
+import {
+  createTask,
+  deleteTask,
+  getTask,
+  leftBehind,
+  moveTask,
+  moveTasks,
+  setTaskDone,
+  tasksBetween,
+  tasksOn,
+  updateTask,
+} from './tasks';
 
 let db: Db;
 beforeEach(async () => {
@@ -71,5 +83,37 @@ describe('to-dos', () => {
     expect(() => createTask(db, { title: 'Run', date: '2024-10-23', dueTime: '25:00' })).toThrow();
     expect(() => createTask(db, { title: 'Run', date: '2024-10-23', dueTime: '7:00' })).toThrow();
     expect(tasksOn(db, '2024-10-23')).toEqual([]);
+  });
+});
+
+describe('left from earlier days', () => {
+  it('T-15.1 two to-dos left undone yesterday are offered for today; "Move" puts them on top, with Undo', () => {
+    createTask(db, { title: 'Call the bank', date: '2024-10-22' });
+    const done = createTask(db, { title: 'Done already', date: '2024-10-22' });
+    setTaskDone(db, done, true);
+    createTask(db, { title: 'Reply to Sam', date: '2024-10-22' });
+    createTask(db, { title: 'Too old', date: '2024-10-01' });
+    createTask(db, { title: 'Weekly one', date: '2024-10-20', scope: 'week' });
+    createTask(db, { title: 'Already today', date: '2024-10-23' });
+    const left = leftBehind(db, '2024-10-23');
+    expect(titles(left)).toEqual(['Reply to Sam', 'Call the bank']);
+    const undo = moveTasks(
+      db,
+      left.map((x) => x.id),
+      '2024-10-23',
+    );
+    expect(titles(tasksOn(db, '2024-10-23'))).toEqual(['Reply to Sam', 'Call the bank', 'Already today']);
+    expect(leftBehind(db, '2024-10-23')).toEqual([]);
+    undo();
+    expect(titles(tasksOn(db, '2024-10-22'))).toEqual(['Reply to Sam', 'Done already', 'Call the bank']);
+  });
+});
+
+describe("today's quote", () => {
+  it('T-TD18.1 a different quote on 3 days in a row, the same all day', () => {
+    const days = ['2024-10-23', '2024-10-24', '2024-10-25'].map((d) => quoteFor(d));
+    expect(new Set(days).size).toBe(3);
+    expect(quoteFor('2024-10-23')).toBe(days[0]);
+    expect(quoteFor('2024-10-23', ['a', 'b'])).not.toBe(quoteFor('2024-10-24', ['a', 'b']));
   });
 });

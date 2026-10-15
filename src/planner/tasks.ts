@@ -1,7 +1,8 @@
 // To-dos: Daily Intentions (scope 'day') and Weekly Priorities (scope 'week', dated by the week's
 // first day). A to-do on a date is also that date's deadline (FR-07, FR-14).
-import { and, asc, eq, gte, isNull, lte, min } from 'drizzle-orm';
+import { and, asc, eq, gte, isNull, lt, lte, min } from 'drizzle-orm';
 
+import { addDaysToKey } from '@/calendar/timezone';
 import { tasks } from '@/db/schema';
 import { newId, type Db, type Undo } from '@/db/types';
 import { setReminderOffsets } from '@/reminders/store';
@@ -106,6 +107,33 @@ export function moveTask(db: Db, id: string, date: string): Undo {
   return () => {
     db.update(tasks).set({ date: before.date, sortOrder: before.sortOrder }).where(eq(tasks.id, id)).run();
   };
+}
+
+/** How far back the "things left from yesterday" prompt looks (FR-15). */
+export const LEFT_BEHIND_DAYS = 14;
+
+/** Day to-dos not done on their day, from the last two weeks, oldest first (FR-15). */
+export function leftBehind(db: Db, today: string): TaskRow[] {
+  return db
+    .select()
+    .from(tasks)
+    .where(
+      and(
+        eq(tasks.scope, 'day'),
+        eq(tasks.done, false),
+        isNull(tasks.deletedAt),
+        gte(tasks.date, addDaysToKey(today, -LEFT_BEHIND_DAYS)),
+        lt(tasks.date, today),
+      ),
+    )
+    .orderBy(asc(tasks.date), asc(tasks.sortOrder), asc(tasks.createdAt))
+    .all();
+}
+
+/** "Move to today" for several to-dos at once, keeping their order; Undo puts each back. */
+export function moveTasks(db: Db, ids: string[], date: string): Undo {
+  const undos = [...ids].reverse().map((id) => moveTask(db, id, date));
+  return () => undos.forEach((undo) => undo());
 }
 
 export function deleteTask(db: Db, id: string): Undo {

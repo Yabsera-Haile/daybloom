@@ -8,8 +8,10 @@ import { events as eventsTable, tasks as tasksTable } from '@/db/schema';
 import { useNow, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { RoutineCards, useRoutineMarkers } from '@/features/habits/RoutineCards';
+import { DailyQuote } from '@/features/today/DailyQuote';
 import { DateCard } from '@/features/today/DateCard';
 import { Intentions } from '@/features/today/Intentions';
+import { LeftBehind } from '@/features/today/LeftBehind';
 import { Timeline } from '@/features/today/Timeline';
 import { UpNext } from '@/features/today/UpNext';
 import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
@@ -76,12 +78,14 @@ export default function TodayScreen() {
           </View>
         </View>
       ) : null}
+      {isToday ? <LeftBehind today={today} /> : null}
       {upNext ? <UpNext occurrence={upNext} now={now} /> : null}
       <RoutineCards day={day} isToday={isToday} now={now} />
       <View onLayout={(e) => (intentionsY.current = e.nativeEvent.layout.y)}>
         <Intentions day={day} isToday={isToday} tasks={tasks} />
       </View>
       <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} markers={markers} />
+      <DailyQuote day={day} />
     </TabScreen>
   );
 }
