@@ -1,5 +1,13 @@
 // Calendar math used across Today, Week, Month and Habits. Pure functions, no device state.
-import { addDays, differenceInCalendarDays, endOfMonth, getISOWeek, getWeek, isLeapYear, startOfWeek, startOfYear } from 'date-fns';
+// one file per function: the bundler keeps only these (importing 'date-fns' pulls in all of it)
+import { addDays } from 'date-fns/addDays';
+import { differenceInCalendarDays } from 'date-fns/differenceInCalendarDays';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { getISOWeek } from 'date-fns/getISOWeek';
+import { getWeek } from 'date-fns/getWeek';
+import { isLeapYear } from 'date-fns/isLeapYear';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { startOfYear } from 'date-fns/startOfYear';
 
 export type WeekStart = 0 | 1 | 6; // Sunday | Monday | Saturday (Settings › Weeks start on)
 export type Hemisphere = 'north' | 'south';
