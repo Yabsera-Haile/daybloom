@@ -29,6 +29,13 @@
       "when": 1792078787011,
       "tag": "0003_drop_month_budgets",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792094744475,
+      "tag": "0004_drafts",
+      "breakpoints": true
     }
   ]
 }

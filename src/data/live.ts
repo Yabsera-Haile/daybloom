@@ -19,10 +19,15 @@ export function notifyDataChanged(): void {
   }, 0);
 }
 
+/** Saved on every keystroke and read only by the form itself, so no screen needs to re-read. */
+const QUIET_TABLES = new Set(['drafts']);
+
 function subscribe(listener: () => void) {
   if (!listening) {
     listening = true;
-    addDatabaseChangeListener(notifyDataChanged);
+    addDatabaseChangeListener((change) => {
+      if (!QUIET_TABLES.has(change.tableName)) notifyDataChanged();
+    });
   }
   listeners.add(listener);
   return () => {

@@ -40,6 +40,11 @@ export const en = {
     next: 'Next',
   },
 
+  drafts: {
+    restored: 'Picked up where you left off',
+    startFresh: 'Start fresh',
+  },
+
   errors: {
     dbTitle: 'Daybloom couldn’t open your planner.',
     dbText: (detail: string) =>

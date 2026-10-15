@@ -4,8 +4,10 @@ import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
+import { useDraft } from '@/data/drafts';
 import { useSettings } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { DraftNotice } from '@/features/DraftNotice';
 import {
   archiveHabit,
   createHabit,
@@ -47,7 +49,13 @@ export function HabitForm({
   const all = useLive(() => listHabits(db), []);
   const tf = settings.timeFormat;
 
-  const [name, setName] = useState(habit?.name ?? presetName ?? '');
+  // a new habit keeps its words until saved (UX-05); an idea chip from Habits starts afresh
+  const draft = useDraft(habit || presetName ? null : 'habit', {
+    name: habit?.name ?? presetName ?? '',
+    note: habit?.note ?? '',
+  });
+  const { name, note } = draft.values;
+  const setName = (v: string) => draft.set('name', v);
   const [frequency, setFrequency] = useState<Frequency>((habit?.frequency as Frequency) ?? 'daily');
   const [routineId, setRoutineId] = useState<string | null>(habit ? habit.routineId : (presetRoutine ?? null));
   const repeating = !!habit?.reminderEvery && !!habit.reminderTime;
@@ -58,7 +66,6 @@ export function HabitForm({
   const [from, setFrom] = useState(repeating ? habit.reminderTime! : '08:00');
   const [until, setUntil] = useState(habit?.reminderUntil ?? '20:00');
   const [every, setEvery] = useState<number>(habit?.reminderEvery ?? 120);
-  const [note, setNote] = useState(habit?.note ?? '');
   const [newRoutine, setNewRoutine] = useState(false);
   const [askDelete, setAskDelete] = useState(false);
   const routine = routines.find((r) => r.id === routineId) ?? null;
@@ -80,6 +87,7 @@ export function HabitForm({
     };
     if (habit) updateHabit(db, habit.id, input);
     else createHabit(db, input);
+    draft.clear();
     router.back();
   };
 
@@ -108,7 +116,15 @@ export function HabitForm({
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
       <View className="h-16 flex-row items-center justify-between border-b border-surface-variant px-1">
-        <Button label={t.common.cancel} variant="text" align="center" onPress={() => router.back()} />
+        <Button
+          label={t.common.cancel}
+          variant="text"
+          align="center"
+          onPress={() => {
+            draft.clear();
+            router.back();
+          }}
+        />
         <Text variant="headlineSm" accessibilityRole="header">
           {habit ? t.habits.editTitle : t.habits.newTitle}
         </Text>
@@ -126,6 +142,7 @@ export function HabitForm({
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        <DraftNotice draft={draft} />
         <View>
           <TextField
             autoFocus={!habit && !presetName}
@@ -284,7 +301,7 @@ export function HabitForm({
             accessibilityLabel={t.habits.note}
             placeholder={t.habits.notePlaceholder}
             value={note}
-            onChangeText={setNote}
+            onChangeText={(v) => draft.set('note', v)}
             className="h-12 rounded-xl border-[1.5px] border-outline-variant bg-surface px-3"
           />
         </FormSection>

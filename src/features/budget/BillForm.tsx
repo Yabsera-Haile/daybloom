@@ -16,7 +16,9 @@ import {
 } from '@/budget/bills';
 import { centsToInput, parseMoney } from '@/budget/money';
 import { db } from '@/db/client';
+import { useDraft } from '@/data/drafts';
 import { useSettings, useToday } from '@/data/hooks';
+import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { shortDay } from '@/i18n/format';
 import { useUi } from '@/state/ui';
@@ -31,8 +33,12 @@ export function BillForm({ bill }: { bill?: Bill }) {
   const settings = useSettings();
   const today = useToday();
   const showToast = useUi((s) => s.showToast);
-  const [title, setTitle] = useState(bill?.title ?? '');
-  const [amount, setAmount] = useState(bill ? centsToInput(bill.amountCents) : '');
+  // a new bill keeps its name and amount until saved (UX-05)
+  const draft = useDraft(bill ? null : 'bill', {
+    title: bill?.title ?? '',
+    amount: bill ? centsToInput(bill.amountCents) : '',
+  });
+  const { title, amount } = draft.values;
   const [dueDate, setDueDate] = useState<string | null>(bill?.dueDate ?? null);
   const [repeatMonths, setRepeatMonths] = useState<number | null>(bill ? bill.repeatMonths : 1);
   const [payment, setPayment] = useState<BillPayment>((bill?.payment as BillPayment | undefined) ?? 'auto');
@@ -56,6 +62,7 @@ export function BillForm({ bill }: { bill?: Bill }) {
     };
     if (bill) updateBill(db, bill.id, input);
     else createBill(db, input);
+    draft.clear();
     router.back();
   };
 
@@ -67,7 +74,15 @@ export function BillForm({ bill }: { bill?: Bill }) {
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
       <View className="h-16 flex-row items-center justify-between border-b border-surface-variant px-1">
-        <Button label={t.common.cancel} variant="text" align="center" onPress={() => router.back()} />
+        <Button
+          label={t.common.cancel}
+          variant="text"
+          align="center"
+          onPress={() => {
+            draft.clear();
+            router.back();
+          }}
+        />
         <Text variant="headlineSm" accessibilityRole="header">
           {bill ? t.budget.bill.editTitle : t.budget.bill.newTitle}
         </Text>
@@ -78,12 +93,13 @@ export function BillForm({ bill }: { bill?: Bill }) {
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        <DraftNotice draft={draft} />
         <TextField
           autoFocus={!bill}
           accessibilityLabel={t.budget.bill.nameLabel}
           placeholder={t.budget.bill.namePlaceholder}
           value={title}
-          onChangeText={setTitle}
+          onChangeText={(v) => draft.set('title', v)}
           variant="headlineLg"
           className={`border-b-[1.5px] pb-2 ${tried && !title.trim() ? 'border-error' : 'border-primary'}`}
         />
@@ -92,7 +108,7 @@ export function BillForm({ bill }: { bill?: Bill }) {
           <MoneyField
             label={t.budget.bill.amount}
             value={amount}
-            onChangeText={setAmount}
+            onChangeText={(v) => draft.set('amount', v)}
             currency={bill?.currency ?? settings.currency}
             big={false}
             error={tried && !valid ? t.budget.needAmount : null}

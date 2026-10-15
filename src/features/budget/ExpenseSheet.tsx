@@ -7,8 +7,10 @@ import { centsToInput, parseMoney } from '@/budget/money';
 import { toDayKey } from '@/calendar/dates';
 import { localDayStart } from '@/calendar/timezone';
 import { db } from '@/db/client';
+import { useDraft } from '@/data/drafts';
 import { useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { monthDay, shortDay } from '@/i18n/format';
 import { useUi } from '@/state/ui';
@@ -31,8 +33,12 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
   const categories = useLive(() => listSpendCategories(db), []);
   // read once: after a delete the sheet closes rather than turning into a new one
   const [entry] = useState(() => (entryId ? getEntry(db, entryId) : undefined));
-  const [amount, setAmount] = useState(entry ? centsToInput(entry.amountCents) : '');
-  const [description, setDescription] = useState(entry?.description ?? '');
+  // a new expense keeps its typing when the sheet is closed by accident (UX-05, T-BU08.3)
+  const draft = useDraft(entry ? null : 'expense', {
+    amount: entry ? centsToInput(entry.amountCents) : '',
+    description: entry?.description ?? '',
+  });
+  const { amount, description } = draft.values;
   const [categoryId, setCategoryId] = useState<string | null>(
     entry ? entry.budgetCategoryId : (categories[0]?.id ?? null),
   );
@@ -56,6 +62,7 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
     };
     if (entry) updateExpense(db, entry.id, input);
     else addExpense(db, input);
+    draft.clear();
     closeSheet();
   };
 
@@ -83,10 +90,11 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
       title={entry ? t.budget.expense.editTitle : t.budget.expense.newTitle}
       closeButton>
       <View className="gap-space-md pb-space-sm">
+        <DraftNotice draft={draft} />
         <MoneyField
           label={t.budget.expense.amount}
           value={amount}
-          onChangeText={setAmount}
+          onChangeText={(v) => draft.set('amount', v)}
           currency={entry?.currency ?? settings.currency}
           autoFocus={!entry}
           error={tried && !valid ? t.budget.needAmount : null}
@@ -99,7 +107,7 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
             accessibilityLabel={t.budget.expense.whatFor}
             placeholder={t.budget.expense.whatForPlaceholder}
             value={description}
-            onChangeText={setDescription}
+            onChangeText={(v) => draft.set('description', v)}
             className={field}
           />
         </View>

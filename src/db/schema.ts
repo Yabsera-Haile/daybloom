@@ -242,3 +242,14 @@ export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
 });
+
+/**
+ * Unsaved typing (UX-05): the text of a form that wasn't saved yet, so it comes back after the app
+ * closes. One row per form; screens don't re-read on changes here (see data/live.ts).
+ */
+export const drafts = sqliteTable('drafts', {
+  key: text('key').primaryKey(),
+  /** JSON of the form's text fields */
+  value: text('value').notNull(),
+  updatedAt: updatedAt(),
+});

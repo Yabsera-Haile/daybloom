@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { db } from '@/db/client';
+import { useDraft } from '@/data/drafts';
 import { useSettings } from '@/data/hooks';
+import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { clockText, reminderText } from '@/i18n/format';
 import { createTask, updateTask, type TaskRow, type TaskScope } from '@/planner/tasks';
@@ -29,13 +31,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
 /** New or edited to-do (TD-10, TD-12) or weekly priority (WK-10). Only the title is required. */
 export function TaskForm({ day, scope, task, dueHour, compact = false, placeholder, onClose }: TaskFormProps) {
   const settings = useSettings();
-  const [title, setTitle] = useState(task?.title ?? '');
+  // a new to-do keeps its typing until saved (UX-05)
+  const draft = useDraft(task ? null : `task.${scope}`, {
+    title: task?.title ?? '',
+    listLabel: task?.listLabel ?? '',
+    notes: task?.notes ?? '',
+  });
+  const { title, listLabel, notes } = draft.values;
   const [urgent, setUrgent] = useState(task?.urgent ?? false);
   const [dueTime, setDueTime] = useState<string | null>(
     task?.dueTime ?? (dueHour !== undefined ? `${pad(dueHour)}:00` : null),
   );
-  const [listLabel, setListLabel] = useState(task?.listLabel ?? '');
-  const [notes, setNotes] = useState(task?.notes ?? '');
   const [reminders, setReminders] = useState<number[]>(() =>
     task ? reminderOffsets(db, 'task', task.id) : settings.defaultReminder !== null ? [settings.defaultReminder] : [],
   );
@@ -46,6 +52,13 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
     const remind = dueTime ? reminders : [];
     if (task) updateTask(db, task.id, { title, urgent, dueTime, listLabel, notes }, remind);
     else createTask(db, { title, date: day, scope, urgent, dueTime, listLabel, notes }, remind);
+    draft.clear();
+    onClose();
+  };
+
+  // Cancel means "I don't want this": the typing goes too
+  const cancel = () => {
+    draft.clear();
     onClose();
   };
 
@@ -88,12 +101,13 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
   if (compact) {
     return (
       <View className="gap-space-sm rounded-2xl bg-surface-container p-space-sm">
+        <DraftNotice draft={draft} />
         <TextField
           autoFocus
           accessibilityLabel={t.task.newLabel}
           placeholder={placeholder ?? (scope === 'week' ? t.week.priorityPlaceholder : t.task.newPlaceholder)}
           value={title}
-          onChangeText={setTitle}
+          onChangeText={(v) => draft.set('title', v)}
           returnKeyType="done"
           onSubmitEditing={save}
           className="h-12 rounded-xl border-[1.5px] border-primary bg-surface-container-lowest px-3"
@@ -101,7 +115,7 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
         <View className="flex-row flex-wrap items-center gap-2">
           {chips}
           <View className="ml-auto flex-row items-center gap-1">
-            <Button label={t.common.cancel} variant="text" size="md" onPress={onClose} />
+            <Button label={t.common.cancel} variant="text" size="md" onPress={cancel} />
             <Button
               label={t.common.save}
               size="md"
@@ -117,12 +131,13 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
 
   return (
     <View className="gap-space-md pb-space-sm">
+      <DraftNotice draft={draft} />
       <TextField
         autoFocus={!task}
         accessibilityLabel={scope === 'week' ? t.task.newPriorityTitle : t.task.newLabel}
         placeholder={placeholder ?? (scope === 'week' ? t.week.priorityPlaceholder : t.task.newPlaceholder)}
         value={title}
-        onChangeText={setTitle}
+        onChangeText={(v) => draft.set('title', v)}
         variant="headlineSm"
         multiline
         className="border-b-[1.5px] border-primary pb-2"
@@ -157,7 +172,7 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
             accessibilityLabel={t.task.listLabel}
             placeholder={t.task.listPlaceholder}
             value={listLabel}
-            onChangeText={setListLabel}
+            onChangeText={(v) => draft.set('listLabel', v)}
             className="h-12 rounded-xl border-[1.5px] border-outline-variant bg-surface px-3"
           />
         </View>
@@ -170,14 +185,14 @@ export function TaskForm({ day, scope, task, dueHour, compact = false, placehold
           accessibilityLabel={t.task.notes}
           placeholder={t.event.notesPlaceholder}
           value={notes}
-          onChangeText={setNotes}
+          onChangeText={(v) => draft.set('notes', v)}
           multiline
           className="min-h-[72px] rounded-xl border-[1.5px] border-outline-variant bg-surface px-3 py-2.5"
           style={{ textAlignVertical: 'top' }}
         />
       </View>
       <View className="flex-row gap-space-sm">
-        <Button label={t.common.cancel} variant="outline" onPress={onClose} className="flex-1" />
+        <Button label={t.common.cancel} variant="outline" onPress={cancel} className="flex-1" />
         <Button
           label={t.common.save}
           onPress={save}

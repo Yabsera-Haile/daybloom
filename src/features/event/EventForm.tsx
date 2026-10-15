@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toDayKey } from '@/calendar/dates';
 import { addDaysToKey, dayKeyInZone, fromWallTime, localTimeZone, parseDayKey } from '@/calendar/timezone';
 import { db } from '@/db/client';
+import { useDraft } from '@/data/drafts';
 import { useCategories, useSettings } from '@/data/hooks';
+import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { clockText, reminderText, shortDay } from '@/i18n/format';
 import { DEFAULT_CATEGORY_ID } from '@/planner/categories';
@@ -83,7 +85,13 @@ export function EventForm({ initial }: { initial: Initial }) {
   const editing = initial.mode === 'edit' ? initial.occurrence : null;
 
   // ---- starting values (EV-02, EV-07)
-  const [title, setTitle] = useState(editing?.title ?? '');
+  // a new event keeps its words until saved (UX-05)
+  const draft = useDraft(editing ? null : 'event', {
+    title: editing?.title ?? '',
+    location: editing?.location ?? '',
+    notes: editing?.notes ?? '',
+  });
+  const { title, location, notes } = draft.values;
   const [categoryId, setCategoryId] = useState<string | null>(
     editing
       ? editing.categoryId
@@ -133,8 +141,6 @@ export function EventForm({ initial }: { initial: Initial }) {
         : [],
   );
   const [urgent, setUrgent] = useState(editing?.urgent ?? false);
-  const [location, setLocation] = useState(editing?.location ?? '');
-  const [notes, setNotes] = useState(editing?.notes ?? '');
 
   // only used to read an existing rule back (a new event has none)
   const timing = { startAt: editing?.startAt ?? 0, timeZone: editing?.timeZone ?? localTimeZone(), allDay };
@@ -151,7 +157,7 @@ export function EventForm({ initial }: { initial: Initial }) {
     existing?.freq === 'weekly' ? existing.weekdays : [weekdayOf(day)],
   );
   const [stops, setStops] = useState<RepeatEnd>(existing?.end ?? { kind: 'never' });
-  const [moreOpen, setMoreOpen] = useState(!!editing && (!!editing.rrule || !!editing.location || !!editing.notes));
+  const [moreOpen, setMoreOpen] = useState((!!editing && !!editing.rrule) || !!location.trim() || !!notes.trim());
   const [asking, setAsking] = useState<'edit' | 'delete' | null>(null);
 
   const endOk = allDay || spanDays > 0 || toMinutes(end) > toMinutes(start);
@@ -228,6 +234,7 @@ export function EventForm({ initial }: { initial: Initial }) {
       if (!scope) return setAsking('edit');
       updateOccurrence(db, editing, input, scope, remind);
     } else updateEvent(db, editing.eventId, input, remind);
+    draft.clear();
     router.back();
   };
 
@@ -276,7 +283,15 @@ export function EventForm({ initial }: { initial: Initial }) {
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
       {/* Top bar: Cancel and Save always visible (EV-03) */}
       <View className="h-16 flex-row items-center justify-between border-b border-surface-variant px-1">
-        <Button label={t.common.cancel} variant="text" align="center" onPress={() => router.back()} />
+        <Button
+          label={t.common.cancel}
+          variant="text"
+          align="center"
+          onPress={() => {
+            draft.clear();
+            router.back();
+          }}
+        />
         <Text variant="headlineSm" accessibilityRole="header">
           {editing ? t.event.editTitle : t.event.newTitle}
         </Text>
@@ -294,13 +309,14 @@ export function EventForm({ initial }: { initial: Initial }) {
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        <DraftNotice draft={draft} />
         <View>
           <TextField
             autoFocus={!editing}
             accessibilityLabel={t.event.titleLabel}
             placeholder={t.event.titlePlaceholder}
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(v) => draft.set('title', v)}
             variant="headlineLg"
             className="border-b-[1.5px] border-primary pb-2"
           />
@@ -542,7 +558,7 @@ export function EventForm({ initial }: { initial: Initial }) {
                   accessibilityLabel={t.event.place}
                   placeholder={t.event.placePlaceholder}
                   value={location}
-                  onChangeText={setLocation}
+                  onChangeText={(v) => draft.set('location', v)}
                   className="h-12 rounded-xl border-[1.5px] border-outline-variant bg-surface px-3"
                 />
               </View>
@@ -555,7 +571,7 @@ export function EventForm({ initial }: { initial: Initial }) {
                   accessibilityLabel={t.event.notes}
                   placeholder={t.event.notesPlaceholder}
                   value={notes}
-                  onChangeText={setNotes}
+                  onChangeText={(v) => draft.set('notes', v)}
                   multiline
                   className="min-h-[88px] rounded-xl border-[1.5px] border-outline-variant bg-surface px-3 py-2.5"
                   style={{ textAlignVertical: 'top' }}
