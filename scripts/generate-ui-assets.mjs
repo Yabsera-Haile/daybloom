@@ -47,6 +47,10 @@ const extras = [
   'more_horiz',
   'sms',
   'sell',
+  'autorenew',
+  'mobile_vibrate',
+  'mobile',
+  'volume_up',
 ];
 for (const name of extras) used.add(name);
 for (const name of tabIcons) filled.add(name);

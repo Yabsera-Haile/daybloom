@@ -43,6 +43,7 @@
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.4",
     "expo": "~57.0.28",
+    "expo-audio": "~57.0.5",
     "expo-battery": "~57.0.3",
     "expo-blur": "~57.0.3",
     "expo-build-properties": "~57.0.22",

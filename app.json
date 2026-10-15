@@ -126,7 +126,14 @@
         "expo-notifications",
         {
           "icon": "./assets/images/android-icon-monochrome.png",
-          "color": "#5B7E67"
+          "color": "#5B7E67",
+          "sounds": [
+            "./assets/sounds/chime.wav",
+            "./assets/sounds/bell.wav",
+            "./assets/sounds/birdsong.wav",
+            "./assets/sounds/marimba.wav",
+            "./assets/sounds/ring.wav"
+          ]
         }
       ],
       [
@@ -137,6 +144,14 @@
             "enableShrinkResourcesInReleaseBuilds": true,
             "useLegacyPackaging": true
           }
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
         }
       ]
     ],

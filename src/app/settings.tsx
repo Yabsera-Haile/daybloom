@@ -7,25 +7,30 @@ import { shareBackup } from '@/backup/share';
 import { hemisphereForTimeZone, type WeekStart } from '@/calendar/dates';
 import { localTimeZone } from '@/calendar/timezone';
 import { db } from '@/db/client';
-import { useCategories, useSettings } from '@/data/hooks';
+import { useCategories, useSettings, useToday } from '@/data/hooks';
+import { SoundSheet, ThemeSheet, themeLabel } from '@/features/settings/LookSheets';
+import { themeFor } from '@/features/ThemeProvider';
 import { useNotificationStatus } from '@/features/useNotificationStatus';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { saveSetting, type Settings } from '@/settings';
 import { useUi } from '@/state/ui';
-import { lookFor, shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { Button, ChoiceSheet, Icon, Page, Row, RowGroup, Sheet, Sticker, Switch, Text, TextField } from '@/ui';
 
 const REMINDER_OPTIONS: (number | null)[] = [null, 0, 10, 30, 60, 1440];
 
-type Picker = 'weekStart' | 'timeFormat' | 'defaultReminder' | 'hemisphere' | 'currency' | 'privacy' | null;
+type Picker =
+  'weekStart' | 'timeFormat' | 'defaultReminder' | 'sound' | 'theme' | 'hemisphere' | 'currency' | 'privacy' | null;
 
 const reminderLabel = (m: number | null) => (m === null ? t.settings.noReminder : t.reminders.detail(m));
 const currencyLabel = (code: string) => (t.currencies[code] ? `${t.currencies[code]} (${code})` : code);
 
 /** Settings (ST-01, SH-06): opened from More. Only what you change is saved; the rest follows the phone. */
 export default function SettingsScreen() {
+  const { lookFor } = useTheme();
   const settings = useSettings();
+  const today = useToday();
   const categories = useCategories();
   const { status, turnOn } = useNotificationStatus();
   const [name, setName] = useState(settings.name ?? '');
@@ -109,6 +114,12 @@ export default function SettingsScreen() {
           onPress={() => setPicker('defaultReminder')}
         />
         <Row
+          icon="volume_up"
+          title={t.settings.reminderSound}
+          value={t.settings.sounds[settings.reminderSound]}
+          onPress={() => setPicker('sound')}
+        />
+        <Row
           icon="palette"
           title={t.settings.categories}
           onPress={() => router.push('/categories')}
@@ -129,6 +140,12 @@ export default function SettingsScreen() {
       <RowGroup heading={t.settings.seasons}>
         <Row
           first
+          icon="palette"
+          title={t.settings.colours}
+          value={themeLabel(settings.theme, themeFor('auto', today, settings.hemisphere))}
+          onPress={() => setPicker('theme')}
+        />
+        <Row
           icon="eco"
           title={t.settings.showSeasons}
           subtitle={t.settings.showSeasonsText}
@@ -242,6 +259,8 @@ export default function SettingsScreen() {
           onClose={() => setPicker(null)}
         />
       ) : null}
+      {picker === 'sound' ? <SoundSheet onClose={() => setPicker(null)} /> : null}
+      {picker === 'theme' ? <ThemeSheet onClose={() => setPicker(null)} /> : null}
       {picker === 'privacy' ? (
         <Sheet visible onClose={() => setPicker(null)} title={t.settings.privacy} closeButton>
           <Text variant="bodyLg" color="onSurfaceVariant" style={{ paddingBottom: 16 }}>

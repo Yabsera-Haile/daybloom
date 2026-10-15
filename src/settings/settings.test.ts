@@ -22,6 +22,8 @@ describe('settings', () => {
       currency: 'USD',
       calm: false,
       onboarded: false,
+      theme: 'autumn',
+      reminderSound: 'chime',
     });
     expect(readSettings(db)).toEqual(phoneDefaults());
   });
@@ -82,5 +84,14 @@ describe('memos', () => {
     expect(db.select().from(settings).all()).toHaveLength(1);
     saveMemo(db, 'leftBehind.hiddenOn', null);
     expect(readMemo(db, 'leftBehind.hiddenOn')).toBeNull();
+  });
+});
+
+describe('look and sound', () => {
+  it('keeps a chosen theme and reminder sound, and ignores unknown ones', () => {
+    saveSetting(db, 'theme', 'auto');
+    saveSetting(db, 'reminderSound', 'vibrate');
+    expect([readSettings(db).theme, readSettings(db).reminderSound]).toEqual(['auto', 'vibrate']);
+    expect(() => saveSetting(db, 'theme', 'monsoon' as never)).toThrow();
   });
 });

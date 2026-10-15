@@ -24,7 +24,17 @@ export interface Settings {
   calm: boolean;
   /** Onboarding finished or skipped (ON-01). */
   onboarded: boolean;
+  /** Colour theme: one season, or 'auto' to follow the seasons where you live. */
+  theme: ThemeChoice;
+  /** How reminders sound: the phone's own sound, one of Daybloom's, or vibrate only. */
+  reminderSound: ReminderSound;
 }
+
+export type ThemeChoice = 'auto' | 'spring' | 'summer' | 'autumn' | 'winter';
+export const THEME_CHOICES: ThemeChoice[] = ['auto', 'spring', 'summer', 'autumn', 'winter'];
+
+export type ReminderSound = 'phone' | 'chime' | 'bell' | 'birdsong' | 'marimba' | 'ring' | 'vibrate';
+export const REMINDER_SOUNDS: ReminderSound[] = ['phone', 'chime', 'bell', 'birdsong', 'marimba', 'ring', 'vibrate'];
 
 type Check<T> = (v: unknown) => v is T;
 const isBool: Check<boolean> = (v): v is boolean => typeof v === 'boolean';
@@ -39,6 +49,8 @@ const checks: { [K in keyof Settings]: Check<Settings[K]> } = {
   currency: (v): v is string => typeof v === 'string' && /^[A-Z]{3}$/.test(v),
   calm: isBool,
   onboarded: isBool,
+  theme: (v): v is ThemeChoice => THEME_CHOICES.includes(v as ThemeChoice),
+  reminderSound: (v): v is ReminderSound => REMINDER_SOUNDS.includes(v as ReminderSound),
 };
 
 export function phoneDefaults(): Settings {
@@ -55,6 +67,8 @@ export function phoneDefaults(): Settings {
     currency: getLocales()[0]?.currencyCode ?? 'USD',
     calm: false,
     onboarded: false,
+    theme: 'autumn',
+    reminderSound: 'chime',
   };
 }
 
