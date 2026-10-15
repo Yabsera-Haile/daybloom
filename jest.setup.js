@@ -32,3 +32,21 @@ jest.mock('@/db/client', () => ({
 
 // Screens re-read after a change; tests trigger that by hand (see notifyDataChanged).
 jest.mock('expo-sqlite', () => ({ addDatabaseChangeListener: () => ({ remove: () => {} }) }));
+
+// Screens are tested on their own: navigation calls are recorded instead of moving anywhere, and
+// route params come from `globalThis.__routeParams`.
+jest.mock('expo-router', () => {
+  const router = { push: jest.fn(), back: jest.fn(), navigate: jest.fn(), replace: jest.fn() };
+  return {
+    router,
+    useRouter: () => router,
+    useLocalSearchParams: () => globalThis.__routeParams ?? {},
+    Redirect: () => null,
+    Link: ({ children }) => children,
+  };
+});
+
+// Animations and the safe area, as their libraries suggest for tests.
+jest.mock('react-native-worklets', () => require('react-native-worklets/src/mock'));
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
