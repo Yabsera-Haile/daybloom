@@ -36,6 +36,14 @@ export const en = {
     allDay: 'All day',
     previousDay: 'Previous day',
     nextDay: 'Next day',
+    previous: 'Previous',
+    next: 'Next',
+  },
+
+  errors: {
+    dbTitle: 'Daybloom couldn’t open your planner.',
+    dbText: (detail: string) =>
+      `Please restart the app. If it keeps happening, contact us from the Play Store page. (${detail})`,
   },
 
   time: {

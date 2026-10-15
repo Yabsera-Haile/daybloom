@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { ensureDefaultSpendCategories } from '@/budget/categories';
 import { ensureDefaultRoutines } from '@/habits/store';
+import { t } from '@/i18n';
 import { ensureDefaultCategories } from '@/planner/categories';
 import { Text } from '@/ui';
 
@@ -28,10 +29,10 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
     return (
       <View className="flex-1 items-center justify-center bg-surface p-margin">
         <Text variant="headlineSm" style={{ textAlign: 'center' }}>
-          Daybloom couldn’t open your planner.
+          {t.errors.dbTitle}
         </Text>
         <Text variant="bodyMd" color="onSurfaceVariant" style={{ textAlign: 'center', marginTop: 8 }}>
-          Please restart the app. If it keeps happening, contact us from the Play Store page. ({error.message})
+          {t.errors.dbText(error.message)}
         </Text>
       </View>
     );

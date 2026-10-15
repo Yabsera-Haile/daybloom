@@ -88,8 +88,8 @@ export function DateNavigator({
   onNext,
   onLabelPress,
   current = true,
-  previousLabel = 'Previous',
-  nextLabel = 'Next',
+  previousLabel = t.common.previous,
+  nextLabel = t.common.next,
 }: DateNavigatorProps) {
   return (
     <View className="flex-row items-center self-start rounded-full bg-surface-container-lowest" style={shadows.card}>
@@ -144,7 +144,7 @@ export function AppHeader({
 }
 
 /** Floating "+ Add" pill (one add button everywhere, DESIGN_REVIEW I7). */
-export function Fab({ label = 'Add', onPress }: { label?: string; onPress?: () => void }) {
+export function Fab({ label = t.common.add, onPress }: { label?: string; onPress?: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"

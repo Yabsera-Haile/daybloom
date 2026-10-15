@@ -1,5 +1,6 @@
 import { Pressable, View } from 'react-native';
 
+import { t } from '@/i18n';
 import { categoryColors, colors, lookFor, type CategoryKey, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
@@ -32,10 +33,10 @@ export function UrgentBadge() {
   return (
     <View
       className="flex-row items-center self-start rounded-full bg-secondary py-0.5 pl-1 pr-2"
-      accessibilityLabel="Urgent">
+      accessibilityLabel={t.common.urgent}>
       <Icon name="priority_high" size={14} color="onSecondary" />
       <Text variant="labelSm" color="onSecondary">
-        Urgent
+        {t.common.urgent}
       </Text>
     </View>
   );
