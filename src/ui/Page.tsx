@@ -11,8 +11,21 @@ import { Icon, type IconName } from './Icon';
 import { Sheet } from './Sheet';
 import { Text } from './Text';
 
-/** A screen opened on top of the tabs: back arrow, title, scrolling page (design shell data-back). */
-export function Page({ title, children, right }: { title: string; children: ReactNode; right?: ReactNode }) {
+/**
+ * A screen opened on top of the tabs: back arrow, title, scrolling page (design shell data-back).
+ * With `list`, the child is the scrolling list itself (a virtualized list can't sit in a ScrollView).
+ */
+export function Page({
+  title,
+  children,
+  right,
+  list = false,
+}: {
+  title: string;
+  children: ReactNode;
+  right?: ReactNode;
+  list?: boolean;
+}) {
   const insets = useSafeAreaInsets();
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
@@ -30,12 +43,16 @@ export function Page({ title, children, right }: { title: string; children: Reac
         </View>
         {right}
       </View>
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="gap-space-lg px-margin pt-space-sm"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
-        {children}
-      </ScrollView>
+      {list ? (
+        <View className="flex-1">{children}</View>
+      ) : (
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerClassName="gap-space-lg px-margin pt-space-sm"
+          contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+          {children}
+        </ScrollView>
+      )}
     </View>
   );
 }

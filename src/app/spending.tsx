@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, SectionList, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { allSpendCategories } from '@/budget/categories';
 import { byCategory, expensesIn, totalOf, type Entry } from '@/budget/entries';
@@ -10,15 +11,21 @@ import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
 import { useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
-import { categoryName, EntryRow, ListCard } from '@/features/budget/parts';
+import { categoryName, EntryRow } from '@/features/budget/parts';
 import { t } from '@/i18n';
 import { money, monthDay, monthYear, shortDay, timeOf } from '@/i18n/format';
 import { useUi } from '@/state/ui';
 import { DateNavigator, EmptyState, FilterChip, Page, Text } from '@/ui';
 
-/** All spending in a month or week, by day, with a category filter; tap one to edit or delete (BU-07). */
+type DaySection = { day: string; total: number; data: Entry[] };
+
+/**
+ * All spending in a month or week, by day, with a category filter; tap one to edit or delete
+ * (BU-07). A virtualized list: a busy month draws only the rows on screen.
+ */
 export default function SpendingScreen() {
   const params = useLocalSearchParams<{ start?: string; category?: string }>();
+  const insets = useSafeAreaInsets();
   const settings = useSettings();
   const today = useToday();
   const openSheet = useUi((s) => s.openSheet);
@@ -35,10 +42,15 @@ export default function SpendingScreen() {
   const categories = useLive(() => new Map(allSpendCategories(db).map((c) => [c.id, c])), []);
   const shown = filter === undefined ? list : list.filter((e) => e.budgetCategoryId === filter);
 
-  const days = new Map<string, Entry[]>();
+  // newest first, so days come in order as they're met
+  const sections: DaySection[] = [];
   for (const e of shown) {
     const day = toDayKey(new Date(e.occurredAt));
-    days.set(day, [...(days.get(day) ?? []), e]);
+    const last = sections.at(-1);
+    if (last?.day === day) {
+      last.data.push(e);
+      last.total += e.amountCents;
+    } else sections.push({ day, total: e.amountCents, data: [e] });
   }
   const shift = (by: 1 | -1) => setAnchor(shiftPeriod(range, period, by, ws).start);
   const label = isCurrent
@@ -49,8 +61,8 @@ export default function SpendingScreen() {
       ? monthYear(range.start)
       : `${monthDay(range.start)} – ${monthDay(range.end)}`;
 
-  return (
-    <Page title={t.budget.all.title}>
+  const header = (
+    <View className="gap-space-lg pb-space-sm">
       <View className="flex-row flex-wrap items-center justify-between gap-2">
         <DateNavigator
           label={label}
@@ -63,7 +75,6 @@ export default function SpendingScreen() {
         />
         <Text variant="labelLg">{t.budget.all.total(money(totalOf(shown), settings.currency))}</Text>
       </View>
-
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -83,36 +94,49 @@ export default function SpendingScreen() {
           />
         ))}
       </ScrollView>
-
       {shown.length === 0 ? <EmptyState title={t.budget.all.empty} /> : null}
-      {[...days].map(([day, entries]) => (
-        <View key={day} className="gap-2">
-          <View className="flex-row items-center justify-between">
+    </View>
+  );
+
+  return (
+    <Page title={t.budget.all.title} list>
+      <SectionList
+        sections={sections}
+        keyExtractor={(e) => e.id}
+        ListHeaderComponent={header}
+        stickySectionHeadersEnabled={false}
+        initialNumToRender={14}
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="px-margin pt-space-sm"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}
+        renderSectionHeader={({ section }) => (
+          <View className="mb-2 mt-space-md flex-row items-center justify-between">
             <Text
               variant="labelMd"
               color="onSurfaceVariant"
               accessibilityRole="header"
               style={{ textTransform: 'uppercase' }}>
-              {shortDay(day)}
+              {shortDay(section.day)}
             </Text>
             <Text variant="labelMd" color="onSurfaceVariant">
-              {money(totalOf(entries), settings.currency, { minus: true })}
+              {money(section.total, settings.currency, { minus: true })}
             </Text>
           </View>
-          <ListCard>
-            {entries.map((e, i) => (
-              <EntryRow
-                key={e.id}
-                first={i === 0}
-                entry={e}
-                category={e.budgetCategoryId ? categories.get(e.budgetCategoryId) : undefined}
-                when={timeOf(e.occurredAt, settings.timeFormat)}
-                onPress={() => openSheet({ kind: 'expense', day, entryId: e.id })}
-              />
-            ))}
-          </ListCard>
-        </View>
-      ))}
+        )}
+        renderItem={({ item, index, section }) => (
+          // each day's rows form one rounded card
+          <View
+            className={`overflow-hidden bg-surface-container-lowest ${index === 0 ? 'rounded-t-2xl' : ''} ${index === section.data.length - 1 ? 'rounded-b-2xl' : ''}`}>
+            <EntryRow
+              first={index === 0}
+              entry={item}
+              category={item.budgetCategoryId ? categories.get(item.budgetCategoryId) : undefined}
+              when={timeOf(item.occurredAt, settings.timeFormat)}
+              onPress={() => openSheet({ kind: 'expense', day: section.day, entryId: item.id })}
+            />
+          </View>
+        )}
+      />
     </Page>
   );
 }
