@@ -39,7 +39,8 @@ export const MoneyField = forwardRef<
         <TextField
           ref={ref}
           value={value}
-          onChangeText={onChangeText}
+          // only numbers and their marks, even when pasted or typed on a full keyboard
+          onChangeText={(v) => onChangeText(v.replace(/[^\d.,\s]/g, ''))}
           keyboardType="decimal-pad"
           placeholder={money(0, currency)}
           accessibilityLabel={label}
