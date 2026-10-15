@@ -8,5 +8,5 @@ name: Back up all data
 - scrollUntilVisible:
     element: "Back up your data.*"
 - tapOn: "Back up your data.*"
-- assertVisible: "daybloom-backup-.*\.json"
+- assertVisible: 'daybloom-backup-.*\.json'
 - back

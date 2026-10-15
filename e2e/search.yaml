@@ -12,5 +12,5 @@ name: Search spending and habits
 - tapOn: "Save"
 - tapOn: "Search your plans"
 - inputText: "latte"
-- assertVisible: "Spending \(1\)"
+- assertVisible: 'Spending \(1\)'
 - assertVisible: ".*Oat latte.*"

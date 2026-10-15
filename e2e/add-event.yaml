@@ -1,4 +1,5 @@
-# T-01.1 / T-UX02: add an event from Today with "+ Add" and see it on Today.
+# T-01.1 / T-UX02: add an event from Today with "+ Add", then find it.
+# (Late in the evening a new event starts tomorrow, so it's checked through search.)
 appId: com.daybloom.app
 name: Add an event from Today
 ---
@@ -7,4 +8,6 @@ name: Add an event from Today
 - tapOn: "Event.*"
 - inputText: "Dentist"
 - tapOn: "Save"
-- assertVisible: ".*Dentist.*"
+- tapOn: "Search your plans"
+- inputText: "Dentist"
+- assertVisible: 'Events \(1\)'
