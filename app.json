@@ -59,12 +59,88 @@
         }
       ],
       "expo-localization",
-      "@react-native-community/datetimepicker",
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#43654f",
+                "dark": "#43654f"
+              },
+              "colorControlActivated": {
+                "light": "#43654f",
+                "dark": "#43654f"
+              },
+              "colorControlHighlight": {
+                "light": "#c5ecd0",
+                "dark": "#c5ecd0"
+              },
+              "textColorPrimary": {
+                "light": "#1e1b18",
+                "dark": "#1e1b18"
+              },
+              "textColorSecondary": {
+                "light": "#424843",
+                "dark": "#424843"
+              },
+              "textColorPrimaryInverse": {
+                "light": "#ffffff",
+                "dark": "#ffffff"
+              },
+              "textColorSecondaryInverse": {
+                "light": "#c5ecd0",
+                "dark": "#c5ecd0"
+              },
+              "windowBackground": {
+                "light": "#fff8f5",
+                "dark": "#fff8f5"
+              }
+            },
+            "timePicker": {
+              "background": {
+                "light": "#fff8f5",
+                "dark": "#fff8f5"
+              },
+              "headerBackground": {
+                "light": "#43654f",
+                "dark": "#43654f"
+              },
+              "numbersBackgroundColor": {
+                "light": "#f5ece7",
+                "dark": "#f5ece7"
+              },
+              "numbersSelectorColor": {
+                "light": "#43654f",
+                "dark": "#43654f"
+              },
+              "numbersTextColor": {
+                "light": "#1e1b18",
+                "dark": "#1e1b18"
+              },
+              "numbersInnerTextColor": {
+                "light": "#424843",
+                "dark": "#424843"
+              }
+            }
+          }
+        }
+      ],
       [
         "expo-notifications",
         {
           "icon": "./assets/images/android-icon-monochrome.png",
           "color": "#5B7E67"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "useLegacyPackaging": true
+          }
         }
       ]
     ],
