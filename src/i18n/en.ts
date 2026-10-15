@@ -40,6 +40,11 @@ export const en = {
     next: 'Next',
   },
 
+  pickers: {
+    chooseDay: 'Choose a day',
+    chooseTime: 'Choose a time',
+  },
+
   drafts: {
     restored: 'Picked up where you left off',
     startFresh: 'Start fresh',

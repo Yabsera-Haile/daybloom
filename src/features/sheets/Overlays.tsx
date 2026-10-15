@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { getTask } from '@/planner/tasks';
 import { useUi, type SheetState } from '@/state/ui';
 import { Sheet, Toast } from '@/ui';
+import { PickerHost } from '@/ui/PickerHost';
 
 import { AddChooser } from './AddChooser';
 import { EventDetail } from './EventDetail';
@@ -39,6 +40,7 @@ export function Overlays() {
         <NoteSheet key={keyOf(sheet)} day={sheet.day} hour={sheet.hour} noteId={sheet.noteId} />
       ) : null}
       {sheet?.kind === 'expense' ? <ExpenseSheet key={keyOf(sheet)} day={sheet.day} entryId={sheet.entryId} /> : null}
+      <PickerHost />
       <Toast />
     </>
   );
