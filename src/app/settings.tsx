@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { shareBackup } from '@/backup/share';
 import { hemisphereForTimeZone, type WeekStart } from '@/calendar/dates';
 import { localTimeZone } from '@/calendar/timezone';
 import { db } from '@/db/client';
@@ -11,6 +12,7 @@ import { useNotificationStatus } from '@/features/useNotificationStatus';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { saveSetting, type Settings } from '@/settings';
+import { useUi } from '@/state/ui';
 import { lookFor, shadows } from '@/theme';
 import { Button, ChoiceSheet, Icon, Page, Row, RowGroup, Sheet, Sticker, Switch, Text, TextField } from '@/ui';
 
@@ -31,6 +33,20 @@ export default function SettingsScreen() {
   const save = <K extends keyof Settings>(key: K, value: Settings[K]) => saveSetting(db, key, value);
   const fromPhone = hemisphereForTimeZone(localTimeZone()) === settings.hemisphere;
   const currencies = [...new Set([settings.currency, ...Object.keys(t.currencies)])];
+  const showToast = useUi((s) => s.showToast);
+  const [backingUp, setBackingUp] = useState(false);
+  // ST-02: every plan, habit and expense in one file, saved wherever the person chooses
+  const backup = async () => {
+    if (backingUp) return;
+    setBackingUp(true);
+    try {
+      if (!(await shareBackup())) showToast(t.settings.backupFailed);
+    } catch {
+      showToast(t.settings.backupFailed);
+    } finally {
+      setBackingUp(false);
+    }
+  };
 
   return (
     <Page title={t.settings.title}>
@@ -162,6 +178,12 @@ export default function SettingsScreen() {
             {t.settings.privacyNote}
           </Text>
         </View>
+        <Row
+          icon="download"
+          title={t.settings.backup}
+          subtitle={backingUp ? t.settings.backupWorking : t.settings.backupText}
+          onPress={backup}
+        />
         <Row icon="policy" title={t.settings.privacy} onPress={() => setPicker('privacy')} />
       </RowGroup>
 

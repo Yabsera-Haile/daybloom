@@ -798,6 +798,11 @@ export const en = {
     remindersOffText: 'Turn them on so Daybloom can remind you before events and to-dos.',
     turnOn: 'Turn on',
     yourData: 'Your data',
+    backup: 'Back up your data',
+    backupText: 'Save a copy of everything to Drive, Files or email',
+    backupWorking: 'Getting your copy ready…',
+    backupShare: 'Save your Daybloom backup',
+    backupFailed: 'Couldn’t make the backup. Please try again.',
     privacyNote: "Everything stays on this phone. Daybloom has no account and doesn't send your plans anywhere.",
     privacy: 'Privacy',
     privacyText:
