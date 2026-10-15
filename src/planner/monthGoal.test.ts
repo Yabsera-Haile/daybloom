@@ -9,6 +9,7 @@ import {
   goalShare,
   monthGoal,
   monthOf,
+  quickSteps,
   setMonthGoal,
   setMonthGoalDone,
 } from './monthGoal';
@@ -51,5 +52,14 @@ describe("the month's goal", () => {
     undo();
     expect(monthGoal(db, '2024-10')!.title).toBe('Read 4 books');
     expect(() => setMonthGoal(db, '2024-10', { title: '  ', target: null })).toThrow();
+  });
+});
+
+describe('quick progress steps', () => {
+  it('are sized to the goal', () => {
+    expect(quickSteps(400)).toEqual([1]);
+    expect(quickSteps(3000)).toEqual([1, 5, 10]);
+    expect(quickSteps(80000)).toEqual([10, 50, 100]);
+    expect(quickSteps(1000000)).toEqual([1000, 5000, 10000]);
   });
 });

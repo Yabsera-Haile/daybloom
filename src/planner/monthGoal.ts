@@ -78,3 +78,10 @@ export function deleteMonthGoal(db: Db, id: string): Undo {
   db.update(goals).set({ archivedAt: Date.now() }).where(eq(goals.id, id)).run();
   return () => db.update(goals).set({ archivedAt: null }).where(eq(goals.id, id)).run();
 }
+
+/** Quick "+" amounts sized to the goal: 4 books → +1; 30 km → +1, +5, +10; 800 → +10, +50, +100. */
+export function quickSteps(targetHundredths: number): number[] {
+  const target = targetHundredths / 100;
+  const base = Math.max(1, 10 ** (Math.floor(Math.log10(Math.max(target, 1))) - 1));
+  return [base, base * 5, base * 10].filter((n) => n <= target);
+}

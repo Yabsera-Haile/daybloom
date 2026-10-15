@@ -11,6 +11,7 @@ import {
   deleteMonthGoal,
   goalShare,
   monthGoal,
+  quickSteps,
   setMonthGoal,
   setMonthGoalDone,
   type MonthGoal,
@@ -130,7 +131,7 @@ function GoalProgress({ goal, onEdit, onClose }: { goal: MonthGoal; onEdit: () =
             />
           </View>
           <View className="flex-row gap-2">
-            {[1, 5, 10].map((n) => (
+            {quickSteps(goal.targetCents).map((n) => (
               <ChoiceChip key={n} role="button" label={`+${n}`} selected={false} onPress={() => add(n * 100)} />
             ))}
           </View>
