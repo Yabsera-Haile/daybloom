@@ -11,8 +11,9 @@ type TabScreenProps = {
   /** Shown under "Daybloom" in the header (TD-04: the viewed date when it isn't today). */
   section: string;
   children: ReactNode;
-  /** Today, Week and Month show the "+ Add" button (UX-09). */
+  /** Today, Week and Month show the "+ Add" button (UX-09); Budget its own "+ Add expense". */
   onAdd?: () => void;
+  addLabel?: string;
   /** Swipe left = 1 (next), right = -1 (previous) (TD-02, WK-02, MO-01). */
   onSwipe?: (direction: 1 | -1) => void;
 };
@@ -26,7 +27,7 @@ export function useHeaderOffset(): number {
 
 /** Shared frame for the five tabs: header on top, scrolling paper page, optional "+ Add". */
 export const TabScreen = forwardRef<ScrollView, TabScreenProps>(function TabScreen(
-  { section, children, onAdd, onSwipe },
+  { section, children, onAdd, addLabel, onSwipe },
   ref,
 ) {
   const insets = useSafeAreaInsets();
@@ -53,11 +54,11 @@ export const TabScreen = forwardRef<ScrollView, TabScreenProps>(function TabScre
       </GestureDetector>
       {/* translucent paper header; the page scrolls underneath it (SH-03) */}
       <View className="absolute left-0 right-0 top-0 bg-surface/95" style={{ paddingTop: insets.top }}>
-        <AppHeader section={section} onSearch={() => router.push('/search')} />
+        <AppHeader section={section} onSearch={() => router.push('/search')} onMore={() => router.push('/more')} />
       </View>
       {onAdd ? (
         <View className="absolute bottom-4 right-margin">
-          <Fab onPress={onAdd} />
+          <Fab label={addLabel} onPress={onAdd} />
         </View>
       ) : null}
     </KeyboardAvoidingView>

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 
+import { t } from '@/i18n';
 import { shadows, type ColorName } from '@/theme';
 
 import { Button, IconButton } from './Button';
@@ -108,8 +109,19 @@ export function DateNavigator({
   );
 }
 
-/** Top bar for the tabs: logo, "Daybloom", section name, search. No profile button (no sign-in, D8). */
-export function AppHeader({ section, onSearch }: { section: string; onSearch?: () => void }) {
+/**
+ * Top bar for the tabs: logo, "Daybloom", section name, search and More (settings, help). No profile
+ * button (no sign-in, D8).
+ */
+export function AppHeader({
+  section,
+  onSearch,
+  onMore,
+}: {
+  section: string;
+  onSearch?: () => void;
+  onMore?: () => void;
+}) {
   return (
     <View className="h-16 flex-row items-center justify-between bg-surface/95 pl-margin pr-2">
       <View className="flex-row items-center gap-space-sm" accessible accessibilityLabel={`Daybloom, ${section}`}>
@@ -123,7 +135,10 @@ export function AppHeader({ section, onSearch }: { section: string; onSearch?: (
           </Text>
         </View>
       </View>
-      <IconButton icon="search" tone="tonal" accessibilityLabel="Search your plans" onPress={onSearch} />
+      <View className="flex-row items-center">
+        <IconButton icon="search" tone="tonal" accessibilityLabel={t.header.search} onPress={onSearch} />
+        {onMore ? <IconButton icon="menu" tone="tonal" accessibilityLabel={t.header.more} onPress={onMore} /> : null}
+      </View>
     </View>
   );
 }

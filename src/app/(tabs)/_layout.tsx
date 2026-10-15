@@ -19,7 +19,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="week" options={{ title: t.tabs.week }} />
       <Tabs.Screen name="month" options={{ title: t.tabs.month }} />
       <Tabs.Screen name="habits" options={{ title: t.tabs.habits }} />
-      <Tabs.Screen name="more" options={{ title: t.tabs.more }} />
+      <Tabs.Screen name="budget" options={{ title: t.tabs.budget }} />
     </Tabs>
   );
 }

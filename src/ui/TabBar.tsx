@@ -10,7 +10,7 @@ const tabIcons: Record<string, IconName> = {
   week: 'view_week',
   month: 'calendar_month',
   habits: 'spa',
-  more: 'menu',
+  budget: 'account_balance_wallet',
 };
 
 /** Bottom tabs from the v2 design: icon + 12px label, active item in a soft sage pill. */
