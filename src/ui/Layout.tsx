@@ -123,7 +123,7 @@ export function AppHeader({
   onMore?: () => void;
 }) {
   return (
-    <View className="h-16 flex-row items-center justify-between bg-surface/95 pl-margin pr-2">
+    <View className="h-16 flex-row items-center justify-between pl-margin pr-2">
       <View className="flex-row items-center gap-space-sm" accessible accessibilityLabel={`Daybloom, ${section}`}>
         <Logo size={32} />
         <View>

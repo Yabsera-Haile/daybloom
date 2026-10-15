@@ -13,13 +13,25 @@ const tabIcons: Record<string, IconName> = {
   budget: 'account_balance_wallet',
 };
 
-/** Bottom tabs from the v2 design: icon + 12px label, active item in a soft sage pill. */
+const ITEM = 56;
+const TOP = 8;
+
+/** Height of the tab bar, gesture bar included: pages leave this much room at the bottom. */
+export function useTabBarHeight(): number {
+  return TOP + ITEM + Math.max(useSafeAreaInsets().bottom, 8);
+}
+
+/**
+ * Bottom tabs from the v2 design: icon + 12px label, active item in a soft sage pill. It floats over
+ * the page; each tab page draws the frosted glass behind it (SH-03, features/TabScreen).
+ */
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const height = useTabBarHeight();
   return (
     <View
-      className="flex-row items-center justify-around bg-surface/95 px-1 pt-2"
-      style={{ paddingBottom: Math.max(insets.bottom, 8), boxShadow: '0px -2px 12px rgba(45, 41, 38, 0.06)' }}>
+      className="absolute bottom-0 left-0 right-0 flex-row items-start justify-around border-t border-surface-variant/70 px-1"
+      style={{ height, paddingTop: TOP, paddingBottom: Math.max(insets.bottom, 8) }}>
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const { options } = descriptors[route.key];
@@ -35,7 +47,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             accessibilityState={{ selected: focused }}
             accessibilityLabel={label}
             onPress={onPress}
-            className={`h-14 min-w-[64px] items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
+            className={`h-14 min-w-[60px] items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
             <Icon name={tabIcons[route.name] ?? 'today'} filled={focused} color={focused ? 'primary' : 'onSurfaceVariant'} />
             <Text variant="labelSm" color={focused ? 'primary' : 'onSurfaceVariant'}>
               {label}

@@ -8,6 +8,6 @@ export { AppHeader, Card, DateNavigator, EmptyState, Fab, SectionHeader } from '
 export { ChoiceSheet, Page, Row, RowGroup } from './Page';
 export { Sheet } from './Sheet';
 export { Logo, Sticker, type StickerName } from './Sticker';
-export { TabBar } from './TabBar';
+export { TabBar, useTabBarHeight } from './TabBar';
 export { Text, type TextProps } from './Text';
 export { Toast } from './Toast';
