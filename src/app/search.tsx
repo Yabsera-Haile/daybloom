@@ -7,12 +7,19 @@ import { db } from '@/db/client';
 import { useCategories, useNow, useSettings } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { t } from '@/i18n';
-import { clockText, shortDay, timeOf } from '@/i18n/format';
+import { clockText, hourLabel, money, shortDay, timeOf } from '@/i18n/format';
 import { eventIcon } from '@/planner/eventIcon';
-import { forgetSearch, recentSearches, rememberSearch, searchPlans, type SearchResult } from '@/planner/search';
+import {
+  forgetSearch,
+  recentSearches,
+  rememberSearch,
+  searchPlans,
+  type SearchKind,
+  type SearchResult,
+} from '@/planner/search';
 import { useUi } from '@/state/ui';
-import { colors, lookFor, shadows } from '@/theme';
-import { FilterChip, Icon, IconButton, Sticker, Text, TextField, UrgentBadge } from '@/ui';
+import { colors, lookFor, shadows, type ColorName } from '@/theme';
+import { FilterChip, Icon, IconButton, Sticker, Text, TextField, UrgentBadge, type IconName } from '@/ui';
 
 /** The title with the searched word highlighted. */
 function Highlighted({ text, query, done }: { text: string; query: string; done?: boolean }) {
@@ -35,10 +42,96 @@ function Highlighted({ text, query, done }: { text: string; query: string; done?
   );
 }
 
+function Card({
+  icon,
+  circle,
+  iconColor,
+  title,
+  detail,
+  query,
+  onOpen,
+  amount,
+}: {
+  icon: IconName;
+  circle: string;
+  iconColor: ColorName;
+  title: string;
+  detail: string;
+  query: string;
+  onOpen: () => void;
+  amount?: string;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onOpen}
+      className="flex-row items-start gap-3 rounded-2xl bg-surface-container-lowest p-space-md active:opacity-80"
+      style={shadows.card}>
+      <View className={`h-10 w-10 items-center justify-center rounded-full ${circle}`}>
+        <Icon name={icon} color={iconColor} />
+      </View>
+      <View className="flex-1">
+        <Highlighted text={title} query={query} />
+        <Text variant="bodySm" color="onSurfaceVariant" style={{ marginTop: 4 }}>
+          {detail}
+        </Text>
+      </View>
+      {amount ? (
+        <Text variant="bodyLg" weight="600">
+          {amount}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+}
+
 function ResultCard({ result, query, onOpen }: { result: SearchResult; query: string; onOpen: () => void }) {
   const settings = useSettings();
   const categories = useCategories();
   const tf = settings.timeFormat;
+  if (result.kind === 'note') {
+    const n = result.note;
+    return (
+      <Card
+        icon="notes"
+        circle="bg-secondary-fixed"
+        iconColor="onSecondaryFixed"
+        title={n.text}
+        detail={[t.search.hourNote(hourLabel(n.hour, tf)), shortDay(result.day)].join(' · ')}
+        query={query}
+        onOpen={onOpen}
+      />
+    );
+  }
+  if (result.kind === 'habit') {
+    const h = result.habit;
+    return (
+      <Card
+        icon={(h.icon as IconName) ?? 'spa'}
+        circle="bg-primary-fixed"
+        iconColor="onPrimaryFixed"
+        title={h.name}
+        detail={[t.search.habit, h.note].filter(Boolean).join(' · ')}
+        query={query}
+        onOpen={onOpen}
+      />
+    );
+  }
+  if (result.kind === 'expense') {
+    const e = result.entry;
+    return (
+      <Card
+        icon="payments"
+        circle="bg-tertiary-fixed"
+        iconColor="onTertiaryFixed"
+        title={e.description || result.categoryName || t.budget.noCategory}
+        detail={[t.search.expense, shortDay(result.day), result.categoryName].filter(Boolean).join(' · ')}
+        query={query}
+        onOpen={onOpen}
+        amount={money(e.amountCents, e.currency, { minus: true })}
+      />
+    );
+  }
   if (result.kind === 'task') {
     const x = result.task;
     const detail = [
@@ -101,23 +194,29 @@ function ResultCard({ result, query, onOpen }: { result: SearchResult; query: st
   );
 }
 
-/** Search (SR-01): events and to-dos, grouped Today / Coming up / Earlier; tapping opens the item. */
+/**
+ * Search (SR-01, SR-02): events, to-dos, hour notes and spending grouped Today / Coming up / Earlier,
+ * then habits; tapping opens the item.
+ */
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const now = useNow();
   const openSheet = useUi((s) => s.openSheet);
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<'all' | 'event' | 'task'>('all');
+  const [filter, setFilter] = useState<'all' | SearchKind>('all');
   const groups = useLive(() => searchPlans(db, query, now), [query, now]);
   const recent = useLive(() => recentSearches(db), []);
-  const all = [...groups.today, ...groups.comingUp, ...groups.earlier];
-  const count = (kind: 'event' | 'task') => all.filter((r) => r.kind === kind).length;
+  const all = [...groups.today, ...groups.comingUp, ...groups.earlier, ...groups.habits];
+  const count = (kind: SearchKind) => all.filter((r) => r.kind === kind).length;
   const keep = (list: SearchResult[]) => list.filter((r) => filter === 'all' || r.kind === filter);
 
   const open = (r: SearchResult) => {
     rememberSearch(db, query);
     if (r.kind === 'event') openSheet({ kind: 'event', occurrence: r.occurrence });
-    else openSheet({ kind: 'taskMenu', taskId: r.task.id });
+    else if (r.kind === 'task') openSheet({ kind: 'taskMenu', taskId: r.task.id });
+    else if (r.kind === 'note') openSheet({ kind: 'note', day: r.day, hour: r.note.hour, noteId: r.note.id });
+    else if (r.kind === 'expense') openSheet({ kind: 'expense', day: r.day, entryId: r.entry.id });
+    else router.push({ pathname: '/habit-history', params: { id: r.habit.id } });
   };
 
   const sections: { title: string; list: SearchResult[]; today?: boolean }[] = [
@@ -128,6 +227,7 @@ export default function SearchScreen() {
     },
     { title: t.search.comingUp, list: keep(groups.comingUp) },
     { title: t.search.earlier, list: keep(groups.earlier) },
+    { title: t.search.habitsHeading, list: keep(groups.habits) },
   ];
 
   return (
@@ -224,6 +324,22 @@ export default function SearchScreen() {
                 selected={filter === 'task'}
                 onPress={() => setFilter('task')}
               />
+              {(
+                [
+                  ['note', t.search.notes],
+                  ['habit', t.search.habitsChip],
+                  ['expense', t.search.spending],
+                ] as const
+              )
+                .filter(([kind]) => count(kind) > 0)
+                .map(([kind, label]) => (
+                  <FilterChip
+                    key={kind}
+                    label={label(count(kind))}
+                    selected={filter === kind}
+                    onPress={() => setFilter(kind)}
+                  />
+                ))}
             </View>
             {sections
               .filter((s) => s.list.length > 0)

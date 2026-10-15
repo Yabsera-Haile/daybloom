@@ -1,9 +1,13 @@
+import { ensureDefaultSpendCategories } from '@/budget/categories';
+import { addExpense } from '@/budget/entries';
 import { createTestDb } from '@/db/testDb';
+import { archiveHabit, createHabit } from '@/habits/store';
 import type { Db } from '@/db/types';
 import { readSettings } from '@/settings';
 import { toRRule } from '@/recurrence';
 
 import { createEvent } from './events';
+import { createHourNote } from './notes';
 import { forgetSearch, recentSearches, rememberSearch, searchPlans } from './search';
 import { createTask } from './tasks';
 
@@ -44,7 +48,7 @@ describe('search', () => {
     });
     createTask(db, { title: 'Yoga 100 times', date: '2024-10-23' });
     expect(titles(searchPlans(db, '100%', now).comingUp)).toEqual(['event 2024-10-30']);
-    expect(searchPlans(db, '   ', now)).toEqual({ today: [], comingUp: [], earlier: [] });
+    expect(searchPlans(db, '   ', now)).toEqual({ today: [], comingUp: [], earlier: [], habits: [] });
   });
 
   it('remembers recent searches, newest first, without touching settings', () => {
@@ -55,5 +59,36 @@ describe('search', () => {
     forgetSearch(db, 'Maya');
     expect(recentSearches(db)).toEqual(['DENTIST']);
     expect(() => readSettings(db)).not.toThrow();
+  });
+
+  it('T-SR02.1 "latte" finds the spending, "hydration" the habit; notes and categories are searched too', () => {
+    ensureDefaultSpendCategories(db);
+    addExpense(db, {
+      amountCents: 625,
+      description: 'Oat latte',
+      categoryId: 'dining',
+      occurredAt: at(10, 21, 9),
+      currency: 'USD',
+    });
+    addExpense(db, {
+      amountCents: 4000,
+      description: '',
+      categoryId: 'groceries',
+      occurredAt: at(10, 23, 9),
+      currency: 'USD',
+    });
+    createHabit(db, { name: 'Drink water', note: 'Hydration matters', frequency: 'daily', routineId: null });
+    const gone = createHabit(db, { name: 'Old hydration habit', frequency: 'daily', routineId: null });
+    archiveHabit(db, gone);
+    createHourNote(db, { date: '2024-10-24', hour: 15, text: 'Bring the latte cups back' });
+
+    const latte = searchPlans(db, 'latte', now);
+    expect(titles(latte.earlier)).toEqual(['expense 2024-10-21']);
+    expect(titles(latte.comingUp)).toEqual(['note 2024-10-24']);
+    const hydration = searchPlans(db, 'HYDRATION', now);
+    expect(hydration.habits.map((r) => (r.kind === 'habit' ? r.habit.name : ''))).toEqual(['Drink water']);
+    // spending with no description is found by its category
+    const groceries = searchPlans(db, 'grocer', now);
+    expect(titles(groceries.today)).toEqual(['expense 2024-10-23']);
   });
 });
