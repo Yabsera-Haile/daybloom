@@ -13,10 +13,26 @@ export async function createTestDb(): Promise<Db> {
   const sqlite = new SQL.Database();
   sqlite.run('PRAGMA foreign_keys = ON;');
   for (const entry of migrations.journal.entries) {
-    const text: string = migrations.migrations[`m${String(entry.idx).padStart(4, '0')}` as keyof typeof migrations.migrations];
+    const text: string =
+      migrations.migrations[`m${String(entry.idx).padStart(4, '0')}` as keyof typeof migrations.migrations];
     for (const statement of text.split('--> statement-breakpoint')) {
       if (statement.trim()) sqlite.run(statement);
     }
   }
   return drizzle(sqlite, { schema });
+}
+
+declare global {
+  var __daybloomTestDb: Db | undefined;
+}
+
+/** A fresh test database before each test, also served as `@/db/client` (see jest.setup.js). */
+export function withTestDb(): () => Db {
+  beforeEach(async () => {
+    globalThis.__daybloomTestDb = await createTestDb();
+  });
+  afterEach(() => {
+    globalThis.__daybloomTestDb = undefined;
+  });
+  return () => globalThis.__daybloomTestDb!;
 }
