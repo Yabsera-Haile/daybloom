@@ -7,7 +7,8 @@ import { addDaysToKey } from '@/calendar/timezone';
 import { tasks } from '@/db/schema';
 import type { Db } from '@/db/types';
 import { t } from '@/i18n';
-import { clockText, timeOf, type TimeFormat } from '@/i18n/format';
+import { clockText, money, timeOf, type TimeFormat } from '@/i18n/format';
+import { BILL_HOUR, listBills } from '@/budget/bills';
 import { doneOn, donePeriods, periodOf } from '@/habits/stats';
 import { checksBetween, listHabits, listRoutines, reminderTimes, weekOf } from '@/habits/store';
 import { eventsBetween } from '@/planner/events';
@@ -25,7 +26,7 @@ const HABIT_MAX = 24;
 const ALL_DAY_HOUR = 9;
 
 export type ReminderData = {
-  kind: 'event' | 'task' | 'routine' | 'habit';
+  kind: 'event' | 'task' | 'routine' | 'habit' | 'bill';
   /** The day it belongs to, for opening Today there */
   day: string;
   eventId?: string;
@@ -34,6 +35,9 @@ export type ReminderData = {
   taskId?: string;
   routineId?: string;
   habitId?: string;
+  billId?: string;
+  /** A bill paid by hand: its reminder offers "Mark paid" */
+  manual?: boolean;
   /** When the event starts / the to-do is due: Snooze never goes past it */
   at: number;
   /** Changes when anything shown changes, so the scheduler replaces it */
@@ -193,6 +197,34 @@ export function plannedReminders(
           data: { kind: 'habit', day, habitId: h.id, at: fireAt, sig: `${fireAt}|${title}|${body}` },
         });
       }
+    }
+  }
+
+  // Bills remind at 9 AM on their day, or a day or three before (BU-10).
+  for (const b of listBills(db)) {
+    if (b.dueDate > last) continue;
+    const due = clockToMs(b.dueDate, `${String(BILL_HOUR).padStart(2, '0')}:00`);
+    const body = t.notify.billBody(money(b.amountCents, b.currency), b.payment === 'auto');
+    for (const minutes of reminderOffsets(db, 'bill', b.id)) {
+      const fireAt = due - minutes * 60_000;
+      if (fireAt <= now) continue;
+      const title = t.notify.billTitle(Math.round(minutes / 1440), b.title);
+      out.push({
+        id: `b.${b.id}.${b.dueDate}.${minutes}`.replace(/[^A-Za-z0-9.]/g, '_'),
+        fireAt,
+        title,
+        body,
+        urgent: false,
+        atStart: minutes === 0,
+        data: {
+          kind: 'bill',
+          day: b.dueDate,
+          billId: b.id,
+          manual: b.payment === 'manual',
+          at: due,
+          sig: `${fireAt}|${title}|${body}`,
+        },
+      });
     }
   }
 

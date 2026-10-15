@@ -19,7 +19,7 @@ export const CHANNEL = 'reminders';
  * SDK 53), so there Daybloom skips them quietly; the installed app (a development or store build) has them.
  */
 export const remindersAvailable = !(Platform.OS === 'android' && isRunningInExpoGo());
-const PLANNED = /^[ethr]\./; // ids made by plan.ts (events, to-dos, habits, routines); snoozes and tests are left alone
+const PLANNED = /^[ethrb]\./; // ids made by plan.ts (events, to-dos, habits, routines, bills); snoozes and tests are left alone
 
 export async function setUpNotifications(): Promise<void> {
   if (!remindersAvailable) return;
@@ -58,6 +58,13 @@ export async function setUpNotifications(): Promise<void> {
     { identifier: 'done', buttonTitle: t.notify.done, options: { opensAppToForeground: true } },
     { identifier: 'open', buttonTitle: t.notify.open, options: { opensAppToForeground: true } },
   ]);
+  await Notifications.setNotificationCategoryAsync('bill', [
+    { identifier: 'done', buttonTitle: t.notify.markPaid, options: { opensAppToForeground: true } },
+    { identifier: 'open', buttonTitle: t.notify.open, options: { opensAppToForeground: true } },
+  ]);
+  await Notifications.setNotificationCategoryAsync('billAuto', [
+    { identifier: 'open', buttonTitle: t.notify.open, options: { opensAppToForeground: true } },
+  ]);
 }
 
 export async function notificationsAllowed(): Promise<boolean> {
@@ -80,7 +87,14 @@ function contentOf(
     data: r.data,
     // urgent to-dos use the rose accent (NT-01)
     color: r.urgent ? colors.secondary : colors.primary,
-    categoryIdentifier: r.data.kind === 'event' ? (r.atStart ? 'eventNow' : 'event') : r.data.kind,
+    categoryIdentifier:
+      r.data.kind === 'event'
+        ? r.atStart
+          ? 'eventNow'
+          : 'event'
+        : r.data.kind === 'bill' && !r.data.manual
+          ? 'billAuto'
+          : r.data.kind,
     sound: 'default',
   };
 }

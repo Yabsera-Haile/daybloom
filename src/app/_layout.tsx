@@ -22,6 +22,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { useAutoBills } from '@/budget/useAutoBills';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
 import { useReminders } from '@/reminders/useReminders';
@@ -29,9 +30,10 @@ import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-/** Keeps reminders scheduled (needs the database, so it lives inside DatabaseProvider). */
+/** Keeps reminders scheduled and bills paid on time (needs the database, so it lives inside DatabaseProvider). */
 function Reminders() {
   useReminders();
+  useAutoBills();
   return null;
 }
 

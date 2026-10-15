@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
+import { getBill, markBillPaid } from '@/budget/bills';
 import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
 import { onDataChanged } from '@/data/live';
@@ -26,6 +27,8 @@ function handle(response: Notifications.NotificationResponse) {
         const habit = getHabit(db, data.habitId);
         if (habit) setHabitDone(db, habit, data.day, true, readSettings(db).weekStart);
       }
+      // "Mark paid", unless it was already paid in the app
+      if (data.billId && getBill(db, data.billId)?.dueDate === data.day) markBillPaid(db, data.billId, Date.now());
       break;
     case 'later':
       void remindAgain(content, 30);
@@ -34,9 +37,10 @@ function handle(response: Notifications.NotificationResponse) {
       void remindAgain(content, 10);
       break;
     default: {
-      // a tap (or "Open"): a habit opens Habits; anything else shows that day on Today with the item open
-      if (data.kind === 'habit') {
-        router.navigate('/habits');
+      // a tap (or "Open"): a habit opens Habits, a bill Budget; anything else shows that day on Today
+      // with the item open
+      if (data.kind === 'habit' || data.kind === 'bill') {
+        router.navigate(data.kind === 'habit' ? '/habits' : '/budget');
         break;
       }
       const ui = useUi.getState();
