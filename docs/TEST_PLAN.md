@@ -215,7 +215,7 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-BU08.1 | BU-08 | E2E | Add expense $6.25 "Latte", Dining | Top of recent spending; spent +$6.25; Dining in "Where it went" |
 | T-BU08.2 | BU-08 | Component | Save with amount 0 or empty | Not saved; friendly hint |
 | T-BU08.3 | BU-08, UX-05 | E2E | Type amount, tap outside sheet | Sheet closes; reopening restores the draft |
-| T-BU09.1 | BU-09 | E2E | Phone region Kenya, then UK | Amounts in KES, then GBP formatting |
+| T-BU09.1 | BU-09 | Unit | 1,730.00 in USD and KES; 1,500 in JPY | "1,730.00" with no currency sign; yen without decimals |
 
 ### Event sheet, onboarding, settings, search
 

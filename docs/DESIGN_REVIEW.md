@@ -181,3 +181,4 @@ The sample numbers in the design contradict each other. This confirms every numb
 | D12 | Grey italic hour notes: user's notes or app suggestions? | **User's own notes**; the app makes no suggestions |
 | D13 | "Coming soon: Skincare, Language, Weight logs" teaser | **Remove from MVP.** Don't promise features that don't exist. |
 | D14 | Budget's place and shape (2026-10-15) | **Budget is a tab** in place of More, which opens from a ≡ button in the header. Inspired by Cashew: a monthly **or weekly** budget, **expenses only** (no income), one overall budget (no per-category limits), spending by category, savings goals and bills. "Add expenses from bank texts" is listed in More as coming in the next version (the one exception to D13, asked for by the owner). |
+| D15 | Currency sign on amounts (2026-10-15) | **None.** People use different currencies, so amounts are plain numbers in the phone's style ("1,730.00"); fields have no "$". |

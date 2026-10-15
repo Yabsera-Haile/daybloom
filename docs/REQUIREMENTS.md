@@ -189,7 +189,7 @@ The "Coming soon" teaser is removed (D13).
 | BU-06 | Upcoming bills (next 14 days): due-date chip ("Due soon" within 3 days, "Late"), name, how often, amount, "Paid automatically" / "Needs paying"; bills repeat every 1, 3, 6 or 12 months; add/edit; a paid bill is added to spending (automatically on its day, or when marked paid) | M |
 | BU-07 | Where it went: spending per category, biggest first, with a labelled bar and share. Recent spending: category icon, description, category, date and time, amount; "View all" opens the full list by day, filterable by category, with edit/delete and Undo | M |
 | BU-08 | "+ Add expense" (also in the "+ Add" chooser) opens the expense sheet: amount (number keypad, local currency), what it was for, category chips with "+ New category", day, Save. Amount must be > 0. Categories start as Groceries, Dining, Transport, Home, Bills, Health, Fun and Other, and can be added, renamed, re-iconed, recolored, reordered and deleted (More › Spending categories). | M |
-| BU-09 | Currency from the phone's region, changeable in Settings (D9); amounts stored in cents (NFR-12) | M |
+| BU-09 | Amounts are shown with no currency sign, written the phone's way ("1,730.00" or "1 730,00"; D15); the currency setting (D9) only decides the decimals; amounts stored in cents (NFR-12) | M |
 | BU-10 | Optional reminder for a bill: on the day, 1 day or 3 days before, at 9 AM | S |
 | BU-11 | Add expenses automatically from bank texts: listed in More as coming in the next version | L |
 

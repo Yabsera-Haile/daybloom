@@ -9,13 +9,13 @@ import type { CategoryTotal, Entry } from '@/budget/entries';
 import type { Goal } from '@/budget/goals';
 import type { BudgetSummary } from '@/budget/plans';
 import { t } from '@/i18n';
-import { currencySymbol, money, monthDay } from '@/i18n/format';
+import { money, monthDay } from '@/i18n/format';
 import { categoryColors, shadows, type CategoryKey } from '@/theme';
 import { Button, Card, Icon, ProgressBar, StatusBadge, Text, TextField, type IconName } from '@/ui';
 
 const pct = (share: number) => Math.round(share * 100);
 
-/** "$ 0.00" amount field with the number keypad (BU-08, BU-09). */
+/** "0.00" amount field with the number keypad (BU-08, BU-09); no currency sign (D15). */
 export const MoneyField = forwardRef<
   TextInput,
   {
@@ -29,25 +29,20 @@ export const MoneyField = forwardRef<
   }
 >(function MoneyField({ label, value, onChangeText, currency, autoFocus, big = true, error }, ref) {
   const [focused, setFocused] = useState(false);
-  const symbol = currencySymbol(currency);
-  const zero = money(0, currency).replace(symbol, '').trim();
   return (
     <View className="gap-1.5">
       <Text variant="labelMd" color="onSurfaceVariant">
         {label}
       </Text>
       <View
-        className={`flex-row items-center gap-2 rounded-xl border-[1.5px] bg-surface px-4 ${big ? 'h-16' : 'h-12'} ${error ? 'border-error' : focused ? 'border-primary' : 'border-outline-variant'}`}>
-        <Text variant={big ? 'headlineLg' : 'bodyLg'} color="onSurfaceVariant">
-          {symbol}
-        </Text>
+        className={`flex-row items-center rounded-xl border-[1.5px] bg-surface px-4 ${big ? 'h-16' : 'h-12'} ${error ? 'border-error' : focused ? 'border-primary' : 'border-outline-variant'}`}>
         <TextField
           ref={ref}
           value={value}
           onChangeText={onChangeText}
           keyboardType="decimal-pad"
-          placeholder={zero}
-          accessibilityLabel={`${label}, ${currency}`}
+          placeholder={money(0, currency)}
+          accessibilityLabel={label}
           variant={big ? 'displayLgMobile' : 'bodyLg'}
           autoFocus={autoFocus}
           onFocus={() => setFocused(true)}

@@ -50,11 +50,12 @@ describe('money', () => {
     expect(parseMoney('0')).toBe(0);
   });
 
-  it('T-BU09.1 formats money in the phone style, spending with a minus', () => {
-    expect(money(173000, 'USD')).toBe('$1,730.00');
-    expect(money(625, 'USD', { minus: true })).toBe('−$6.25');
-    expect(money(1000000, 'USD', { whole: true })).toBe('$10,000');
-    expect(money(150000, 'KES')).toMatch(/1,500\.00/);
+  it('T-BU09.1 writes money the phone way with no currency sign, spending with a minus', () => {
+    expect(money(173000, 'USD')).toBe('1,730.00');
+    expect(money(625, 'USD', { minus: true })).toBe('−6.25');
+    expect(money(1000000, 'USD', { whole: true })).toBe('10,000');
+    expect(money(150000, 'KES')).toBe('1,500.00');
+    expect(money(150000, 'JPY')).toBe('1,500'); // no cents in yen
   });
 
   it('months and weeks, and the ones before and after', () => {
@@ -254,8 +255,8 @@ describe('bills', () => {
     });
     const rs = plannedReminders(db, at(23, 13), '12h').filter((r) => r.data.kind === 'bill');
     expect(rs.map((r) => [r.fireAt, r.title, r.body, r.data.manual])).toEqual([
-      [at(24, 9), 'Due tomorrow · Car insurance', '$420.00 · Needs paying', true],
-      [at(28, 9), 'Due today · Rent', '$1,450.00 · Paid automatically', false],
+      [at(24, 9), 'Due tomorrow · Car insurance', '420.00 · Needs paying', true],
+      [at(28, 9), 'Due today · Rent', '1,450.00 · Paid automatically', false],
     ]);
   });
 });

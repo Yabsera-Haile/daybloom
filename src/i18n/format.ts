@@ -92,35 +92,35 @@ export function untilText(ms: number, now: number): string {
 
 const moneyFormats = new Map<string, Intl.NumberFormat>();
 
+/** How many decimals the currency uses (2 for most, 0 for yen or won). */
+function decimalsOf(currency: string): number {
+  try {
+    return new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits ?? 2;
+  } catch {
+    return 2;
+  }
+}
+
 function moneyFormat(currency: string, whole: boolean): Intl.NumberFormat {
   const locale = textLocale();
   const key = `${locale}|${currency}|${whole}`;
   let f = moneyFormats.get(key);
   if (!f) {
-    f = new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      ...(whole && { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-    });
+    const digits = whole ? 0 : decimalsOf(currency);
+    f = new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
     moneyFormats.set(key, f);
   }
   return f;
 }
 
 /**
- * Money from whole cents in the phone's style (BU-09): "$1,730.00", "R 1 730,00".
- * `minus` writes spending as "−$86.40"; `whole` drops the cents for round goal targets ("$10,000").
+ * Money from whole cents, written the phone's way but with no currency sign, since people use
+ * different currencies (D15): "1,730.00", "1 730,00". `minus` writes spending as "−86.40"; `whole`
+ * drops the cents for round goal targets ("10,000").
  */
 export function money(cents: number, currency: string, opts: { minus?: boolean; whole?: boolean } = {}): string {
   const text = moneyFormat(currency, !!opts.whole).format(Math.abs(cents) / 100);
   return opts.minus || cents < 0 ? `−${text}` : text;
-}
-
-/** "$", "R", "KES": the currency's sign as the phone writes it, for amount fields. */
-export function currencySymbol(currency: string): string {
-  return moneyFormat(currency, true)
-    .format(0)
-    .replace(/[\d\s.,  ]/g, '');
 }
 
 /** "10 minutes before", "When it starts", "1 day before" */
