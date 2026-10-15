@@ -10,7 +10,7 @@ import type { Goal } from '@/budget/goals';
 import type { BudgetSummary } from '@/budget/plans';
 import { t } from '@/i18n';
 import { money, monthDay } from '@/i18n/format';
-import { categoryColors, shadows, type CategoryKey } from '@/theme';
+import { shadows, useTheme, type CategoryKey } from '@/theme';
 import { Button, Card, Icon, ProgressBar, StatusBadge, Text, TextField, type IconName } from '@/ui';
 
 const pct = (share: number) => Math.round(share * 100);
@@ -69,9 +69,6 @@ export function ListCard({ children }: { children: ReactNode }) {
   );
 }
 
-const lookOf = (category?: Pick<SpendCategory, 'colorKey'> | null) =>
-  categoryColors[(category?.colorKey as CategoryKey) ?? 'creative'] ?? categoryColors.creative;
-
 /** The category's icon in its color circle. */
 export function CategoryIcon({
   category,
@@ -80,7 +77,8 @@ export function CategoryIcon({
   category?: Pick<SpendCategory, 'icon' | 'colorKey'> | null;
   size?: number;
 }) {
-  const look = lookOf(category);
+  const { categoryColors } = useTheme();
+  const look = categoryColors[(category?.colorKey as CategoryKey) ?? 'creative'] ?? categoryColors.creative;
   return (
     <View
       className="items-center justify-center"

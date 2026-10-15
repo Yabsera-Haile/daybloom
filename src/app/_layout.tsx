@@ -26,7 +26,8 @@ import { useAutoBills } from '@/budget/useAutoBills';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
 import { useReminders } from '@/reminders/useReminders';
-import { colors } from '@/theme';
+import { ThemeProvider } from '@/features/ThemeProvider';
+import { useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,6 +36,12 @@ function Reminders() {
   useReminders();
   useAutoBills();
   return null;
+}
+
+/** The screens, on the theme's paper. */
+function Screens() {
+  const { colors } = useTheme();
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.surface } }} />;
 }
 
 export default function RootLayout() {
@@ -62,10 +69,12 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <DatabaseProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.surface } }} />
-          <Overlays />
-          <Reminders />
+          <ThemeProvider>
+            <StatusBar style="dark" />
+            <Screens />
+            <Overlays />
+            <Reminders />
+          </ThemeProvider>
         </DatabaseProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

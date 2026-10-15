@@ -13,7 +13,7 @@ import { createEvent, deleteEvent, deleteOccurrence, type EventOccurrence } from
 import { describeRepeat, fromRRule } from '@/recurrence';
 import { reminderOffsets } from '@/reminders/store';
 import { useUi } from '@/state/ui';
-import { categoryColors, type CategoryKey } from '@/theme';
+import { useTheme, type CategoryKey } from '@/theme';
 import { Button, Icon, IconButton, Sheet, Text, UrgentBadge, type IconName } from '@/ui';
 
 import { ScopeChooser } from './ScopeChooser';
@@ -29,6 +29,7 @@ function Row({ icon, children }: { icon: IconName; children: ReactNode }) {
 
 /** Event details (EV-04, TD-17): all fields, plus Delete (with Undo), Copy and Edit. */
 export function EventDetail({ occurrence: o }: { occurrence: EventOccurrence }) {
+  const { categoryColors } = useTheme();
   const { closeSheet, showToast } = useUi();
   const settings = useSettings();
   const categories = useCategories();

@@ -5,7 +5,7 @@ import { db } from '@/db/client';
 import { useLive } from '@/data/live';
 import { checksBetween, listHabits, listRoutines, type Habit, type Routine } from '@/habits/store';
 import { t } from '@/i18n';
-import { colors, type ColorName } from '@/theme';
+import { useTheme, type ColorName } from '@/theme';
 import type { IconName } from '@/ui';
 
 /** Routines, active habits and every tick, re-read after any change. */
@@ -80,6 +80,7 @@ export const routineIconName = (routine: Pick<Routine, 'icon'> | null): IconName
 
 /** "Some done" circle for Habits at a Glance: a ring filled to the share done. */
 export function PartialRing({ value, size = 24 }: { value: number; size?: number }) {
+  const { colors } = useTheme();
   const stroke = 4;
   const r = (size - stroke) / 2;
   const length = 2 * Math.PI * r;

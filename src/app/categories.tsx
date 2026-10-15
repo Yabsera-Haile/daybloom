@@ -18,7 +18,7 @@ import {
   type CategoryColor,
 } from '@/planner/categories';
 import { useUi } from '@/state/ui';
-import { categoryColors, lookFor, shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { Button, Icon, Page, Sheet, Text, TextField } from '@/ui';
 
 function EditSheet({
@@ -34,6 +34,7 @@ function EditSheet({
   usage: number;
   onClose: () => void;
 }) {
+  const { categoryColors, lookFor } = useTheme();
   const showToast = useUi((s) => s.showToast);
   const categories = useCategories();
   const [name, setName] = useState(category?.name ?? '');
@@ -155,6 +156,7 @@ function EditSheet({
 
 /** Settings › Categories (ST-01): rename, recolor, reorder, add, delete. */
 export default function CategoriesScreen() {
+  const { categoryColors, lookFor } = useTheme();
   const categories = useCategories();
   const usage = useLive(() => categoryUsage(db), []);
   const [editing, setEditing] = useState<string | 'new' | null>(null);

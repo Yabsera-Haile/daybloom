@@ -5,7 +5,15 @@ const tokens = require('./design/tokens.json');
 const kebab = (s) => s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 const px = (n) => `${n}px`;
 
-const colors = Object.fromEntries(Object.entries(tokens.color).map(([k, v]) => [kebab(k), v]));
+// Theme colours are CSS variables (r g b), so the seasonal themes can switch them at runtime
+// (src/theme: ThemeProvider sets them with NativeWind's vars()); autumn is the default.
+const channels = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(' ');
+const colors = Object.fromEntries(
+  Object.keys(tokens.color).map((k) => [kebab(k), `rgb(var(--color-${kebab(k)}) / <alpha-value>)`]),
+);
+const themeDefaults = Object.fromEntries(
+  Object.entries(tokens.color).map(([k, v]) => [`--color-${kebab(k)}`, channels(v)]),
+);
 const social = tokens.categoryColor.social;
 colors.social = social.accent;
 colors['social-container'] = social.container;
@@ -31,5 +39,5 @@ module.exports = {
       minWidth: { touch: px(tokens.layout.minTouchTarget), dense: px(tokens.layout.minTouchTargetDenseGrid) },
     },
   },
-  plugins: [],
+  plugins: [({ addBase }) => addBase({ ":root": themeDefaults })],
 };

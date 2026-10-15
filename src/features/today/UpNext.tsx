@@ -6,11 +6,12 @@ import { timeRange, untilText } from '@/i18n/format';
 import { eventIcon } from '@/planner/eventIcon';
 import type { EventOccurrence } from '@/planner/events';
 import { useUi } from '@/state/ui';
-import { lookFor, shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { Icon, Text } from '@/ui';
 
 /** "Up next · in 45 min" (TD-19): the next event today. */
 export function UpNext({ occurrence: o, now }: { occurrence: EventOccurrence; now: number }) {
+  const { lookFor } = useTheme();
   const settings = useSettings();
   const categories = useCategories();
   const openSheet = useUi((s) => s.openSheet);

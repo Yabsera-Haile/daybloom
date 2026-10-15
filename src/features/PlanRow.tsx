@@ -4,13 +4,14 @@ import { useCategories, useSettings } from '@/data/hooks';
 import { t } from '@/i18n';
 import { clockText, timeOf } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { colors, lookFor } from '@/theme';
+import { useTheme } from '@/theme';
 import { Icon, Text, UrgentBadge } from '@/ui';
 
 import type { Plan } from './plans';
 
 /** One event or to-do in a day list (Week day cards, Month's day sheet): stripe, title, detail, time. */
 export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
+  const { colors, lookFor } = useTheme();
   const settings = useSettings();
   const categories = useCategories();
   const openSheet = useUi((s) => s.openSheet);

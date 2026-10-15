@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { t } from '@/i18n';
-import { colors } from '@/theme';
+import { useTheme } from '@/theme';
 
 import { Button } from './Button';
 import { usePickerRequest, type PickerRequest } from './pickers';
 import { Sheet } from './Sheet';
 
 function PickerSheet({ request }: { request: PickerRequest }) {
+  const { colors } = useTheme();
   const set = usePickerRequest((s) => s.set);
   const [value, setValue] = useState(request.value);
   const finish = (date: Date | null) => {

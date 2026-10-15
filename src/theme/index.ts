@@ -1,20 +1,31 @@
-// Typed access to the design tokens (design/tokens.json is the single source of truth).
-// Layout and colors are usually applied with NativeWind classes (see tailwind.config.js);
-// this module covers what classes can't: typography with real font files, shadows, and raw values.
-import tokens from '../../design/tokens.json';
+// Typed access to the design tokens (design/tokens.json is the single source of truth) and the four
+// seasonal colour themes (design/themes.json, generated from the autumn palette with the same
+// contrast). Layout and colors are usually applied with NativeWind classes, whose colours are CSS
+// variables set by <ThemeProvider> (see tailwind.config.js); this module covers what classes can't:
+// colours in code (useTheme), typography with real font files, shadows, and raw values.
+import { createContext, useContext } from 'react';
+import { vars } from 'nativewind';
 
-export const colors = tokens.color;
-export type ColorName = keyof typeof colors;
+import tokens from '../../design/tokens.json';
+import themeFile from '../../design/themes.json';
+
+export type Palette = typeof tokens.color;
+export type ColorName = keyof Palette;
+export type ThemeName = 'spring' | 'summer' | 'autumn' | 'winter';
+export const THEME_NAMES: ThemeName[] = ['spring', 'summer', 'autumn', 'winter'];
+
+export const palettes: Record<ThemeName, Palette> = {
+  spring: themeFile.spring.color,
+  summer: themeFile.summer.color,
+  autumn: themeFile.autumn.color,
+  winter: themeFile.winter.color,
+};
+
+/** The autumn palette, for code outside the screens (notification accent, splash). */
+export const defaultColors: Palette = palettes.autumn;
 
 export type CategoryKey = 'wellness' | 'work' | 'personal' | 'social' | 'creative';
 export type CategoryColor = { label: string; container: string; onContainer: string; accent: string };
-export const categoryColors: Record<CategoryKey, CategoryColor> = {
-  wellness: tokens.categoryColor.wellness,
-  work: tokens.categoryColor.work,
-  personal: tokens.categoryColor.personal,
-  social: tokens.categoryColor.social,
-  creative: tokens.categoryColor.creative,
-};
 
 /** How each category looks on timeline cards and choice chips (design/daybloom/today, event). */
 export type CategoryLook = {
@@ -28,53 +39,114 @@ export type CategoryLook = {
   icon: IconNameForCategory;
 };
 type IconNameForCategory = 'spa' | 'laptop_mac' | 'event' | 'groups' | 'brush';
-const c = tokens.color;
-export const categoryLooks: Record<CategoryKey, CategoryLook> = {
-  wellness: {
-    card: 'bg-primary-fixed/60',
-    chipOn: 'border-primary bg-primary-fixed',
-    dot: c.primary,
-    title: c.onPrimaryFixed,
-    detail: c.primary,
-    icon: 'spa',
-  },
-  work: {
-    card: 'bg-secondary-fixed/60',
-    chipOn: 'border-secondary bg-secondary-fixed',
-    dot: c.secondary,
-    title: c.onSecondaryFixed,
-    detail: c.secondary,
-    icon: 'laptop_mac',
-  },
-  personal: {
-    card: 'bg-tertiary-fixed/60',
-    chipOn: 'border-tertiary bg-tertiary-fixed',
-    dot: c.tertiary,
-    title: c.onTertiaryFixed,
-    detail: c.tertiary,
-    icon: 'event',
-  },
-  social: {
-    card: 'bg-social-container',
-    chipOn: 'border-social bg-social-container',
-    dot: tokens.categoryColor.social.accent,
-    title: tokens.categoryColor.social.onContainer,
-    detail: tokens.categoryColor.social.onContainer,
-    icon: 'groups',
-  },
-  creative: {
-    card: 'bg-surface-variant',
-    chipOn: 'border-on-surface-variant bg-surface-variant',
-    dot: c.onSurfaceVariant,
-    title: c.onSurface,
-    detail: c.onSurfaceVariant,
-    icon: 'brush',
-  },
+
+/** Category colours follow the theme's families; Social keeps its own lavender. */
+function categoryColorsOf(c: Palette): Record<CategoryKey, CategoryColor> {
+  const cc = tokens.categoryColor;
+  return {
+    wellness: { label: cc.wellness.label, container: c.primaryFixed, onContainer: c.onPrimaryFixed, accent: c.primary },
+    work: { label: cc.work.label, container: c.secondaryFixed, onContainer: c.onSecondaryFixed, accent: c.secondary },
+    personal: {
+      label: cc.personal.label,
+      container: c.tertiaryFixed,
+      onContainer: c.onTertiaryFixed,
+      accent: c.tertiary,
+    },
+    social: cc.social,
+    creative: {
+      label: cc.creative.label,
+      container: c.surfaceVariant,
+      onContainer: c.onSurface,
+      accent: c.onSurfaceVariant,
+    },
+  };
+}
+
+function categoryLooksOf(c: Palette): Record<CategoryKey, CategoryLook> {
+  const social = tokens.categoryColor.social;
+  return {
+    wellness: {
+      card: 'bg-primary-fixed/60',
+      chipOn: 'border-primary bg-primary-fixed',
+      dot: c.primary,
+      title: c.onPrimaryFixed,
+      detail: c.primary,
+      icon: 'spa',
+    },
+    work: {
+      card: 'bg-secondary-fixed/60',
+      chipOn: 'border-secondary bg-secondary-fixed',
+      dot: c.secondary,
+      title: c.onSecondaryFixed,
+      detail: c.secondary,
+      icon: 'laptop_mac',
+    },
+    personal: {
+      card: 'bg-tertiary-fixed/60',
+      chipOn: 'border-tertiary bg-tertiary-fixed',
+      dot: c.tertiary,
+      title: c.onTertiaryFixed,
+      detail: c.tertiary,
+      icon: 'event',
+    },
+    social: {
+      card: 'bg-social-container',
+      chipOn: 'border-social bg-social-container',
+      dot: social.accent,
+      title: social.onContainer,
+      detail: social.onContainer,
+      icon: 'groups',
+    },
+    creative: {
+      card: 'bg-surface-variant',
+      chipOn: 'border-on-surface-variant bg-surface-variant',
+      dot: c.onSurfaceVariant,
+      title: c.onSurface,
+      detail: c.onSurfaceVariant,
+      icon: 'brush',
+    },
+  };
+}
+
+export type Theme = {
+  name: ThemeName;
+  colors: Palette;
+  categoryColors: Record<CategoryKey, CategoryColor>;
+  /** A stored color key, or Personal's look if it's unknown. */
+  lookFor: (colorKey: string | null | undefined) => CategoryLook;
+  /** The CSS variables behind the color classes (bg-primary…), for the theme's root view */
+  style: ReturnType<typeof vars>;
 };
 
-/** A stored color key, or Personal's look if it's unknown. */
-export function lookFor(colorKey: string | null | undefined): CategoryLook {
-  return categoryLooks[(colorKey ?? 'personal') as CategoryKey] ?? categoryLooks.personal;
+const kebab = (s: string) => s.replace(/[A-Z]/g, (ch) => `-${ch.toLowerCase()}`);
+const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(' ');
+
+function buildTheme(name: ThemeName): Theme {
+  const colors = palettes[name];
+  const looks = categoryLooksOf(colors);
+  return {
+    name,
+    colors,
+    categoryColors: categoryColorsOf(colors),
+    lookFor: (colorKey) => looks[(colorKey ?? 'personal') as CategoryKey] ?? looks.personal,
+    style: vars(
+      Object.fromEntries(Object.entries(colors).map(([key, hex]) => [`--color-${kebab(key)}`, channels(hex)])),
+    ),
+  };
+}
+
+export const themes: Record<ThemeName, Theme> = {
+  spring: buildTheme('spring'),
+  summer: buildTheme('summer'),
+  autumn: buildTheme('autumn'),
+  winter: buildTheme('winter'),
+};
+
+export const ThemeContext = createContext<Theme>(themes.autumn);
+
+/** The colours of the theme in use (Settings › Colours), for styles set in code. */
+export function useTheme(): Theme {
+  return useContext(ThemeContext);
 }
 
 export const spacing = tokens.spacing;

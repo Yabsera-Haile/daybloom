@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
-import { colors, fontFamilyFor, typography, type ColorName, type TypographyVariant } from '@/theme';
+import { fontFamilyFor, typography, useTheme, type ColorName, type TypographyVariant } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
@@ -13,6 +13,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
   { variant = 'bodyLg', style, className = '', ...rest },
   ref,
 ) {
+  const { colors } = useTheme();
   const ty = typography[variant];
   return (
     <TextInput

@@ -3,10 +3,11 @@ import { Tabs } from 'expo-router/js-tabs';
 
 import { useSettings } from '@/data/hooks';
 import { t } from '@/i18n';
-import { colors } from '@/theme';
+import { useTheme } from '@/theme';
 import { TabBar } from '@/ui';
 
 export default function TabsLayout() {
+  const { colors } = useTheme();
   const settings = useSettings();
   if (!settings.onboarded) return <Redirect href="/onboarding" />;
   return (
@@ -14,7 +15,8 @@ export default function TabsLayout() {
       // Android back: from another tab it goes to Today; from Today it leaves the app (SH-04)
       backBehavior="firstRoute"
       tabBar={(props) => <TabBar {...props} />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.surface } }}>
+      // tabs out of view stop re-rendering on every data change and clock tick until you come back
+      screenOptions={{ headerShown: false, freezeOnBlur: true, sceneStyle: { backgroundColor: colors.surface } }}>
       <Tabs.Screen name="index" options={{ title: t.tabs.today }} />
       <Tabs.Screen name="week" options={{ title: t.tabs.week }} />
       <Tabs.Screen name="month" options={{ title: t.tabs.month }} />

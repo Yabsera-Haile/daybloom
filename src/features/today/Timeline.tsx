@@ -12,7 +12,7 @@ import type { HourNote } from '@/planner/notes';
 import { updateHourNote } from '@/planner/notes';
 import type { TaskRow } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { lookFor, type ColorName } from '@/theme';
+import { useTheme, type ColorName } from '@/theme';
 import { Card, Icon, IconButton, Text, UrgentBadge, type IconName } from '@/ui';
 
 export type TimelineMarker = {
@@ -40,6 +40,7 @@ const urgentFirst = (a: EventOccurrence, b: EventOccurrence) =>
 
 /** An event on the timeline or in a list: icon, title, time · place, category, Urgent. */
 export function EventCard({ occurrence: o, compact = false }: { occurrence: EventOccurrence; compact?: boolean }) {
+  const { lookFor } = useTheme();
   const settings = useSettings();
   const categories = useCategories();
   const openSheet = useUi((s) => s.openSheet);

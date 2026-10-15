@@ -1,7 +1,7 @@
 import { Pressable, View } from 'react-native';
 
 import { t } from '@/i18n';
-import { categoryColors, colors, lookFor, type CategoryKey, type ColorName } from '@/theme';
+import { useTheme, type CategoryKey, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
 import { Text } from './Text';
@@ -52,6 +52,7 @@ export function CategoryTag({
   name?: string;
   tone?: 'container' | 'onCard';
 }) {
+  const { categoryColors, lookFor } = useTheme();
   const c = categoryColors[category] ?? categoryColors.personal;
   return (
     <View
@@ -74,6 +75,7 @@ const statusColors: Record<StatusTone, [ColorName, ColorName]> = {
 
 /** Small status pill: "All done", "3 of 4 done", "On track", "Deadline". */
 export function StatusBadge({ label, tone = 'neutral' }: { label: string; tone?: StatusTone }) {
+  const { colors } = useTheme();
   const [bg, fg] = statusColors[tone];
   return (
     <View className="self-start rounded-full px-2.5 py-0.5" style={{ backgroundColor: colors[bg] }}>

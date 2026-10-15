@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { categoryColors, colors, typography, type CategoryKey, type ColorName, type TypographyVariant } from '@/theme';
+import { typography, useTheme, type CategoryKey, type ColorName, type TypographyVariant } from '@/theme';
 import {
   Button,
   Card,
@@ -27,6 +27,7 @@ import {
 
 /** Phase 0 component gallery: every building block from docs/DESIGN_REVIEW.md section 3, for side-by-side checks. */
 export default function GalleryScreen() {
+  const { colors, categoryColors } = useTheme();
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState('All (4)');
   const [ticks, setTicks] = useState({ lemon: true, journal: false });

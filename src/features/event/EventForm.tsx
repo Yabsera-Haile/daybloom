@@ -33,7 +33,7 @@ import {
 } from '@/recurrence';
 import { reminderOffsets } from '@/reminders/store';
 import { useUi } from '@/state/ui';
-import { fontFamilyFor, lookFor, shadows } from '@/theme';
+import { fontFamilyFor, shadows, useTheme } from '@/theme';
 import { Button, ChoiceChip, Icon, PickerPill, Sheet, Switch, Text, TextField } from '@/ui';
 import { pickDay, pickTime } from '@/ui/pickers';
 
@@ -77,6 +77,7 @@ function Section({ children, className = '' }: { children: ReactNode; className?
 
 /** Add / Edit Event (EV-01..07, FR-04..06; design/daybloom/event). Only the title is required. */
 export function EventForm({ initial }: { initial: Initial }) {
+  const { lookFor } = useTheme();
   const insets = useSafeAreaInsets();
   const settings = useSettings();
   const categories = useCategories();

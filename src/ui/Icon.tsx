@@ -1,6 +1,6 @@
 import Svg, { Path } from 'react-native-svg';
 
-import { colors, type ColorName } from '@/theme';
+import { useTheme, type ColorName } from '@/theme';
 
 import { filledIconPaths, iconPaths, type IconName } from './generated/icons';
 
@@ -25,6 +25,7 @@ export function Icon({
   filled = false,
   accessibilityLabel,
 }: IconProps) {
+  const { colors } = useTheme();
   const d = (filled && filledIconPaths[name]) || iconPaths[name];
   return (
     <Svg

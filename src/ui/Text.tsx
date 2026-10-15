@@ -1,6 +1,6 @@
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 
-import { colors, fontFamilyFor, typography, type ColorName, type TypographyVariant } from '@/theme';
+import { fontFamilyFor, typography, useTheme, type ColorName, type TypographyVariant } from '@/theme';
 
 export type TextProps = RNTextProps & {
   /** Type style from the design tokens (default bodyMd). */
@@ -14,6 +14,7 @@ export type TextProps = RNTextProps & {
 };
 
 export function Text({ variant = 'bodyMd', color = 'onSurface', weight, italic, done, style, ...rest }: TextProps) {
+  const { colors } = useTheme();
   const t = typography[variant];
   return (
     <RNText

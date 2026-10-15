@@ -18,7 +18,7 @@ import { eventsBetween } from '@/planner/events';
 import { setWeekIntention, weekIntention } from '@/planner/notes';
 import { setTaskDone, tasksBetween, type TaskRow } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { categoryColors, shadows, type CategoryKey } from '@/theme';
+import { shadows, useTheme, type CategoryKey } from '@/theme';
 import {
   Button,
   Checkbox,
@@ -39,6 +39,7 @@ const dateOf = (day: string) => {
 };
 
 function StatusChip({ plans, when }: { plans: Plan[]; when: 'past' | 'today' | 'future' }) {
+  const { categoryColors } = useTheme();
   const categories = useCategories();
   const status = dayStatus(plans, when);
   if (!status) return null;

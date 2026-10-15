@@ -17,7 +17,7 @@ import { CategoryIcon, ListCard } from '@/features/budget/parts';
 import { t } from '@/i18n';
 import type { CategoryColor } from '@/planner/categories';
 import { useUi } from '@/state/ui';
-import { categoryColors, lookFor } from '@/theme';
+import { useTheme } from '@/theme';
 import { Button, Icon, Page, Sheet, Text, TextField } from '@/ui';
 
 function CategorySheet({
@@ -31,6 +31,7 @@ function CategorySheet({
   count: number;
   onClose: () => void;
 }) {
+  const { categoryColors, lookFor } = useTheme();
   const showToast = useUi((s) => s.showToast);
   const [name, setName] = useState(category?.name ?? '');
   const [icon, setIcon] = useState<string>(category?.icon ?? 'sell');

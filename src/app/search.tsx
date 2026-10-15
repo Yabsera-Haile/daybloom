@@ -18,11 +18,12 @@ import {
   type SearchResult,
 } from '@/planner/search';
 import { useUi } from '@/state/ui';
-import { colors, lookFor, shadows, type ColorName } from '@/theme';
+import { shadows, useTheme, type ColorName } from '@/theme';
 import { FilterChip, Icon, IconButton, Sticker, Text, TextField, UrgentBadge, type IconName } from '@/ui';
 
 /** The title with the searched word highlighted. */
 function Highlighted({ text, query, done }: { text: string; query: string; done?: boolean }) {
+  const { colors } = useTheme();
   const i = text.toLowerCase().indexOf(query.trim().toLowerCase());
   const n = query.trim().length;
   return (
@@ -86,6 +87,7 @@ function Card({
 }
 
 function ResultCard({ result, query, onOpen }: { result: SearchResult; query: string; onOpen: () => void }) {
+  const { lookFor } = useTheme();
   const settings = useSettings();
   const categories = useCategories();
   const tf = settings.timeFormat;

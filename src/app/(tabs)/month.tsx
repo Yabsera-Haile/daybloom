@@ -16,7 +16,7 @@ import { eventsBetween } from '@/planner/events';
 import { monthOf } from '@/planner/monthGoal';
 import { tasksBetween } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { categoryColors, colors, lookFor, shadows, type CategoryKey } from '@/theme';
+import { shadows, useTheme, type CategoryKey } from '@/theme';
 import { DateNavigator, Icon, IconButton, Text, UrgentBadge, Button } from '@/ui';
 
 const firstOfMonth = (day: string) => `${day.slice(0, 8)}01`;
@@ -31,6 +31,7 @@ const dateOf = (day: string) => {
 
 /** Category colors for a plan's label, or the solid rose for urgent ones (MO-04, I4). */
 function useLabelColors() {
+  const { colors, categoryColors, lookFor } = useTheme();
   const categories = useCategories();
   return (p: Plan): { bg: string; fg: string; stripe: string } => {
     if (p.urgent && !p.done) return { bg: colors.secondary, fg: colors.onSecondary, stripe: colors.secondary };

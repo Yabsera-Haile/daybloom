@@ -9,7 +9,7 @@ import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { askForNotifications } from '@/reminders/scheduler';
 import { saveSetting } from '@/settings';
-import { colors, shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { Button, Icon, Logo, Sticker, Text, TextField, type IconName } from '@/ui';
 
 function Big({ icon, circle, color }: { icon: IconName; circle: string; color: 'onTertiaryFixed' | 'onPrimaryFixed' }) {
@@ -22,6 +22,7 @@ function Big({ icon, circle, color }: { icon: IconName; circle: string; color: '
 
 /** First run (ON-01): welcome → name (optional) → why reminders matter + permission → done. All skippable. */
 export default function OnboardingScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const settings = useSettings();
   const [step, setStep] = useState(1);

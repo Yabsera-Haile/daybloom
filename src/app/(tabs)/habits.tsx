@@ -16,7 +16,7 @@ import { archivedHabits, moveHabit, type Habit } from '@/habits/store';
 import { t } from '@/i18n';
 import { monthDay, monthName, monthYear } from '@/i18n/format';
 import { readFlag, saveFlag } from '@/settings';
-import { colors, shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { Button, ChoiceChip, Icon, IconButton, Text } from '@/ui';
 
 const HINT = 'habitsHint.hidden';
@@ -94,6 +94,7 @@ function EditRow({ habit, first, last }: { habit: Habit; first: boolean; last: b
 
 /** Habits (HB-01…09): the month at a glance, daily habits by routine, weekly habits by week. */
 export default function HabitsScreen() {
+  const { colors } = useTheme();
   const today = useToday();
   const settings = useSettings();
   const { routines, habits, checks } = useHabitData();

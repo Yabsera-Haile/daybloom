@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 
-import { colors, type ColorName } from '@/theme';
+import { useTheme, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
 import { Text } from './Text';
@@ -80,6 +80,7 @@ type SwitchProps = {
 };
 
 export function Switch({ value, onChange, label, tone = 'primary' }: SwitchProps) {
+  const { colors } = useTheme();
   const on: ColorName = tone === 'secondary' ? 'secondary' : 'primary';
   return (
     <Pressable
@@ -118,6 +119,7 @@ const fill: Record<NonNullable<ProgressBarProps['tone']>, ColorName> = {
 };
 
 export function ProgressBar({ value, tone = 'primary', thick = false, label }: ProgressBarProps) {
+  const { colors } = useTheme();
   const pct = Math.max(0, Math.min(1, value)) * 100;
   return (
     <View
