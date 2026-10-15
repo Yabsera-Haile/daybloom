@@ -1,0 +1,1 @@
+CREATE INDEX `habit_checks_period_idx` ON `habit_checks` (`period`);

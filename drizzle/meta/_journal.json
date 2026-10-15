@@ -36,6 +36,13 @@
       "when": 1792094744475,
       "tag": "0004_drafts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792107033526,
+      "tag": "0005_habit_checks_period_index",
+      "breakpoints": true
     }
   ]
 }

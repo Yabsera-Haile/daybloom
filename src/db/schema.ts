@@ -155,7 +155,8 @@ export const habitChecks = sqliteTable(
     period: text('period').notNull(),
     checkedAt: integer('checked_at').notNull().default(sql`(unixepoch() * 1000)`),
   },
-  (t) => [primaryKey({ columns: [t.habitId, t.period] })],
+  // ticks are read by date range across all habits (Today, Week, Habits, reminders)
+  (t) => [primaryKey({ columns: [t.habitId, t.period] }), index('habit_checks_period_idx').on(t.period)],
 );
 
 export const goals = sqliteTable('goals', {

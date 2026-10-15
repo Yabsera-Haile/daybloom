@@ -79,9 +79,19 @@ export function plannedReminders(
   const first = toDayKey(new Date(now));
   const last = addDaysToKey(first, HORIZON_DAYS);
   const out: PlannedReminder[] = [];
+  // a repeating event has many occurrences but one set of reminders: read it once
+  const eventOffsets = new Map<string, number[]>();
+  const offsetsOf = (eventId: string) => {
+    let offsets = eventOffsets.get(eventId);
+    if (!offsets) {
+      offsets = reminderOffsets(db, 'event', eventId);
+      eventOffsets.set(eventId, offsets);
+    }
+    return offsets;
+  };
 
   for (const o of eventsBetween(db, first, addDaysToKey(last, 1))) {
-    const offsets = reminderOffsets(db, 'event', o.eventId);
+    const offsets = offsetsOf(o.eventId);
     if (offsets.length === 0) continue;
     const day = o.allDay ? o.days[0] : toDayKey(new Date(o.startAt));
     const anchor = o.allDay ? clockToMs(day, `${String(ALL_DAY_HOUR).padStart(2, '0')}:00`) : o.startAt;
