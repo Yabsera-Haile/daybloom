@@ -1,4 +1,5 @@
 import { db } from '@/db/client';
+import { ExpenseSheet } from '@/features/budget/ExpenseSheet';
 import { useLive } from '@/data/live';
 import { t } from '@/i18n';
 import { getTask } from '@/planner/tasks';
@@ -23,7 +24,7 @@ function TaskSheet({ sheet }: { sheet: Extract<SheetState, { kind: 'task' }> }) 
 }
 
 const keyOf = (s: SheetState) =>
-  `${s.kind}:${'taskId' in s ? s.taskId : ''}:${'occurrence' in s ? s.occurrence.key : ''}:${'noteId' in s ? s.noteId : ''}`;
+  `${s.kind}:${'taskId' in s ? s.taskId : ''}:${'occurrence' in s ? s.occurrence.key : ''}:${'noteId' in s ? s.noteId : ''}:${'entryId' in s ? s.entryId : ''}`;
 
 /** The sheet that is open (one at a time) and the Undo bar, above every screen. */
 export function Overlays() {
@@ -37,6 +38,7 @@ export function Overlays() {
       {sheet?.kind === 'note' ? (
         <NoteSheet key={keyOf(sheet)} day={sheet.day} hour={sheet.hour} noteId={sheet.noteId} />
       ) : null}
+      {sheet?.kind === 'expense' ? <ExpenseSheet key={keyOf(sheet)} day={sheet.day} entryId={sheet.entryId} /> : null}
       <Toast />
     </>
   );

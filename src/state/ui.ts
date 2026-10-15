@@ -15,7 +15,9 @@ export type SheetState =
   | { kind: 'task'; day: string; scope: 'day' | 'week'; taskId?: string; dueHour?: number }
   | { kind: 'taskMenu'; taskId: string }
   | { kind: 'event'; occurrence: EventOccurrence }
-  | { kind: 'note'; day: string; hour: number; noteId?: string };
+  | { kind: 'note'; day: string; hour: number; noteId?: string }
+  /** New or edited expense (BU-08), dated by `day` when new */
+  | { kind: 'expense'; day: string; entryId?: string };
 
 export type Toast = { message: string; undo?: Undo; id: number };
 

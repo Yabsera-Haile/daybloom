@@ -83,6 +83,16 @@ export function AddChooser({ sheet }: { sheet: Extract<SheetState, { kind: 'add'
       onPress: () => openSheet({ kind: 'task', day: week.start, scope: 'week' }),
     });
   }
+  if (hour === undefined) {
+    options.push({
+      icon: 'payments',
+      circle: 'bg-primary-fixed',
+      iconColor: 'onPrimaryFixed',
+      title: t.add.expense,
+      text: t.add.expenseText,
+      onPress: () => openSheet({ kind: 'expense', day }),
+    });
+  }
   if (hour !== undefined) {
     options.push({
       icon: 'notes',
