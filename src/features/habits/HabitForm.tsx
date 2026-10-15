@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,97 +22,11 @@ import {
 import { t } from '@/i18n';
 import { clockText } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { shadows } from '@/theme';
-import { Button, ChoiceChip, Icon, PickerPill, Sheet, Text, TextField } from '@/ui';
+import { Button, ChoiceChip, FormSection, Icon, PickerRow, RadioCard, Segmented, Sheet, Text, TextField } from '@/ui';
 import { pickTime } from '@/ui/pickers';
 
 import { routineIconName, routineLook } from './shared';
 import { RoutineSheet } from './Sheets';
-
-function Section({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return (
-    <View className={`rounded-2xl bg-surface-container-lowest ${className}`} style={shadows.card}>
-      {children}
-    </View>
-  );
-}
-
-function Radio({
-  on,
-  onPress,
-  icon,
-  iconColor,
-  title,
-  detail,
-}: {
-  on: boolean;
-  onPress: () => void;
-  icon: Parameters<typeof Icon>[0]['name'];
-  iconColor: Parameters<typeof Icon>[0]['color'];
-  title: string;
-  detail: string;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ checked: on }}
-      accessibilityLabel={`${title}, ${detail}`}
-      onPress={onPress}
-      className={`min-h-touch flex-row items-center gap-3 rounded-2xl border-[1.5px] p-3 ${on ? 'border-primary bg-primary-fixed/40' : 'border-outline-variant'}`}>
-      <View
-        className={`h-6 w-6 items-center justify-center rounded-full border-2 ${on ? 'border-primary' : 'border-outline'}`}>
-        {on ? <View className="h-3 w-3 rounded-full bg-primary" /> : null}
-      </View>
-      <Icon name={icon} color={iconColor} />
-      <View className="flex-1">
-        <Text variant="bodyLg">{title}</Text>
-        <Text variant="bodySm" color="onSurfaceVariant">
-          {detail}
-        </Text>
-      </View>
-    </Pressable>
-  );
-}
-
-function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-}) {
-  return (
-    <View accessibilityRole="radiogroup" className="flex-row rounded-full bg-surface-container p-1">
-      {options.map((o) => (
-        <Pressable
-          key={o.value}
-          accessibilityRole="radio"
-          accessibilityState={{ checked: value === o.value }}
-          onPress={() => onChange(o.value)}
-          hitSlop={{ top: 4, bottom: 4 }}
-          className={`min-h-11 flex-1 items-center justify-center rounded-full px-1 ${value === o.value ? 'bg-primary' : ''}`}>
-          <Text
-            variant="labelLg"
-            color={value === o.value ? 'onPrimary' : 'onSurfaceVariant'}
-            style={{ textAlign: 'center' }}>
-            {o.label}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
-function TimeRow({ label, time, onPress }: { label: string; time: string; onPress: () => void }) {
-  return (
-    <View className="min-h-touch flex-row items-center justify-between">
-      <Text variant="bodyMd">{label}</Text>
-      <PickerPill label={label} value={time} onPress={onPress} />
-    </View>
-  );
-}
 
 type RemindMode = 'off' | 'once' | 'several';
 
@@ -243,7 +157,7 @@ export function HabitForm({
         </View>
 
         {/* How often */}
-        <Section className="p-space-md">
+        <FormSection className="p-space-md">
           <View className="mb-space-sm flex-row items-center gap-3">
             <Icon name="repeat" />
             <Text variant="bodyLg">{t.habits.howOften}</Text>
@@ -256,17 +170,17 @@ export function HabitForm({
               { value: 'weekly', label: t.habits.onceAWeek },
             ]}
           />
-        </Section>
+        </FormSection>
 
         {/* When: part of a routine (D1) */}
-        <Section className="p-space-md">
+        <FormSection className="p-space-md">
           <View className="mb-space-sm flex-row items-center gap-3">
             <Icon name="schedule" />
             <Text variant="bodyLg">{t.habits.when}</Text>
           </View>
           <View accessibilityRole="radiogroup" className="gap-space-sm">
             {routines.map((r) => (
-              <Radio
+              <RadioCard
                 key={r.id}
                 on={routineId === r.id}
                 onPress={() => setRoutineId(r.id)}
@@ -279,7 +193,7 @@ export function HabitForm({
                 )}
               />
             ))}
-            <Radio
+            <RadioCard
               on={!routine}
               onPress={() => setRoutineId(null)}
               icon="all_inclusive"
@@ -297,10 +211,10 @@ export function HabitForm({
               </Text>
             </Pressable>
           </View>
-        </Section>
+        </FormSection>
 
         {/* Reminder: routine habits share the routine's; others ring once, or every so often in a range */}
-        <Section className="gap-space-sm p-space-md">
+        <FormSection className="gap-space-sm p-space-md">
           <View className="flex-row items-center gap-3">
             <Icon name="notifications" />
             <View className="flex-1">
@@ -322,7 +236,11 @@ export function HabitForm({
             />
           )}
           {!routine && mode === 'once' ? (
-            <TimeRow label={t.habits.remindAt} time={clockText(onceAt, tf)} onPress={() => choose(onceAt, setOnceAt)} />
+            <PickerRow
+              label={t.habits.remindAt}
+              value={clockText(onceAt, tf)}
+              onPress={() => choose(onceAt, setOnceAt)}
+            />
           ) : null}
           {!routine && mode === 'several' ? (
             <>
@@ -337,18 +255,22 @@ export function HabitForm({
                   />
                 ))}
               </View>
-              <TimeRow label={t.habits.remindFrom} time={clockText(from, tf)} onPress={() => choose(from, setFrom)} />
-              <TimeRow
+              <PickerRow
+                label={t.habits.remindFrom}
+                value={clockText(from, tf)}
+                onPress={() => choose(from, setFrom)}
+              />
+              <PickerRow
                 label={t.habits.remindUntil}
-                time={clockText(until, tf)}
+                value={clockText(until, tf)}
                 onPress={() => choose(until, setUntil)}
               />
             </>
           ) : null}
-        </Section>
+        </FormSection>
 
         {/* Note */}
-        <Section className="p-space-md">
+        <FormSection className="p-space-md">
           <View className="mb-space-sm flex-row items-center gap-3">
             <Icon name="notes" />
             <Text variant="bodyLg">
@@ -365,7 +287,7 @@ export function HabitForm({
             onChangeText={setNote}
             className="h-12 rounded-xl border-[1.5px] border-outline-variant bg-surface px-3"
           />
-        </Section>
+        </FormSection>
 
         {habit ? (
           <View className="gap-space-sm">

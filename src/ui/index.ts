@@ -1,5 +1,6 @@
 export { Button, IconButton } from './Button';
 export { CategoryTag, FilterChip, StatusBadge, UrgentBadge } from './Chip';
+export { FormSection, PickerRow, RadioCard, Segmented } from './Choices';
 export { Checkbox, HabitCircle, ProgressBar, Switch } from './Controls';
 export { ChoiceChip, MenuRow, PickerPill, TextField } from './Fields';
 export { Icon, type IconName } from './Icon';

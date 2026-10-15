@@ -105,7 +105,7 @@ export function Switch({ value, onChange, label, tone = 'primary' }: SwitchProps
 type ProgressBarProps = {
   /** 0..1 */
   value: number;
-  tone?: 'primary' | 'secondary' | 'tertiary';
+  tone?: 'primary' | 'secondary' | 'tertiary' | 'error';
   thick?: boolean;
   label: string;
 };
@@ -114,6 +114,7 @@ const fill: Record<NonNullable<ProgressBarProps['tone']>, ColorName> = {
   primary: 'primaryContainer',
   secondary: 'secondaryContainer',
   tertiary: 'tertiaryContainer',
+  error: 'error',
 };
 
 export function ProgressBar({ value, tone = 'primary', thick = false, label }: ProgressBarProps) {
