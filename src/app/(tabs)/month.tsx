@@ -7,11 +7,13 @@ import { addDaysToKey, parseDayKey } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { MonthGoalCard } from '@/features/month/MonthGoal';
 import { plansByDay, type Plan } from '@/features/plans';
 import { TabScreen } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { clockText, fullDay, longDay, monthDay, monthYear, shortDay, timeOf, weekdayShort } from '@/i18n/format';
 import { eventsBetween } from '@/planner/events';
+import { monthOf } from '@/planner/monthGoal';
 import { tasksBetween } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
 import { categoryColors, colors, lookFor, shadows, type CategoryKey } from '@/theme';
@@ -356,6 +358,9 @@ export default function MonthScreen() {
             ) : null}
           </View>
 
+          {/* This month's goal (MO-06: goals belong to the month, not a day) */}
+          <MonthGoalCard month={monthOf(first)} monthStart={first} />
+
           {/* Coming up this month (MO-07) */}
           <View className="gap-space-sm">
             <View className="flex-row items-end justify-between">
@@ -429,6 +434,7 @@ export default function MonthScreen() {
       ) : (
         /* Agenda (MO-03): from today to the end of the month, earlier days on request */
         <View className="gap-space-md">
+          <MonthGoalCard month={monthOf(first)} monthStart={first} />
           {isThisMonth && today > first && !showEarlier ? (
             <Pressable
               accessibilityRole="button"

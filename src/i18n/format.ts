@@ -123,6 +123,14 @@ export function money(cents: number, currency: string, opts: { minus?: boolean; 
   return opts.minus || cents < 0 ? `−${text}` : text;
 }
 
+let amountFormat: Intl.NumberFormat | null = null;
+
+/** A number kept in hundredths, decimals only when it has some: 80000 → "800", 1250 → "12.5". */
+export function amountText(hundredths: number): string {
+  amountFormat ??= new Intl.NumberFormat(textLocale(), { maximumFractionDigits: 2 });
+  return amountFormat.format(hundredths / 100);
+}
+
 /** "10 minutes before", "When it starts", "1 day before" */
 export function reminderText(minutes: number): string {
   if (minutes === 0) return t.reminders.atStart;
