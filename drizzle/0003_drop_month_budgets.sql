@@ -1,0 +1,1 @@
+DROP TABLE `month_budgets`;

@@ -32,8 +32,23 @@ for (const file of walk(designDir)) {
   }
 }
 // Icons that live in shell.js data rather than markup (tab bar, add chooser, header).
-const tabIcons = ['today', 'view_week', 'calendar_month', 'spa', 'menu'];
+const tabIcons = ['today', 'view_week', 'calendar_month', 'spa', 'account_balance_wallet', 'menu'];
 for (const name of [...tabIcons, 'event', 'task_alt', 'chevron_right', 'close', 'add', 'search', 'arrow_back']) used.add(name);
+// Extras the app uses beyond the designs: spending-category choices, bank texts, category settings.
+const extras = [
+  'home',
+  'directions_bus',
+  'local_gas_station',
+  'shopping_bag',
+  'checkroom',
+  'fitness_center',
+  'child_care',
+  'pets',
+  'more_horiz',
+  'sms',
+  'sell',
+];
+for (const name of extras) used.add(name);
 for (const name of tabIcons) filled.add(name);
 
 const readPath = (file) =>

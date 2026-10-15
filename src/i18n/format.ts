@@ -90,6 +90,39 @@ export function untilText(ms: number, now: number): string {
   return t.time.inDays(Math.round(hours / 24));
 }
 
+const moneyFormats = new Map<string, Intl.NumberFormat>();
+
+function moneyFormat(currency: string, whole: boolean): Intl.NumberFormat {
+  const locale = textLocale();
+  const key = `${locale}|${currency}|${whole}`;
+  let f = moneyFormats.get(key);
+  if (!f) {
+    f = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      ...(whole && { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+    });
+    moneyFormats.set(key, f);
+  }
+  return f;
+}
+
+/**
+ * Money from whole cents in the phone's style (BU-09): "$1,730.00", "R 1 730,00".
+ * `minus` writes spending as "−$86.40"; `whole` drops the cents for round goal targets ("$10,000").
+ */
+export function money(cents: number, currency: string, opts: { minus?: boolean; whole?: boolean } = {}): string {
+  const text = moneyFormat(currency, !!opts.whole).format(Math.abs(cents) / 100);
+  return opts.minus || cents < 0 ? `−${text}` : text;
+}
+
+/** "$", "R", "KES": the currency's sign as the phone writes it, for amount fields. */
+export function currencySymbol(currency: string): string {
+  return moneyFormat(currency, true)
+    .format(0)
+    .replace(/[\d\s.,  ]/g, '');
+}
+
 /** "10 minutes before", "When it starts", "1 day before" */
 export function reminderText(minutes: number): string {
   if (minutes === 0) return t.reminders.atStart;

@@ -182,6 +182,7 @@ export const budgetCategories = sqliteTable('budget_categories', {
   icon: text('icon').notNull(),
   colorKey: text('color_key').notNull(),
   sortOrder: integer('sort_order').notNull().default(0),
+  archivedAt: integer('archived_at'),
 });
 
 /** Money in or out, entered by hand (no bank connection). */
@@ -211,9 +212,11 @@ export const bills = sqliteTable('bills', {
   currency: text('currency').notNull(),
   /** Next due day 'YYYY-MM-DD' */
   dueDate: text('due_date').notNull(),
+  /** Day of the month it falls on (31 = the last day in shorter months), so repeats don't drift */
+  dueDay: integer('due_day'),
   /** null = just once; 1, 3, 6 or 12 = repeats every N months */
   repeatMonths: integer('repeat_months'),
-  /** auto | manual | flexible */
+  /** auto (added to spending on the day) | manual (added when marked paid) */
   payment: text('payment').notNull().default('auto'),
   lastPaidAt: integer('last_paid_at'),
   createdAt: createdAt(),
@@ -221,10 +224,17 @@ export const bills = sqliteTable('bills', {
   deletedAt: deletedAt(),
 });
 
-/** Monthly budget; null amount = "same as money in" (BU-04). */
-export const monthBudgets = sqliteTable('month_budgets', {
-  month: text('month').primaryKey(),
+/**
+ * The budget, monthly or weekly (BU-04). A change applies from the period it was made in, so earlier
+ * months or weeks keep the budget they had. null amount = no budget from then on.
+ */
+export const budgetPlans = sqliteTable('budget_plans', {
+  /** month | week */
+  period: text('period').notNull(),
+  /** First day of the period it starts in 'YYYY-MM-DD' */
+  startsOn: text('starts_on').primaryKey(),
   amountCents: integer('amount_cents'),
+  createdAt: createdAt(),
 });
 
 /** Small key/value settings (name, week start, time style, seasons, currency, calm mode…). Values are JSON. */

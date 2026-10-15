@@ -2,6 +2,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { ensureDefaultSpendCategories } from '@/budget/categories';
 import { ensureDefaultRoutines } from '@/habits/store';
 import { ensureDefaultCategories } from '@/planner/categories';
 import { Text } from '@/ui';
@@ -16,6 +17,7 @@ function seedOnce() {
   if (seeded) return;
   ensureDefaultCategories(db);
   ensureDefaultRoutines(db);
+  ensureDefaultSpendCategories(db);
   seeded = true;
 }
 
