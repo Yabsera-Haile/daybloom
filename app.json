@@ -117,10 +117,6 @@
               "numbersTextColor": {
                 "light": "#1e1b18",
                 "dark": "#1e1b18"
-              },
-              "numbersInnerTextColor": {
-                "light": "#424843",
-                "dark": "#424843"
               }
             }
           }
