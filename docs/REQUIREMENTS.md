@@ -214,8 +214,10 @@ The "Coming soon" teaser is removed (D13).
 | ID | Requirement | Priority |
 |---|---|---|
 | ON-01 | Onboarding of up to 4 short steps: welcome → your name (optional) → why reminders matter + notification permission → done. Week start and time format come from the phone. Skippable. | M |
-| ST-01 | Settings: first name, week start, 12/24-hour, usual reminder, categories (rename, recolor, reorder), seasons on/off + hemisphere, currency, calm mode, reminder help, privacy & about | M |
+| ST-01 | Settings: first name, week start, 12/24-hour, usual reminder, reminder sound, categories (rename, recolor, reorder), colours, seasons on/off + hemisphere, currency, calm mode, reminder help, privacy & about | M |
 | ST-02 | Export all data to a file (backup) | S |
+| ST-04 | Colours (D16): a spring, summer, autumn or winter colour theme, or "Follow the seasons" (changes on the first day of each season where you live). Every theme keeps text contrast ≥ 4.5:1. | S |
+| ST-05 | Reminder sound (D17): the phone's own sound, one of Daybloom's (Chime, Bell, Birdsong, Marimba, Gentle ring) or vibrate only. Tapping one plays it; "Send a test reminder" sends one in 5 seconds with that sound. Reminders always vibrate. | M |
 | ST-03 | "Reminders not arriving?" screen: live checks (notifications on, on-time reminders allowed, battery saving), step-by-step help for Samsung, Xiaomi, OnePlus/Oppo and other phones, and a "Send a test reminder" button | M |
 | NT-01 | Reminder notifications: time and title first; place, details or "in 10 minutes" second; at most two actions (Snooze / Open, Done / Later, Mark as paid); urgent to-dos use the rose accent; never any marketing messages | M |
 | SR-01 | Search finds events and tasks by text; results grouped by date; tapping opens the item | M |

@@ -230,6 +230,8 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-EV07.1 | EV-07 | Component | Open "+ Add" → Event at 1:15 PM | Wed, Oct 23 · 2:00–3:00 PM · Personal · 10 min before; title focused |
 | T-ON01.1 | ON-01 | E2E | Fresh install, go through onboarding, skip name | Lands on Today with empty state; permission asked once |
 | T-ST01.1 | ST-01 | E2E | Change week start to Monday | Week, Month and Habits all start on Monday |
+| T-ST04.1 | ST-04, NFR-04 | Unit | Each seasonal theme | All text colour pairs ≥ 4.5:1; "Follow the seasons" gives spring in October in the south, autumn in the north |
+| T-ST05.1 | ST-05 | Manual (installed app) | Pick Birdsong, then Vibrate only; send a test reminder each time | The reminder chirps, then only buzzes; the next real reminder does the same |
 | T-SR01.1 | SR-01 | E2E | Search "tax" | Finds the task and the event, grouped by date; tap opens it |
 
 ### Remaining coverage (one test per requirement not covered above)
