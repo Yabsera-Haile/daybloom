@@ -6,7 +6,7 @@ import type { Db } from '@/db/types';
 
 import migrations from '../../drizzle/migrations';
 
-/** The tables that hold the person's data (unsaved drafts are left out). */
+/** The tables that hold the person's data (unsaved drafts and bank texts not yet understood are left out). */
 const TABLES = {
   categories: schema.categories,
   events: schema.events,
@@ -22,6 +22,8 @@ const TABLES = {
   entries: schema.entries,
   bills: schema.bills,
   budgetPlans: schema.budgetPlans,
+  smsSenders: schema.smsSenders,
+  smsPatterns: schema.smsPatterns,
   settings: schema.settings,
 } as const;
 

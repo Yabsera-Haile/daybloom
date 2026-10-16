@@ -638,6 +638,14 @@ export const en = {
     },
   },
 
+  sms: {
+    /** An expense read from a text: "Aline · MoMo" */
+    paidTo: (payee: string, label: string) => `${payee} · ${label}`,
+    payment: (label: string) => `${label} payment`,
+    fee: (label: string) => `${label} fee`,
+    feesCategory: 'Fees',
+  },
+
   habits: {
     morningRitual: 'Morning Ritual',
     eveningWindDown: 'Evening Wind-Down',

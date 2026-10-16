@@ -20,6 +20,7 @@ export const SPEND_ICONS = [
   'local_gas_station',
   'home',
   'receipt_long',
+  'sell',
   'shopping_bag',
   'checkroom',
   'favorite',

@@ -6,7 +6,7 @@
 //   - soft delete with deleted_at (undo + future sync)
 //   - nothing derived (streaks, totals, counts) is stored (FR-13)
 import { sql } from 'drizzle-orm';
-import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 const id = () => text('id').primaryKey();
 const createdAt = () => integer('created_at').notNull().default(sql`(unixepoch() * 1000)`);
@@ -186,7 +186,7 @@ export const budgetCategories = sqliteTable('budget_categories', {
   archivedAt: integer('archived_at'),
 });
 
-/** Money in or out, entered by hand (no bank connection). */
+/** Money in or out, entered by hand or read from a bank text on the phone (no bank connection). */
 export const entries = sqliteTable(
   'entries',
   {
@@ -198,12 +198,63 @@ export const entries = sqliteTable(
     description: text('description').notNull(),
     budgetCategoryId: text('budget_category_id').references(() => budgetCategories.id),
     occurredAt: integer('occurred_at').notNull(),
+    /** null = entered by hand; 'sms' = read from a text (BU-11) */
+    source: text('source'),
+    /** The text it came from (its id; a fee adds ':fee'), so one text is never added twice */
+    ref: text('ref'),
+    /** Who was paid, as the text said */
+    payee: text('payee'),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     deletedAt: deletedAt(),
   },
-  (t) => [index('entries_occurred_idx').on(t.occurredAt)],
+  (t) => [index('entries_occurred_idx').on(t.occurredAt), uniqueIndex('entries_ref_idx').on(t.ref)],
 );
+
+/** Who sends the bank or mobile-money texts that expenses are read from (BU-11). */
+export const smsSenders = sqliteTable('sms_senders', {
+  id: id(),
+  /** As the phone shows the sender, e.g. 'M-Money' */
+  address: text('address').notNull().unique(),
+  /** What to call it, e.g. 'MoMo' */
+  label: text('label').notNull(),
+  enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
+  /** Texts that arrived up to this time have been read (older ones were added only if picked at setup) */
+  readUntil: integer('read_until').notNull(),
+  createdAt: createdAt(),
+});
+
+/** The shapes of a sender's texts, learned from them (src/sms/learn.ts) and confirmed by the person. */
+export const smsPatterns = sqliteTable(
+  'sms_patterns',
+  {
+    id: id(),
+    senderId: text('sender_id')
+      .notNull()
+      .references(() => smsSenders.id),
+    /** spend | income | ignore */
+    kind: text('kind').notNull(),
+    regex: text('regex').notNull(),
+    amountGroup: integer('amount_group'),
+    feeGroup: integer('fee_group'),
+    payeeGroup: integer('payee_group'),
+    /** A text it was learned from, to show */
+    example: text('example').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index('sms_patterns_sender_idx').on(t.senderId)],
+);
+
+/** Texts that looked like spending but had no known shape, for the person to teach (BU-11). */
+export const smsUnmatched = sqliteTable('sms_unmatched', {
+  /** messageId(address, body) */
+  id: text('id').primaryKey(),
+  senderId: text('sender_id')
+    .notNull()
+    .references(() => smsSenders.id),
+  body: text('body').notNull(),
+  receivedAt: integer('received_at').notNull(),
+});
 
 export const bills = sqliteTable('bills', {
   id: id(),

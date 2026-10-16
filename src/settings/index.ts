@@ -28,6 +28,8 @@ export interface Settings {
   theme: ThemeChoice;
   /** How reminders sound: the phone's own sound, one of Daybloom's, or vibrate only. */
   reminderSound: ReminderSound;
+  /** Bank texts (BU-11): ask what each payment was for, or just add it. */
+  smsAsk: boolean;
 }
 
 export type ThemeChoice = 'auto' | 'spring' | 'summer' | 'autumn' | 'winter';
@@ -51,6 +53,7 @@ const checks: { [K in keyof Settings]: Check<Settings[K]> } = {
   onboarded: isBool,
   theme: (v): v is ThemeChoice => THEME_CHOICES.includes(v as ThemeChoice),
   reminderSound: (v): v is ReminderSound => REMINDER_SOUNDS.includes(v as ReminderSound),
+  smsAsk: isBool,
 };
 
 export function phoneDefaults(): Settings {
@@ -69,6 +72,7 @@ export function phoneDefaults(): Settings {
     onboarded: false,
     theme: 'autumn',
     reminderSound: 'chime',
+    smsAsk: true,
   };
 }
 

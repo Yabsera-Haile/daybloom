@@ -24,6 +24,7 @@ describe('settings', () => {
       onboarded: false,
       theme: 'autumn',
       reminderSound: 'chime',
+      smsAsk: true,
     });
     expect(readSettings(db)).toEqual(phoneDefaults());
   });
