@@ -5,7 +5,7 @@ import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
 
 import { MOMO_MESSAGES, MOMO_NOISE, MOMO_SENDER } from './fixtures';
-import { applyNote, entryForText, FEES_CATEGORY_ID, ingest, type Text } from './ingest';
+import { applyNote, entryForText, FEES_CATEGORY_ID, ingest, retryUnmatched, wasAdded, type Text } from './ingest';
 import { learnShapes, messageId, shapeOf } from './learn';
 import {
   addPattern,
@@ -152,7 +152,20 @@ describe('adding payments from texts', () => {
     const [row] = listUnmatched(db);
     expect(row.body).toBe(odd);
 
-    addPattern(db, senderId, { ...toSave(shapeOf(odd, 'spend')) });
-    expect(ingest(db, [text(odd)], 'RWF').added).toHaveLength(1);
+    addPattern(db, senderId, toSave(shapeOf(odd, 'spend')));
+    expect(retryUnmatched(db, senderId, 'RWF')).toBe(1);
+    expect(listUnmatched(db)).toEqual([]);
+    expect(expensesIn(db, october).map((e) => [e.amountCents, e.description])).toEqual([[250000, 'MoMo payment']]);
+    expect(wasAdded(db, MOMO_SENDER, odd)).toBe(true);
+    expect(ingest(db, [text(odd)], 'RWF').added).toEqual([]);
+  });
+
+  it('a text taught as not spending is set aside without adding anything', () => {
+    const odd = 'You paid 2,500 RWF for airtime 0788000000 on 2026-10-17. Thank you for using MoMo.';
+    ingest(db, [text(odd)], 'RWF');
+    addPattern(db, senderId, toSave(shapeOf(odd, 'ignore')));
+    expect(retryUnmatched(db, senderId, 'RWF')).toBe(0);
+    expect(listUnmatched(db)).toEqual([]);
+    expect(expensesIn(db, october)).toEqual([]);
   });
 });

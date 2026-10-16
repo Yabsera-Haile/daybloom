@@ -9,7 +9,16 @@ import { newId, type Db } from '@/db/types';
 import { t } from '@/i18n';
 
 import { looksLikeSpending, messageId, readWith, type Reading, type ShapeKind } from './learn';
-import { listSenders, patternsOf, recordUnmatched, type Sender, type SmsPattern } from './store';
+import {
+  dismissUnmatched,
+  getSender,
+  listSenders,
+  listUnmatched,
+  patternsOf,
+  recordUnmatched,
+  type Sender,
+  type SmsPattern,
+} from './store';
 
 /** A text as the phone gives it. */
 export type Text = { address: string; body: string; receivedAt: number };
@@ -161,3 +170,26 @@ export const entryForText = (db: Db, textId: string): string | null =>
     .from(entries)
     .where(and(eq(entries.ref, textId), isNull(entries.deletedAt)))
     .get()?.id ?? null;
+
+/** Whether a text was already added (setup leaves those off "this month's payments"). */
+export const wasAdded = (db: Db, address: string, body: string) => known(db, messageId(address, body));
+
+/** After a shape is taught: texts not understood that it now reads are added (or set aside). */
+export function retryUnmatched(db: Db, senderId: string, currency: string): number {
+  const sender = getSender(db, senderId);
+  if (!sender) return 0;
+  const patterns = patternsOf(db, senderId);
+  let added = 0;
+  db.transaction((tx) => {
+    for (const row of listUnmatched(tx, senderId)) {
+      const read = readText(patterns, row.body);
+      if (!read) continue;
+      dismissUnmatched(tx, row.id);
+      if (read.kind === 'spend' && read.reading.amountCents > 0 && !known(tx, row.id)) {
+        addPayment(tx, sender, row.id, read.reading, row.receivedAt, currency);
+        added += 1;
+      }
+    }
+  });
+  return added;
+}

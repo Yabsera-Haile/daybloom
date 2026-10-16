@@ -303,7 +303,8 @@ const SLOT_REGEX: Record<SlotType, string> = {
   id: String.raw`[\w*]+`,
 };
 
-function toPattern(t: Tok[], kind: ShapeKind): { pattern: PatternDef; amountGroups: number[] } {
+/** The pattern for a shape, with its groups found whatever its kind (the person can change the kind). */
+function toPattern(t: Tok[]): { pattern: PatternDef; amountGroups: number[] } {
   const parts: string[] = [];
   const amountGroups: number[] = [];
   const wildGroups: { group: number; at: number }[] = [];
@@ -342,9 +343,9 @@ function toPattern(t: Tok[], kind: ShapeKind): { pattern: PatternDef; amountGrou
   return {
     pattern: {
       regex: `^\\s*${parts.join('\\s*')}\\s*$`,
-      amountGroup: kind === 'spend' ? (amountGroup ?? amountGroups[0] ?? null) : null,
-      feeGroup: kind === 'spend' ? feeGroup : null,
-      payeeGroup: kind === 'spend' ? (payee?.group ?? null) : null,
+      amountGroup: amountGroup ?? amountGroups[0] ?? null,
+      feeGroup,
+      payeeGroup: payee?.group ?? null,
     },
     amountGroups,
   };
@@ -382,7 +383,7 @@ export function learnShapes(messages: string[], max = 6): LearnedShape[] {
     } else clusters.push({ kind, tokens, examples: [body], count: 1 });
   }
   const shapes = clusters.map((c) => {
-    const { pattern, amountGroups } = toPattern(generaliseNames(c.tokens), c.kind);
+    const { pattern, amountGroups } = toPattern(generaliseNames(c.tokens));
     return { kind: c.kind, count: c.count, examples: c.examples, pattern, amountGroups };
   });
   shapes.sort((a, b) => b.count - a.count);
@@ -394,18 +395,14 @@ export function learnShapes(messages: string[], max = 6): LearnedShape[] {
 /** A shape for one message the person is teaching ("Messages I didn't understand"). */
 export function shapeOf(body: string, kind: ShapeKind, amountIndex = 0): LearnedShape {
   const tokens = generaliseNames(toTemplate(tokenize(body)));
-  const { pattern, amountGroups } = toPattern(tokens, 'spend');
-  const amountGroup = amountGroups[amountIndex] ?? pattern.amountGroup;
-  return {
-    kind,
-    count: 1,
-    examples: [body],
-    amountGroups,
-    pattern:
-      kind === 'spend'
-        ? { ...pattern, amountGroup, feeGroup: pattern.feeGroup === amountGroup ? null : pattern.feeGroup }
-        : { ...pattern, amountGroup: null, feeGroup: null, payeeGroup: null },
-  };
+  const { pattern, amountGroups } = toPattern(tokens);
+  return { kind, count: 1, examples: [body], amountGroups, pattern: withAmount(pattern, amountGroups[amountIndex]) };
+}
+
+/** The pattern with another of its numbers as the amount ("tap the amount"). */
+export function withAmount(p: PatternDef, group: number | undefined): PatternDef {
+  if (!group) return p;
+  return { ...p, amountGroup: group, feeGroup: p.feeGroup === group ? null : p.feeGroup };
 }
 
 // --------------------------------------------------------------------------------------------
@@ -466,6 +463,9 @@ export function pieces(p: PatternDef, body: string, groups: number[]): { text: s
   if (at < body.length) out.push({ text: body.slice(at) });
   return out;
 }
+
+/** Mentions an amount of money ("7,380 RWF"), to put money senders first. */
+export const mentionsMoney = (body: string) => tokenize(body).some((x) => x.kind === 'amount');
 
 /** Looks like spending (has an amount and a spending word), for "Messages I didn't understand". */
 export function looksLikeSpending(body: string): boolean {
