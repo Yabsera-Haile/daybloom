@@ -1,18 +1,27 @@
 import { router, type Href } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { db } from '@/db/client';
+import { useLive } from '@/data/live';
 import { t } from '@/i18n';
-import { Button, Icon, Page, Row, RowGroup, Sheet, StatusBadge, Text, type IconName } from '@/ui';
+import { listSenders } from '@/sms/store';
+import { Icon, Page, Row, RowGroup, Text, type IconName } from '@/ui';
 
 type Item = { icon: IconName; title: string; detail?: string; href?: Href; onPress?: () => void; right?: ReactNode };
 
 /**
  * More (D6), opened from the ≡ button in the header now that Budget has its tab: spending
- * categories, bank texts (next version), Settings, reminder help. No profile or account (D8).
+ * categories, expenses from bank texts, Settings, reminder help. No profile or account (D8).
  */
 export default function MoreScreen() {
-  const [bankTexts, setBankTexts] = useState(false);
+  const reading = useLive(
+    () =>
+      listSenders(db)
+        .filter((s) => s.enabled)
+        .map((s) => s.label),
+    [],
+  );
   const sections: { heading: string; rows: Item[] }[] = [
     {
       heading: t.more.money,
@@ -21,13 +30,8 @@ export default function MoreScreen() {
         {
           icon: 'sms',
           title: t.more.bankTexts,
-          detail: t.more.bankTextsSoon,
-          onPress: () => setBankTexts(true),
-          right: (
-            <View>
-              <StatusBadge label={t.more.soon} />
-            </View>
-          ),
+          detail: reading.length ? t.more.bankTextsOn(t.list(reading)) : t.more.bankTextsText,
+          href: '/bank-texts',
         },
       ],
     },
@@ -73,17 +77,6 @@ export default function MoreScreen() {
           {t.more.private}
         </Text>
       </View>
-
-      {bankTexts ? (
-        <Sheet visible onClose={() => setBankTexts(false)} title={t.more.bankTextsTitle} closeButton>
-          <View className="gap-space-md pb-space-sm">
-            <Text variant="bodyMd" color="onSurfaceVariant">
-              {t.more.bankTextsText}
-            </Text>
-            <Button label={t.more.gotIt} fullWidth onPress={() => setBankTexts(false)} />
-          </View>
-        </Sheet>
-      ) : null}
     </Page>
   );
 }

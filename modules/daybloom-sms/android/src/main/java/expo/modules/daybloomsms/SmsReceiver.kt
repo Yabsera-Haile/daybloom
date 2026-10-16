@@ -68,10 +68,12 @@ class ReplyReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     val id = intent.getStringExtra(Notices.EXTRA_ID) ?: return
     val note = RemoteInput.getResultsFromIntent(intent)?.getCharSequence(Notices.KEY_NOTE)?.toString()?.trim()
-    if (!note.isNullOrEmpty()) {
-      SmsStore.enqueue(context, JSONObject().put("type", "note").put("id", id).put("note", note))
-      DaybloomSmsModule.tellApp()
+    if (note.isNullOrEmpty()) {
+      Notices.cancel(context, id)
+      return
     }
-    Notices.cancel(context, id)
+    SmsStore.enqueue(context, JSONObject().put("type", "note").put("id", id).put("note", note))
+    DaybloomSmsModule.tellApp()
+    Notices.saved(context, id, note)
   }
 }

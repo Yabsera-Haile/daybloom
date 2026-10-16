@@ -16,8 +16,11 @@ export type SheetState =
   | { kind: 'taskMenu'; taskId: string }
   | { kind: 'event'; occurrence: EventOccurrence }
   | { kind: 'note'; day: string; hour: number; noteId?: string }
-  /** New or edited expense (BU-08), dated by `day` when new */
-  | { kind: 'expense'; day: string; entryId?: string };
+  /**
+   * New or edited expense (BU-08), dated by `day` when new. `ask`: "What was it for?" about a
+   * payment read from a text (BU-11)
+   */
+  | { kind: 'expense'; day: string; entryId?: string; ask?: boolean };
 
 export type Toast = { message: string; undo?: Undo; id: number };
 

@@ -1,6 +1,7 @@
 package expo.modules.daybloomsms
 
 import android.Manifest
+import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Telephony
@@ -26,8 +27,6 @@ class DaybloomSmsModule : Module() {
 
     OnCreate { current = WeakReference(this@DaybloomSmsModule) }
     OnDestroy { current = null }
-    OnActivityEntersForeground { foreground = true }
-    OnActivityEntersBackground { foreground = false }
 
     Function("hasPermission") {
       granted(context, Manifest.permission.READ_SMS) && granted(context, Manifest.permission.RECEIVE_SMS)
@@ -105,12 +104,12 @@ class DaybloomSmsModule : Module() {
 
   companion object {
     @Volatile private var current: WeakReference<DaybloomSmsModule>? = null
-    @Volatile private var foreground = false
 
     /** Tells the open app a text or answer is waiting. False when the app isn't on screen. */
     internal fun tellApp(): Boolean {
       val module = current?.get() ?: return false
-      if (!foreground) return false
+      val state = ActivityManager.RunningAppProcessInfo().also { ActivityManager.getMyMemoryState(it) }
+      if (state.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) return false
       return try {
         module.sendEvent("onText", emptyMap<String, Any>())
         true

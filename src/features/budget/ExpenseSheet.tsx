@@ -23,9 +23,10 @@ const field = 'h-12 rounded-xl border-[1.5px] border-outline-variant bg-surface 
 
 /**
  * "Add an expense" (BU-08, design/daybloom/budget#entry): amount, what it was for, category, day.
- * Amount must be above zero; a new category can be added right here.
+ * Amount must be above zero; a new category can be added right here. With `ask` it asks "What was
+ * it for?" about a payment read from a text (BU-11): the name starts empty, and left empty it stays.
  */
-export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }) {
+export function ExpenseSheet({ day, entryId, ask = false }: { day: string; entryId?: string; ask?: boolean }) {
   const closeSheet = useUi((s) => s.closeSheet);
   const showToast = useUi((s) => s.showToast);
   const settings = useSettings();
@@ -36,7 +37,7 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
   // a new expense keeps its typing when the sheet is closed by accident (UX-05, T-BU08.3)
   const draft = useDraft(entry ? null : 'expense', {
     amount: entry ? centsToInput(entry.amountCents) : '',
-    description: entry?.description ?? '',
+    description: entry && !ask ? entry.description : '',
   });
   const { amount, description } = draft.values;
   const [categoryId, setCategoryId] = useState<string | null>(
@@ -55,7 +56,7 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
     const sameDay = entry && toDayKey(new Date(entry.occurredAt)) === date;
     const input = {
       amountCents: cents,
-      description,
+      description: ask && entry && !description.trim() ? entry.description : description,
       categoryId,
       occurredAt: sameDay ? entry.occurredAt : date === today ? Date.now() : localDayStart(date) + 12 * 3_600_000,
       currency: entry?.currency ?? settings.currency,
@@ -87,10 +88,15 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
     <Sheet
       visible
       onClose={closeSheet}
-      title={entry ? t.budget.expense.editTitle : t.budget.expense.newTitle}
+      title={ask ? t.sms.askTitle : entry ? t.budget.expense.editTitle : t.budget.expense.newTitle}
       closeButton>
       <View className="gap-space-md pb-space-sm">
         <DraftNotice draft={draft} />
+        {entry?.source === 'sms' ? (
+          <Text variant="bodySm" color="onSurfaceVariant">
+            {t.sms.fromText(entry.payee)}
+          </Text>
+        ) : null}
         <MoneyField
           label={t.budget.expense.amount}
           value={amount}
@@ -105,7 +111,8 @@ export function ExpenseSheet({ day, entryId }: { day: string; entryId?: string }
           </Text>
           <TextField
             accessibilityLabel={t.budget.expense.whatFor}
-            placeholder={t.budget.expense.whatForPlaceholder}
+            placeholder={ask && entry ? entry.description : t.budget.expense.whatForPlaceholder}
+            autoFocus={ask}
             value={description}
             onChangeText={(v) => draft.set('description', v)}
             className={field}

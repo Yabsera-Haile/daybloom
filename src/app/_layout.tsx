@@ -26,15 +26,20 @@ import { useAutoBills } from '@/budget/useAutoBills';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
 import { useReminders } from '@/reminders/useReminders';
+import { useBankTexts } from '@/sms/useBankTexts';
 import { ThemeProvider } from '@/features/ThemeProvider';
 import { useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-/** Keeps reminders scheduled and bills paid on time (needs the database, so it lives inside DatabaseProvider). */
+/**
+ * Keeps reminders scheduled, bills paid on time and payments from bank texts added (needs the
+ * database, so it lives inside DatabaseProvider).
+ */
 function Reminders() {
   useReminders();
   useAutoBills();
+  useBankTexts();
   return null;
 }
 

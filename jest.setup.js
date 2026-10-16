@@ -36,7 +36,7 @@ jest.mock('expo-sqlite', () => ({ addDatabaseChangeListener: () => ({ remove: ()
 // Screens are tested on their own: navigation calls are recorded instead of moving anywhere, and
 // route params come from `globalThis.__routeParams`.
 jest.mock('expo-router', () => {
-  const router = { push: jest.fn(), back: jest.fn(), navigate: jest.fn(), replace: jest.fn() };
+  const router = { push: jest.fn(), back: jest.fn(), navigate: jest.fn(), replace: jest.fn(), dismissTo: jest.fn() };
   return {
     router,
     useRouter: () => router,

@@ -39,7 +39,9 @@ export function Overlays() {
       {sheet?.kind === 'note' ? (
         <NoteSheet key={keyOf(sheet)} day={sheet.day} hour={sheet.hour} noteId={sheet.noteId} />
       ) : null}
-      {sheet?.kind === 'expense' ? <ExpenseSheet key={keyOf(sheet)} day={sheet.day} entryId={sheet.entryId} /> : null}
+      {sheet?.kind === 'expense' ? (
+        <ExpenseSheet key={keyOf(sheet)} day={sheet.day} entryId={sheet.entryId} ask={sheet.ask} />
+      ) : null}
       <PickerHost />
       <Toast />
     </>
