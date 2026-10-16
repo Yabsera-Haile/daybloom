@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.8, 2026-10-15. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator; an installable build is with the owner for a check on a real phone (Samsung S24 Ultra), reminders included. Next: Phase 2 (polish and beta).
+**Status:** v0.9, 2026-10-17. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 adds expenses from bank texts (Android). Next: Phase 2 (polish and beta).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -115,10 +115,14 @@ Routine        id, name, icon, time?, reminder?, sortOrder, archivedAt
 Habit          id, name, detail, icon, frequency ('daily'|'weekly'), routineId?, sortOrder, archivedAt
 HabitCheck     habitId + period (a date, or a week's first day)    ← one row per tick
 Goal           id, title, note, icon, kind ('savings'|'general'), targetAmount, currentAmount, month?
-Entry          id, type ('expense'), amountCents, currency, description, budgetCategoryId, occurredAt
+Entry          id, type ('expense'), amountCents, currency, description, budgetCategoryId, occurredAt,
+               source ('sms'?), ref (the text's id, unique), payee
 BudgetCategory id, name, icon, colorKey, sortOrder, archivedAt
 Bill           id, title, amountCents, dueDate, dueDay, repeatMonths?, payment ('auto'|'manual'), lastPaidAt?
 BudgetPlan     period ('month'|'week'), startsOn, amountCents?   ← from that period on
+SmsSender      id, address, label, enabled, readUntil           ← bank texts (BU-11)
+SmsPattern     id, senderId, kind ('spend'|'income'|'ignore'), regex, amountGroup, feeGroup, payeeGroup, example
+SmsUnmatched   id, senderId, body, receivedAt                   ← texts to teach
 Settings       name, photo, weekStart, timeFormat, defaultReminder, seasons, hemisphere, currency, calm
 ```
 
@@ -183,6 +187,12 @@ Each milestone ends with an installable build on a real phone.
 - The header and tab bar are frosted glass on Android 12 and newer (expo-blur), plain paper before that.
 - The release build is shrunk (R8, resource shrinking, compressed native libraries) and built for one processor type per phone.
 - Screen tests render the real screens on an in-memory database (`src/__tests__`); end-to-end flows for Maestro are in `e2e/`.
+
+**v3 status (2026-10-17): expenses from bank texts (BU-11, D18).** Android only. Notes:
+- `src/sms/learn.ts` learns a sender's text shapes with no AI: it masks amounts, numbers, dates and ids, groups texts of one kind by aligning them word by word, guesses the kind from words like "payment" or "received", and writes a regex that both JavaScript and Java can run.
+- `modules/daybloom-sms` is Daybloom's own Expo module (Kotlin): it lists senders, reads a sender's texts, and catches new ones from picked senders (a receiver for SMS_RECEIVED), queueing them in SharedPreferences and showing the "What was it for?" notification with a reply box. The app adds what's queued when it opens or comes back, and also reads the inbox since the last read.
+- Tables `sms_senders`, `sms_patterns`, `sms_unmatched`; expenses from texts have `source` 'sms', `ref` (the text's id, unique, so a text is added once) and `payee`.
+- Google Play allows SMS reading for money management only with a permissions declaration; the declaration and a short video are needed before a Play release.
 
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 

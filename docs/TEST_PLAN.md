@@ -256,6 +256,23 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-BU04.1 | BU-04 | E2E | Set monthly budget to $4,000 (spent $3,120); then switch to $500 each week | Spent shows 78%; then the tab counts this week, earlier months keep theirs |
 | T-BU07.1 | BU-07 | E2E | View all → edit an entry's amount; delete another, Undo | Totals update; deleted entry restored |
 | T-BU10.1 | BU-10 | Unit | Bill due Oct 25 with "1 day before" | Reminder at 9 AM on Oct 24: "Due tomorrow · Car insurance", "$420.00 · Needs paying" |
+| T-BU11.1 | BU-11 | Unit | 20 made-up MoMo texts, an offer and a failed payment | Two payment shapes (16 and 1 texts); money in, the offer and the failed payment are not spending; every text has a shape |
+| T-BU11.2 | BU-11 | Unit | A MoMo payment, a payment with a fee, a received text | 7,380 to Aline (fee 0); 1,200 to Eric NSHUTI, fee 20; the balance is never read as the amount |
+| T-BU11.3 | BU-11 | Unit | Later payments to new people, in both shapes | Read with the new name and amount |
+| T-BU11.4 | BU-11 | Unit | Save MoMo, then learn it again | One sender "MoMo" with its shapes; learning again replaces them |
+| T-BU11.5 | BU-11 | Unit | Add a payment, money in and an offer | One expense "Aline · MoMo", 7,380, dated when the text came |
+| T-BU11.6 | BU-11 | Unit | A payment with a fee of 20 | Two expenses: the payment and "MoMo fee" (20) in Fees |
+| T-BU11.7 | BU-11 | Unit | The same text twice; again after deleting its expense | Added once; never added back |
+| T-BU11.8 | BU-11 | Unit | Give a payee's expense Dining, then a new payment to them | The new one is Dining (none if Dining was deleted) |
+| T-BU11.9 | BU-11 | Unit | Answer "Lunch with Sara" (then an empty answer) | The expense is renamed; an empty answer keeps the name |
+| T-BU11.10 | BU-11 | Unit | A text from another number; from a sender switched off | Nothing added |
+| T-BU11.11 | BU-11 | Unit | A payment text of an unknown shape, then taught | Listed to teach; once taught it's added and leaves the list |
+| T-BU11.13 | BU-11 | Component | Open bank texts with no senders, tap "Pick a sender" | Explains what it does and that nothing leaves the phone; asks to read texts, then shows senders |
+| T-BU11.14 | BU-11 | Component | A friend's number and MoMo in the inbox | MoMo under "Texts about money"; the friend only after "Show all senders" |
+| T-BU11.15 | BU-11 | Component | Set up MoMo from its texts, untick one payment, save | "16 texts like this", "Adds 7,380.00, paid to Aline"; 16 payments and one fee added, not the unticked one |
+| T-BU11.16 | BU-11 | Component | Mark the payment-with-fee kind as Skip, save | Those texts aren't added |
+| T-BU11.17 | BU-11 | Component | Teach a text that wasn't understood | "Adds 2,500.00"; saved, it's added and the list is gone |
+| T-BU11.12 | BU-11 | Manual (installed app, emulator `adb emu sms send`) | Set up MoMo from 20 texts; send a payment with Daybloom closed, reply "Lunch"; send one with Daybloom open | Shapes shown as above; notification "Paid 7,380 to Aline", the reply renames it; when open, "What was it for?" opens |
 | T-ST02.1 | ST-02 | E2E | Export data | File contains every event, task, habit, check and entry |
 | T-ST03.1 | ST-03 | E2E | Turn off Daybloom notifications in phone settings, open Reminder help | Notifications check shows "Off" with a button to fix it; "Send a test reminder" arrives within 1 minute once it's on |
 | T-NT01.1 | NT-01 | Component + manual | Reminders for an event, an urgent to-do, a routine and a bill | Each shows time + title first, at most two actions; urgent uses the rose accent; Snooze never moves past the event's start |
