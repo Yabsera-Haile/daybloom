@@ -137,6 +137,18 @@
         }
       ],
       [
+        "./plugins/withKeptSounds",
+        {
+          "sounds": [
+            "chime",
+            "bell",
+            "birdsong",
+            "marimba",
+            "ring"
+          ]
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {
