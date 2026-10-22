@@ -50,25 +50,41 @@ export async function pushConfig(db: Db, palette: Palette): Promise<void> {
 const NONE: Ingested = { added: [], unmatched: 0 };
 let queue: Promise<unknown> = Promise.resolve();
 
+type Note = Extract<QueueItem, { type: 'note' }>;
+
 async function run(db: Db): Promise<Ingested> {
   if (!sms) return NONE;
   const items = JSON.parse(sms.readQueue()) as QueueItem[];
-  const texts: Text[] = items.flatMap((i) => (i.type === 'text' ? [i] : []));
+  const currency = readSettings(db).currency;
+  const result: Ingested = { added: [], unmatched: 0 };
+  const add = (texts: Text[]) => {
+    if (!texts.length) return;
+    const r = ingest(db, texts, currency);
+    result.added.push(...r.added);
+    result.unmatched += r.unmatched;
+  };
+  // in the order they came: an answer's category is then known when the next payment to the same
+  // payee is added, even if that one was put off with "Later"
+  const waiting: Note[] = [];
+  for (const i of items) {
+    if (i.type === 'text') add([i]);
+    else if (!applyNote(db, i.id, i.note, i.categoryId)) waiting.push(i);
+  }
+  // then anything in the inbox the phone held back
   const senders = listSenders(db).filter((s) => s.enabled);
   if (senders.length && sms.hasPermission()) {
     const started = Date.now();
     const since = new Map(senders.map((s) => [s.address, s.readUntil]));
     const inbox = await sms.readTexts([...since.keys()], Math.min(...since.values()), 500);
-    texts.push(...inbox.filter((x) => x.receivedAt > (since.get(x.address) ?? Infinity)));
+    add(inbox.filter((x) => x.receivedAt > (since.get(x.address) ?? Infinity)));
     markRead(
       db,
       senders.map((s) => s.id),
       started,
     );
   }
-  const result = texts.length ? ingest(db, texts, readSettings(db).currency) : NONE;
-  // answers come after their texts, whose expenses now exist
-  for (const i of items) if (i.type === 'note') applyNote(db, i.id, i.note, i.categoryId);
+  // answers to texts that only came from the inbox
+  for (const i of waiting) applyNote(db, i.id, i.note, i.categoryId);
   sms.dropQueue(items.length);
   return result;
 }
