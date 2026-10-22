@@ -3,7 +3,10 @@ package expo.modules.daybloomsms
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import android.provider.Telephony
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
@@ -78,6 +81,16 @@ class DaybloomSmsModule : Module() {
     Function("dropQueue") { count: Int -> SmsStore.dropFirst(context, count) }
 
     Function("cancelNotice") { id: String -> Notices.cancel(context, id) }
+
+    /** Whether Daybloom may appear on top of other apps, to ask about a payment the moment it comes. */
+    Function("canPopUp") { PopUp.allowed(context) }
+
+    /** Opens the phone's "Appear on top" setting for Daybloom. */
+    Function("openPopUpSettings") {
+      val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+      val activity = appContext.currentActivity
+      if (activity != null) activity.startActivity(intent) else context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
   }
 
   private fun granted(context: Context, permission: String) =

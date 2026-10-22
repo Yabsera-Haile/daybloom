@@ -2,6 +2,8 @@
   <!-- Reading bank and mobile-money texts to add spending (BU-11). Texts stay on the phone. -->
   <uses-permission android:name="android.permission.READ_SMS" />
   <uses-permission android:name="android.permission.RECEIVE_SMS" />
+  <!-- "What was it for?" over other apps when a payment text arrives, if the person allows it -->
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
   <application>
     <receiver

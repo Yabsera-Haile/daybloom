@@ -5,7 +5,16 @@ import { createTestDb } from '@/db/testDb';
 import type { Db } from '@/db/types';
 
 import { MOMO_MESSAGES, MOMO_NOISE, MOMO_SENDER } from './fixtures';
-import { applyNote, entryForText, FEES_CATEGORY_ID, ingest, retryUnmatched, wasAdded, type Text } from './ingest';
+import {
+  applyNote,
+  entryForText,
+  FEES_CATEGORY_ID,
+  ingest,
+  payeeCategories,
+  retryUnmatched,
+  wasAdded,
+  type Text,
+} from './ingest';
 import { learnShapes, messageId, shapeOf } from './learn';
 import {
   addPattern,
@@ -136,6 +145,21 @@ describe('adding payments from texts', () => {
     // an empty answer keeps the name
     applyNote(db, ref, ' ');
     expect(getEntry(db, added[0].entryId)?.description).toBe('Lunch with Sara');
+  });
+
+  it('T-BU11.18 the pop-up’s answer can set the category, alone or with a name', () => {
+    const { added } = ingest(db, [text(MOMO_MESSAGES[0])], 'RWF');
+    const ref = messageId(MOMO_SENDER, MOMO_MESSAGES[0]);
+    applyNote(db, ref, '', 'dining');
+    expect(getEntry(db, added[0].entryId)).toMatchObject({ description: 'Aline · MoMo', budgetCategoryId: 'dining' });
+    applyNote(db, ref, 'Lunch', 'groceries');
+    expect(getEntry(db, added[0].entryId)).toMatchObject({ description: 'Lunch', budgetCategoryId: 'groceries' });
+    // a category deleted meanwhile is left out
+    deleteSpendCategory(db, 'fun');
+    applyNote(db, ref, '', 'fun');
+    expect(getEntry(db, added[0].entryId)?.budgetCategoryId).toBe('groceries');
+    // the pop-up picks each payee's last category
+    expect(payeeCategories(db)).toEqual({ Aline: 'groceries' });
   });
 
   it('T-BU11.10 texts from other senders, or a sender switched off, are left alone', () => {

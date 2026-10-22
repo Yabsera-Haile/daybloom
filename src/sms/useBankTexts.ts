@@ -28,10 +28,10 @@ export function useBankTexts(): void {
   // the Android side watches for new texts with the senders and shapes saved here
   useEffect(() => {
     if (!sms) return;
-    const push = () => void pushConfig(db, colors.primary).catch(() => undefined);
+    const push = () => void pushConfig(db, colors).catch(() => undefined);
     push();
     return onDataChanged(push);
-  }, [colors.primary]);
+  }, [colors]);
 
   useEffect(() => {
     const native = sms;

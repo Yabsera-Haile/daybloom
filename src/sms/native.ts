@@ -9,7 +9,8 @@ import type { Text } from './ingest';
 export type SenderSummary = { address: string; count: number; lastAt: number; samples: string[] };
 
 /** What waits in the module's queue: texts that arrived, and answers typed into a notification. */
-export type QueueItem = ({ type: 'text'; id: string } & Text) | { type: 'note'; id: string; note: string };
+export type QueueItem =
+  ({ type: 'text'; id: string } & Text) | { type: 'note'; id: string; note: string; categoryId?: string };
 
 declare class DaybloomSmsModule extends NativeModule<{ onText: () => void }> {
   hasPermission(): boolean;
@@ -19,6 +20,8 @@ declare class DaybloomSmsModule extends NativeModule<{ onText: () => void }> {
   readQueue(): string;
   dropQueue(count: number): void;
   cancelNotice(id: string): void;
+  canPopUp(): boolean;
+  openPopUpSettings(): void;
 }
 
 export const sms = Platform.OS === 'android' ? requireOptionalNativeModule<DaybloomSmsModule>('DaybloomSms') : null;

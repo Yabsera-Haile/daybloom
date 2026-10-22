@@ -18,7 +18,22 @@ internal object SmsStore {
 
   class Shape(val kind: String, val regex: Pattern, val amountGroup: Int, val payeeGroup: Int)
   class Sender(val address: String, val label: String, val shapes: List<Shape>)
-  class Config(val ask: Boolean, val senders: List<Sender>, val strings: JSONObject, val color: String?)
+  class Category(val id: String, val name: String)
+
+  /**
+   * `categories`: spending categories to pick from; `payees`: the category each payee was last given;
+   * `colors`: the app's colour theme (hex), so the pop-up looks like Daybloom.
+   */
+  class Config(
+    val ask: Boolean,
+    val senders: List<Sender>,
+    val strings: JSONObject,
+    val colors: JSONObject,
+    val categories: List<Category>,
+    val payees: JSONObject
+  ) {
+    val color: String? get() = colors.optString("primary", "").ifEmpty { null }
+  }
 
   private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
@@ -56,7 +71,14 @@ internal object SmsStore {
           )
         },
         strings = root.optJSONObject("strings") ?: JSONObject(),
-        color = root.optString("color", "").ifEmpty { null }
+        colors = root.optJSONObject("colors") ?: JSONObject(),
+        categories = (root.optJSONArray("categories") ?: JSONArray()).let { list ->
+          (0 until list.length()).map { i ->
+            val c = list.getJSONObject(i)
+            Category(c.getString("id"), c.getString("name"))
+          }
+        },
+        payees = root.optJSONObject("payees") ?: JSONObject()
       )
     } catch (e: Exception) {
       null
@@ -71,6 +93,17 @@ internal object SmsStore {
       // a long time closed: keep the newest; the app also reads the inbox when it opens
       val kept = if (queue.length() > 500) JSONArray((queue.length() - 500 until queue.length()).map { queue.get(it) }) else queue
       p.edit().putString(QUEUE, kept.toString()).commit()
+    }
+  }
+
+  /** The category a payee was just given in the pop-up, until the app sends its own list again. */
+  fun rememberPayee(context: Context, payee: String, categoryId: String) {
+    synchronized(lock) {
+      val p = prefs(context)
+      val root = runCatching { JSONObject(p.getString(CONFIG, null) ?: return) }.getOrNull() ?: return
+      val payees = root.optJSONObject("payees") ?: JSONObject().also { root.put("payees", it) }
+      payees.put(payee, categoryId)
+      p.edit().putString(CONFIG, root.toString()).apply()
     }
   }
 

@@ -13,7 +13,9 @@ import android.os.Build
 
 /** "Paid 7,380 to Aline · What was it for?", with a reply box. Words come from the app (en.ts). */
 internal object Notices {
-  const val CHANNEL = "bank-texts"
+  // high importance, so it shows at the top of the screen (the first channel, "bank-texts", didn't)
+  const val CHANNEL = "bank-texts-ask"
+  private const val OLD_CHANNEL = "bank-texts"
   const val EXTRA_ID = "id"
   const val KEY_NOTE = "note"
 
@@ -34,9 +36,10 @@ internal object Notices {
         .replace("{payee}", payment.payee ?: "")
         .replace("{label}", payment.label)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val channel = NotificationChannel(CHANNEL, word("channel", "Bank texts"), NotificationManager.IMPORTANCE_DEFAULT)
+      val channel = NotificationChannel(CHANNEL, word("channel", "Bank texts"), NotificationManager.IMPORTANCE_HIGH)
       channel.description = word("channelText", "")
       manager.createNotificationChannel(channel)
+      manager.deleteNotificationChannel(OLD_CHANNEL)
     }
     // reply: the answer names the expense
     val reply = Intent(context, ReplyReceiver::class.java).putExtra(EXTRA_ID, payment.id)

@@ -150,17 +150,46 @@ export function ingest(db: Db, texts: Text[], currency: string): Ingested {
   return out;
 }
 
-/** "What was it for?": the answer becomes the expense's name. */
-export function applyNote(db: Db, textId: string, note: string): string | null {
+/** "What was it for?": the answer becomes the expense's name, and a category picked with it is set. */
+export function applyNote(db: Db, textId: string, note: string, categoryId?: string | null): string | null {
   const text = note.trim();
   const row = db
     .select({ id: entries.id })
     .from(entries)
     .where(and(eq(entries.ref, textId), isNull(entries.deletedAt)))
     .get();
-  if (!row || !text) return row?.id ?? null;
-  db.update(entries).set({ description: text, updatedAt: Date.now() }).where(eq(entries.id, row.id)).run();
+  if (!row) return null;
+  const category = categoryId
+    ? db
+        .select({ id: budgetCategories.id })
+        .from(budgetCategories)
+        .where(and(eq(budgetCategories.id, categoryId), isNull(budgetCategories.archivedAt)))
+        .get()
+    : undefined;
+  if (!text && !category) return row.id;
+  db.update(entries)
+    .set({
+      ...(text ? { description: text } : {}),
+      ...(category ? { budgetCategoryId: category.id } : {}),
+      updatedAt: Date.now(),
+    })
+    .where(eq(entries.id, row.id))
+    .run();
   return row.id;
+}
+
+/** The category each payee was last given, for the pop-up to pick it already (newest wins). */
+export function payeeCategories(db: Db): Record<string, string> {
+  const rows = db
+    .select({ payee: entries.payee, id: entries.budgetCategoryId })
+    .from(entries)
+    .innerJoin(budgetCategories, eq(budgetCategories.id, entries.budgetCategoryId))
+    .where(and(isNotNull(entries.payee), isNull(entries.deletedAt), isNull(budgetCategories.archivedAt)))
+    .orderBy(desc(entries.updatedAt))
+    .all();
+  const out: Record<string, string> = {};
+  for (const r of rows) if (r.payee && r.id && !(r.payee in out)) out[r.payee] = r.id;
+  return out;
 }
 
 /** The expense a text was added as (for the notification's "open" tap). */

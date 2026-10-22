@@ -26,11 +26,18 @@ jest.mock('@/sms/native', () => ({
     readQueue: () => '[]',
     dropQueue: jest.fn(),
     cancelNotice: jest.fn(),
+    canPopUp: jest.fn(() => false),
+    openPopUpSettings: jest.fn(),
     addListener: () => ({ remove() {} }),
   },
   askToReadTexts: jest.fn(async () => true),
 }));
-const fake = sms as unknown as { listSenders: jest.Mock; readTexts: jest.Mock };
+const fake = sms as unknown as {
+  listSenders: jest.Mock;
+  readTexts: jest.Mock;
+  canPopUp: jest.Mock;
+  openPopUpSettings: jest.Mock;
+};
 
 const getDb = withTestDb();
 const now = Date.now();
@@ -123,5 +130,24 @@ describe('bank texts', () => {
     expect(listUnmatched(getDb(), id)).toEqual([]);
     expect(expensesIn(getDb(), month).map((e) => [e.amountCents, e.description])).toEqual([[250000, 'MoMo payment']]);
     expect(screen.queryByText(/didn’t understand/)).toBeNull();
+  });
+
+  it('T-BU11.19 asks to pop up over other apps, and says so once allowed', async () => {
+    saveSender(getDb(), {
+      address: MOMO_SENDER,
+      label: 'MoMo',
+      shapes: learnShapes(MOMO_MESSAGES).map(toSave),
+      readFrom: now,
+    });
+    const first = await render(<BankTextsScreen />);
+    expect(screen.getByText('Pop up over other apps')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'Allow' }));
+    expect(fake.openPopUpSettings).toHaveBeenCalled();
+    await first.unmount();
+
+    fake.canPopUp.mockReturnValue(true);
+    await render(<BankTextsScreen />);
+    expect(screen.getByText('Pops up over other apps')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Allow' })).toBeNull();
   });
 });

@@ -191,6 +191,7 @@ Each milestone ends with an installable build on a real phone.
 **v3 status (2026-10-17): expenses from bank texts (BU-11, D18).** Android only. Notes:
 - `src/sms/learn.ts` learns a sender's text shapes with no AI: it masks amounts, numbers, dates and ids, groups texts of one kind by aligning them word by word, guesses the kind from words like "payment" or "received", and writes a regex that both JavaScript and Java can run.
 - `modules/daybloom-sms` is Daybloom's own Expo module (Kotlin): it lists senders, reads a sender's texts, and catches new ones from picked senders (a receiver for SMS_RECEIVED), queueing them in SharedPreferences and showing the "What was it for?" notification with a reply box. The app adds what's queued when it opens or comes back, and also reads the inbox since the last read.
+- "What was it for?" over other apps is a native card (`PopUp.kt`, a window of type application overlay, needing "Appear on top"); the app hands it the categories, each payee's last category and the theme colours. Without the permission, a high-importance notification asks instead.
 - Tables `sms_senders`, `sms_patterns`, `sms_unmatched`; expenses from texts have `source` 'sms', `ref` (the text's id, unique, so a text is added once) and `payee`.
 - Google Play allows SMS reading for money management only with a permissions declaration; the declaration and a short video are needed before a Play release.
 

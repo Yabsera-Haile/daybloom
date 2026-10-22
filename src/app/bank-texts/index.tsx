@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Linking, Platform, Pressable, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AppState, Linking, Platform, Pressable, View } from 'react-native';
 
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
@@ -15,7 +15,8 @@ import { Button, Card, Icon, Page, Row, RowGroup, Sticker, Switch, Text } from '
 
 /**
  * Expenses from bank texts (BU-11, D18), from More: first an explanation and the permission, then
- * the senders being read, "Ask what each payment was for", and texts Daybloom didn't understand.
+ * the senders being read, "Ask what each payment was for" (best as a pop-up over other apps), and
+ * texts Daybloom didn't understand.
  */
 export default function BankTextsScreen() {
   const settings = useSettings();
@@ -24,6 +25,14 @@ export default function BankTextsScreen() {
   const [denied, setDenied] = useState(false);
   const [editing, setEditing] = useState<Sender | null>(null);
   const [teaching, setTeaching] = useState<Unmatched | null>(null);
+  // "Appear on top" is allowed in the phone's settings: check again on coming back from there
+  const [popUp, setPopUp] = useState(() => sms?.canPopUp() ?? false);
+  useEffect(() => {
+    const app = AppState.addEventListener('change', (state) => {
+      if (state === 'active') setPopUp(sms?.canPopUp() ?? false);
+    });
+    return () => app.remove();
+  }, []);
 
   const pick = async () => {
     if (await askToReadTexts()) {
@@ -102,6 +111,16 @@ export default function BankTextsScreen() {
           subtitle={t.sms.askText}
           right={<Switch value={settings.smsAsk} label={t.sms.ask} onChange={(v) => saveSetting(db, 'smsAsk', v)} />}
         />
+        {settings.smsAsk ? (
+          <Row
+            icon={popUp ? 'check_circle' : 'mobile'}
+            title={popUp ? t.sms.popUpOn : t.sms.popUp}
+            subtitle={popUp ? t.sms.popUpOnText : t.sms.popUpText}
+            right={
+              popUp ? undefined : <Button label={t.sms.allow} size="md" onPress={() => sms?.openPopUpSettings()} />
+            }
+          />
+        ) : null}
       </RowGroup>
 
       {unread.length ? (

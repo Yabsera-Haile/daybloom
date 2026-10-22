@@ -9,8 +9,9 @@ import org.json.JSONObject
 
 /**
  * A new text arrived. If it's from a sender the person picked, keep it for the app; if it's a
- * payment and Daybloom should ask about it, show a notification with a "What was it for?" reply.
- * When Daybloom is open, the app asks itself instead.
+ * payment and Daybloom should ask about it, ask "What was it for?" over whatever is on screen (or,
+ * without "Appear on top", in a notification with a reply box). When Daybloom is open, the app asks
+ * itself instead.
  */
 class SmsReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
@@ -59,7 +60,7 @@ class SmsReceiver : BroadcastReceiver() {
     if (!queued) return
     // the app is open: it adds the text and asks there
     if (DaybloomSmsModule.tellApp()) return
-    for (payment in payments) Notices.show(context, config, payment)
+    for (payment in payments) PopUp.show(context, config, payment)
   }
 }
 
