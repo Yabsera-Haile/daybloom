@@ -4,6 +4,7 @@ import { t } from '@/i18n';
 import { useTheme, type CategoryKey, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
+import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 type FilterChipProps = {
@@ -20,6 +21,7 @@ export function FilterChip({ label, selected = false, onPress }: FilterChipProps
       accessibilityState={{ selected }}
       onPress={onPress}
       hitSlop={6}
+      pressRetentionOffset={usePressRetention()}
       className={`h-9 justify-center rounded-full px-3 active:opacity-80 ${selected ? 'bg-primary' : 'border-[1.5px] border-outline-variant'}`}>
       <Text variant="labelMd" color={selected ? 'onPrimary' : 'onSurface'}>
         {label}

@@ -4,6 +4,7 @@ import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 import { fontFamilyFor, typography, useTheme, type ColorName, type TypographyVariant } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 type TextFieldProps = TextInputProps & { variant?: TypographyVariant; className?: string };
@@ -71,6 +72,7 @@ export function ChoiceChip({
       accessibilityLabel={label}
       onPress={onPress}
       hitSlop={4}
+      pressRetentionOffset={usePressRetention()}
       className={`h-10 flex-row items-center gap-1.5 rounded-full border-[1.5px] active:opacity-80 ${dot ? 'pl-2 pr-3.5' : 'px-3.5'} ${selected ? on : 'border-outline-variant bg-surface-container-lowest'}`}>
       {dot ? <View className="h-3 w-3 rounded-full" style={{ backgroundColor: dot }} /> : null}
       {icon ? <Icon name={icon} size={18} color={text} /> : null}
@@ -96,6 +98,7 @@ export function MenuRow({ icon, label, onPress, tone = 'normal', detail }: MenuR
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
+      pressRetentionOffset={usePressRetention()}
       className="min-h-[56px] flex-row items-center gap-space-md px-margin active:bg-surface-container-low">
       <Icon name={icon} color={tone === 'danger' ? 'secondary' : 'onSurfaceVariant'} />
       <View className="flex-1">
@@ -120,6 +123,7 @@ export function PickerPill({ label, value, onPress }: { label: string; value: st
       accessibilityLabel={`${label}, ${value}`}
       onPress={onPress}
       hitSlop={4}
+      pressRetentionOffset={usePressRetention()}
       className="h-10 flex-row items-center justify-center rounded-full bg-surface-container px-4 active:opacity-80">
       <Text variant="labelLg">{value}</Text>
     </Pressable>

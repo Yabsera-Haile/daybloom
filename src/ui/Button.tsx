@@ -3,6 +3,7 @@ import { Pressable, View, type PressableProps } from 'react-native';
 import type { ColorName } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 type Variant = 'primary' | 'outline' | 'tonal' | 'text' | 'danger';
@@ -43,6 +44,7 @@ export function Button({ label, variant = 'primary', size = 'lg', icon, fullWidt
     <Pressable
       accessibilityRole="button"
       hitSlop={size === 'md' ? 4 : 0}
+      pressRetentionOffset={usePressRetention()}
       className={`flex-row items-center justify-center gap-1.5 rounded-full active:opacity-80 ${sizeClass[size]} ${variantClass[variant]} ${fullWidth ? 'w-full' : alignClass[align]} ${className}`}
       {...rest}>
       {icon ? <Icon name={icon} size={20} color={color} /> : null}
@@ -71,6 +73,7 @@ export function IconButton({ icon, tone = 'plain', iconColor, filled, className 
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: !!rest.disabled }}
+      pressRetentionOffset={usePressRetention()}
       className={`h-12 w-12 items-center justify-center active:opacity-70 ${rest.disabled ? 'opacity-30' : ''} ${className}`}
       {...rest}>
       <View className={`h-10 w-10 items-center justify-center rounded-full ${circle}`}>

@@ -7,6 +7,7 @@ import { t } from '@/i18n';
 import { shadows } from '@/theme';
 
 import { IconButton } from './Button';
+import { InSheet } from './sheetContext';
 import { Text } from './Text';
 
 type SheetProps = {
@@ -132,7 +133,8 @@ export function Sheet({
             keyboardShouldPersistTaps="handled"
             bounces={false}
             contentContainerClassName={flush ? '' : 'px-margin'}>
-            {children}
+            {/* presses inside forgive a finger that drifts (see sheetContext.ts) */}
+            <InSheet.Provider value>{children}</InSheet.Provider>
           </ScrollView>
         </Animated.View>
       </View>

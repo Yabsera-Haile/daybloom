@@ -5,6 +5,7 @@ import { shadows, type ColorName } from '@/theme';
 
 import { PickerPill } from './Fields';
 import { Icon, type IconName } from './Icon';
+import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 /** White card that groups part of a form (habit, bill). */
@@ -38,6 +39,7 @@ export function RadioCard({
       accessibilityState={{ checked: on }}
       accessibilityLabel={[title, detail].filter(Boolean).join(', ')}
       onPress={onPress}
+      pressRetentionOffset={usePressRetention()}
       className={`min-h-touch flex-row items-center gap-3 rounded-2xl border-[1.5px] p-3 ${on ? 'border-primary bg-primary-fixed/40' : 'border-outline-variant'}`}>
       <View
         className={`h-6 w-6 items-center justify-center rounded-full border-2 ${on ? 'border-primary' : 'border-outline'}`}>
@@ -66,6 +68,7 @@ export function Segmented<T extends string>({
   options: { value: T; label: string }[];
   onChange: (value: T) => void;
 }) {
+  const pressRetentionOffset = usePressRetention();
   return (
     <View accessibilityRole="radiogroup" className="flex-row rounded-full bg-surface-container p-1">
       {options.map((o) => (
@@ -75,6 +78,7 @@ export function Segmented<T extends string>({
           accessibilityState={{ checked: value === o.value }}
           onPress={() => onChange(o.value)}
           hitSlop={{ top: 4, bottom: 4 }}
+          pressRetentionOffset={pressRetentionOffset}
           className={`min-h-11 flex-1 items-center justify-center rounded-full px-1 ${value === o.value ? 'bg-primary' : ''}`}>
           <Text
             variant="labelLg"

@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import { useTheme, type ColorName } from '@/theme';
 
 import { Icon } from './Icon';
+import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 type CheckboxProps = {
@@ -22,6 +23,7 @@ export function Checkbox({ checked, onChange, label, showLabel = false }: Checkb
       accessibilityState={{ checked }}
       accessibilityLabel={label}
       onPress={() => onChange?.(!checked)}
+      pressRetentionOffset={usePressRetention()}
       className="min-h-touch flex-row items-center gap-1">
       <View className="h-12 w-12 items-center justify-center">
         <View
@@ -48,6 +50,7 @@ type HabitCircleProps = {
 
 /** Habit tick: 28 visual, 32 touch (dense grid, NFR-04). Future days can't be ticked. */
 export function HabitCircle({ state, today = false, onPress, label }: HabitCircleProps) {
+  const pressRetentionOffset = usePressRetention();
   const ring = today ? { outlineWidth: 2, outlineStyle: 'solid' as const, outlineOffset: 1, outlineColor: 'rgba(67,101,79,0.4)' } : null;
   if (state === 'future') {
     return (
@@ -65,6 +68,7 @@ export function HabitCircle({ state, today = false, onPress, label }: HabitCircl
       accessibilityLabel={label}
       onPress={onPress}
       hitSlop={2}
+      pressRetentionOffset={pressRetentionOffset}
       style={ring}
       className={`h-7 w-7 items-center justify-center rounded-full ${done ? 'bg-primary' : 'border-[1.5px] border-outline bg-surface-container-lowest'}`}>
       {done ? <Icon name="check" size={18} color="onPrimary" /> : null}
@@ -89,6 +93,7 @@ export function Switch({ value, onChange, label, tone = 'primary' }: SwitchProps
       accessibilityLabel={label}
       onPress={() => onChange?.(!value)}
       hitSlop={8}
+      pressRetentionOffset={usePressRetention()}
       className="h-8 w-14 justify-center rounded-full px-1"
       style={{
         backgroundColor: value ? colors[on] : colors.surfaceContainerHighest,

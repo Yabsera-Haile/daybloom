@@ -9,6 +9,7 @@ import { shadows } from '@/theme';
 import { IconButton } from './Button';
 import { Icon, type IconName } from './Icon';
 import { Sheet } from './Sheet';
+import { SHEET_RETENTION, usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
 /**
@@ -89,6 +90,7 @@ type RowProps = {
 
 /** A settings row: icon, title (and subtitle), value, chevron. */
 export function Row({ icon, title, subtitle, value, onPress, right, first = false }: RowProps) {
+  const pressRetentionOffset = usePressRetention();
   const body = (
     <>
       <Icon name={icon} />
@@ -116,6 +118,7 @@ export function Row({ icon, title, subtitle, value, onPress, right, first = fals
       accessibilityRole="button"
       accessibilityLabel={[title, value].filter(Boolean).join(', ')}
       onPress={onPress}
+      pressRetentionOffset={pressRetentionOffset}
       className={`${className} active:bg-surface-container-low`}>
       {body}
     </Pressable>
@@ -146,6 +149,7 @@ export function ChoiceSheet<T extends string | number | null>({
               key={String(o.value)}
               accessibilityRole="radio"
               accessibilityState={{ checked: on }}
+              pressRetentionOffset={SHEET_RETENTION}
               onPress={() => {
                 onChoose(o.value);
                 onClose();
