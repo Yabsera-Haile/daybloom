@@ -67,6 +67,7 @@ export default function TodayScreen() {
       onAdd={() => openSheet({ kind: 'add', day, inline: true })}
       onSwipe={move}>
       <DateCard day={day} isToday={isToday} onMove={move} onToday={() => showDay(null)} />
+      <DailyQuote day={day} />
       {fresh && isToday ? (
         <View className="flex-row gap-space-sm rounded-2xl bg-primary-fixed/50 p-space-md">
           <Icon name="local_florist" size={28} color="primary" />
@@ -85,7 +86,6 @@ export default function TodayScreen() {
         <Intentions day={day} isToday={isToday} tasks={tasks} />
       </View>
       <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} markers={markers} />
-      <DailyQuote day={day} />
     </TabScreen>
   );
 }

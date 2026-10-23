@@ -4,13 +4,18 @@ import { quoteFor } from '@/planner/quotes';
 import { fontFamilyFor } from '@/theme';
 import { Icon, Text } from '@/ui';
 
-/** A gentle line at the bottom of Today (TD-18, design/daybloom/today): serif italic. */
+/**
+ * A gentle line just under the date on Today (TD-18): serif italic, no box, so it reads as part of
+ * the day's heading rather than one more card.
+ */
 export function DailyQuote({ day }: { day: string }) {
   return (
-    <View className="flex-row items-center gap-space-sm rounded-2xl bg-surface-container-high/60 p-space-md">
-      <Icon name="spa" color="secondary" />
+    <View className="flex-row items-start gap-space-sm px-space-sm">
+      <View className="pt-0.5">
+        <Icon name="spa" size={18} color="primary" />
+      </View>
       <Text
-        variant="bodyLg"
+        variant="bodyMd"
         color="onSurfaceVariant"
         style={{ flex: 1, fontFamily: fontFamilyFor('serif', '400', true) }}>
         {`“${quoteFor(day)}”`}
