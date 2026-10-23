@@ -1,8 +1,9 @@
 import { View } from 'react-native';
 
-import { dayOfYear, seasonOf } from '@/calendar/dates';
+import { dayOfYear } from '@/calendar/dates';
 import { parseDayKey } from '@/calendar/timezone';
 import { useSettings } from '@/data/hooks';
+import { seasonShown } from '@/features/ThemeProvider';
 import { t } from '@/i18n';
 import { longDay } from '@/i18n/format';
 import { Card, DateNavigator, Sticker, Text } from '@/ui';
@@ -22,7 +23,7 @@ export function DateCard({
   const settings = useSettings();
   const p = parseDayKey(day);
   const date = new Date(p.year, p.month - 1, p.day, 12);
-  const season = settings.seasons ? seasonOf(date, settings.hemisphere) : null;
+  const season = settings.seasons ? seasonShown(settings.theme, date, settings.hemisphere) : null;
   const { day: n, total } = dayOfYear(date);
   return (
     <Card tone="low" shadow className="flex-row items-start justify-between gap-space-sm">

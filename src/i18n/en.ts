@@ -905,10 +905,10 @@ export const en = {
     followSeasonsText: (season: string) => `Changes on the first day of each season · ${season} now`,
     followSeasonsNow: (season: string) => `${season} (follows the seasons)`,
     themeText: {
-      spring: 'Fresh leaves, blossom pink and daffodil',
-      summer: 'Sea teal, coral and sunflower',
+      spring: 'Cherry blossom, tulips and fresh leaves',
+      summer: 'Turquoise sea, coral and sunflower',
       autumn: 'Sage, terracotta and butterscotch',
-      winter: 'Frosty blue, cranberry and evergreen',
+      winter: 'Icy blue, cranberry and evergreen',
     } as Record<string, string>,
     reminderSound: 'Reminder sound',
     soundText: 'Tap a sound to hear it. Reminders and the test reminder use the one you pick.',

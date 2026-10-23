@@ -1,7 +1,12 @@
 // Builds the four seasonal colour themes (design/themes.json) from the approved autumn palette
 // (design/tokens.json "color"). Each colour keeps its exact brightness (WCAG luminance) and takes the
-// season's hue, so every text/background pair keeps the contrast checked for autumn (NFR-04).
-// Usage: npm run generate:themes
+// season's hue and colourfulness, so every text/background pair keeps the contrast checked for
+// autumn (NFR-04) while each season looks like itself (D16).
+//
+// Every season keeps the same jobs for its colours: primary is its own colour (buttons, the active
+// tab, Wellness); secondary is warm and red-ish, for urgent things, the time line and Delete;
+// tertiary is a third accent (Personal); the neutrals tint the paper.
+// Usage: npm run generate:themes (node scripts/show-themes.mjs compares them)
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,35 +28,54 @@ function familyOf(name) {
   return 'neutral';
 }
 
-/** Hue (OKLCH degrees) and how colourful each family is, relative to autumn. */
+/**
+ * Each family's hue (OKLCH degrees) and colourfulness (OKLCH chroma of its main colour; the family's
+ * other colours keep autumn's proportions, and are made as colourful as the screen allows).
+ * Seed colours from common seasonal palettes: blossom pink #FFB7C5, tulip #E8505B, fresh green
+ * #38761D; turquoise #1AB6B6, coral #FF6F61, sunflower #FFD166; icy blue #A9D6E5, navy #14213D,
+ * cranberry #8B1E3F, evergreen #1F5633.
+ */
 const seasons = {
   spring: {
     label: 'Spring',
-    description: 'Fresh leaves, blossom pink and daffodil',
-    primary: { hue: 132, chroma: 1.5 },
-    secondary: { hue: 0, chroma: 0.95 },
-    tertiary: { hue: 84, chroma: 1 },
-    neutral: { hue: 12, chroma: 1 },
-    outline: { hue: 132, chroma: 1 },
+    description: 'Cherry blossom, tulips and fresh leaves',
+    primary: { hue: 352, chroma: 0.13 },
+    secondary: { hue: 40, chroma: 0.15 },
+    tertiary: { hue: 135, chroma: 0.12 },
+    neutral: { hue: 355, chroma: 0.014 },
+    outline: { hue: 352, chroma: 0.016 },
   },
   summer: {
     label: 'Summer',
-    description: 'Sea teal, coral and sunflower',
-    primary: { hue: 210, chroma: 1.2 },
-    secondary: { hue: 18, chroma: 1.25 },
-    tertiary: { hue: 80, chroma: 1.15 },
-    neutral: { hue: 85, chroma: 1.1 },
-    outline: { hue: 210, chroma: 1 },
+    description: 'Turquoise sea, coral and sunflower',
+    primary: { hue: 206, chroma: 0.11 },
+    secondary: { hue: 28, chroma: 0.16 },
+    // a sunflower that still reads as sunshine when pale
+    tertiary: { hue: 92, chroma: 0.13, pale: 0.11 },
+    neutral: { hue: 200, chroma: 0.011 },
+    outline: { hue: 206, chroma: 0.016 },
   },
   winter: {
     label: 'Winter',
-    description: 'Frosty blue, cranberry and evergreen',
-    primary: { hue: 248, chroma: 1.25 },
-    secondary: { hue: 8, chroma: 0.95 },
-    tertiary: { hue: 165, chroma: 0.75 },
-    neutral: { hue: 250, chroma: 0.9 },
-    outline: { hue: 248, chroma: 1 },
+    description: 'Icy blue, cranberry and evergreen',
+    primary: { hue: 262, chroma: 0.12 },
+    secondary: { hue: 4, chroma: 0.14 },
+    tertiary: { hue: 162, chroma: 0.09 },
+    neutral: { hue: 252, chroma: 0.016 },
+    outline: { hue: 258, chroma: 0.018 },
   },
+};
+
+/** Pale colours (chips, highlights) stay soft however colourful the season: at most this chroma. */
+const PALE = { luminance: 0.6, chroma: 0.07 };
+
+/** Each family's main colour in autumn, which the others are measured against. */
+const BASE = {
+  primary: 'primary',
+  secondary: 'secondary',
+  tertiary: 'tertiary',
+  neutral: 'surface',
+  outline: 'outline',
 };
 
 function shift(season) {
@@ -64,8 +88,11 @@ function shift(season) {
       out[name] = hex;
       continue;
     }
-    const { hue, chroma } = season[family];
-    out[name] = withLuminance(hue, C * chroma, luminance(hex));
+    const { hue, chroma, pale = PALE.chroma } = season[family];
+    const scale = chroma / hexToOklch(autumn[BASE[family]]).C;
+    const y = luminance(hex);
+    const c = y > PALE.luminance ? Math.min(C * scale, Math.max(C, pale)) : C * scale;
+    out[name] = withLuminance(hue, c, y);
   }
   return out;
 }

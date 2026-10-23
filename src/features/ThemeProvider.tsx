@@ -10,9 +10,16 @@ import { ThemeContext, themes, type ThemeName } from '@/theme';
 
 /** The theme for a setting: a chosen season, or (auto) the season it is now where you live. */
 export function themeFor(choice: ThemeChoice, today: string, hemisphere: Hemisphere): ThemeName {
-  if (choice !== 'auto') return choice;
   const p = parseDayKey(today);
-  return seasonOf(new Date(p.year, p.month - 1, p.day), hemisphere);
+  return seasonShown(choice, new Date(p.year, p.month - 1, p.day), hemisphere);
+}
+
+/**
+ * The season pictured for a day (Today's sticker, Week, Month): the chosen colours' season, or with
+ * "Follow the seasons" the season that day where you live. So the picture always matches the colours.
+ */
+export function seasonShown(choice: ThemeChoice, date: Date, hemisphere: Hemisphere): ThemeName {
+  return choice === 'auto' ? seasonOf(date, hemisphere) : choice;
 }
 
 /**

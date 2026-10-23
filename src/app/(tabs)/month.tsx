@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { seasonOf, toDayKey, weeksInMonth } from '@/calendar/dates';
+import { toDayKey, weeksInMonth } from '@/calendar/dates';
 import { addDaysToKey, parseDayKey } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
@@ -10,6 +10,7 @@ import { useLive } from '@/data/live';
 import { MonthGoalCard } from '@/features/month/MonthGoal';
 import { plansByDay, type Plan } from '@/features/plans';
 import { TabScreen } from '@/features/TabScreen';
+import { seasonShown } from '@/features/ThemeProvider';
 import { t } from '@/i18n';
 import { clockText, fullDay, longDay, monthDay, monthYear, shortDay, timeOf, weekdayShort } from '@/i18n/format';
 import { eventsBetween } from '@/planner/events';
@@ -103,7 +104,7 @@ export default function MonthScreen() {
   const events = useLive(() => eventsBetween(db, first, last), [first, last]);
   const tasks = useLive(() => tasksBetween(db, first, last), [first, last]);
   const byDay = plansByDay(days, events, tasks);
-  const season = settings.seasons ? seasonOf(dateOf(first), settings.hemisphere) : null;
+  const season = settings.seasons ? seasonShown(settings.theme, dateOf(first), settings.hemisphere) : null;
 
   // summary (MO-02), worked out from the data (FR-13)
   const urgentCount = [...byDay.values()].flat().filter((p) => p.urgent && !p.done).length;

@@ -11,7 +11,7 @@ import { bestStreak, currentStreak, donePeriods, periodOf, startedOn } from '@/h
 import { setHabitDone } from '@/habits/store';
 import { t } from '@/i18n';
 import { fullDay, monthYear, weekdayLetter } from '@/i18n/format';
-import { shadows } from '@/theme';
+import { shadows, useTheme } from '@/theme';
 import { ChoiceChip, DateNavigator, Icon, Page, Sticker, Text } from '@/ui';
 
 function Stat({
@@ -47,6 +47,7 @@ export default function HabitHistoryScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const today = useToday();
   const settings = useSettings();
+  const { name: themeName } = useTheme();
   const ws = settings.weekStart;
   const { habits, checks } = useHabitData();
   const [selected, setSelected] = useState(id);
@@ -195,7 +196,7 @@ export default function HabitHistoryScreen() {
 
       {settings.calm ? null : (
         <View className="flex-row items-center gap-space-sm rounded-2xl bg-primary-fixed/40 p-space-md">
-          {settings.seasons ? <Sticker name="spring" size={48} rotate={-6} /> : <Icon name="eco" color="primary" />}
+          {settings.seasons ? <Sticker name={themeName} size={48} rotate={-6} /> : <Icon name="eco" color="primary" />}
           <Text variant="bodyMd" style={{ flex: 1 }}>
             {cheer}
           </Text>

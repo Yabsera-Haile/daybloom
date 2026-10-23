@@ -31,7 +31,7 @@ const currencyLabel = (code: string) => (t.currencies[code] ? `${t.currencies[co
 
 /** Settings (ST-01, SH-06): opened from More. Only what you change is saved; the rest follows the phone. */
 export default function SettingsScreen() {
-  const { lookFor } = useTheme();
+  const { lookFor, name: themeName } = useTheme();
   const settings = useSettings();
   const today = useToday();
   const categories = useCategories();
@@ -62,7 +62,7 @@ export default function SettingsScreen() {
       <View
         className="mt-space-sm flex-row items-center gap-space-md rounded-2xl bg-surface-container-lowest p-space-md"
         style={shadows.card}>
-        <Sticker name="spring" size={64} rotate={-6} />
+        <Sticker name={themeName} size={64} rotate={-6} />
         <View className="flex-1">
           <Text variant="labelMd" color="onSurfaceVariant">
             {t.settings.name}

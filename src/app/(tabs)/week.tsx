@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, View, type ScrollView } from 'react-native';
 
-import { seasonOf, toDayKey, weekNumber, weekRange } from '@/calendar/dates';
+import { toDayKey, weekNumber, weekRange } from '@/calendar/dates';
 import { addDaysToKey, parseDayKey } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
@@ -12,6 +12,7 @@ import { PlanRow } from '@/features/PlanRow';
 import { dayStatus, paceLabel, plansByDay, type Plan } from '@/features/plans';
 import { TaskForm } from '@/features/sheets/TaskForm';
 import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
+import { seasonShown } from '@/features/ThemeProvider';
 import { t } from '@/i18n';
 import { monthDay, weekdayLetter, weekdayLong } from '@/i18n/format';
 import { eventsBetween } from '@/planner/events';
@@ -267,7 +268,7 @@ export default function WeekScreen() {
         soFar.length + priorities.length,
       )
     : null;
-  const season = settings.seasons ? seasonOf(dateOf(start), settings.hemisphere) : null;
+  const season = settings.seasons ? seasonShown(settings.theme, dateOf(start), settings.hemisphere) : null;
 
   const move = (by: 1 | -1) => {
     const next = addDaysToKey(start, by * 7);
