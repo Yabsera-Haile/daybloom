@@ -1,5 +1,14 @@
 import { MOMO_MESSAGES, MOMO_NOISE, MOMO_SENDER } from './fixtures';
-import { learnShapes, looksLikeSpending, messageId, pieces, readWith, shapeOf, type LearnedShape } from './learn';
+import {
+  learnShapes,
+  looksLikeSpending,
+  messageId,
+  pieces,
+  readWith,
+  shapeOf,
+  withFee,
+  type LearnedShape,
+} from './learn';
 
 const read = (shapes: LearnedShape[], body: string) => {
   for (const s of shapes) {
@@ -63,6 +72,38 @@ describe('learning a sender’s texts', () => {
     const s = learnShapes(bank);
     expect(read(s, bank[1])).toEqual({ kind: 'spend', amountCents: 104575, feeCents: 0, payee: null });
     expect(read(s, bank[2])?.kind).toBe('income');
+  });
+});
+
+describe('amounts written against their currency', () => {
+  it('T-BU11.22 M-Pesa: "Ksh1,250.00" is the amount and "Transaction cost" the fee', () => {
+    const mpesa = [
+      'QJK3AB12CD Confirmed. Ksh1,250.00 sent to JOHN DOE 0712345678 on 17/10/26 at 9:15 AM. New M-PESA balance is Ksh3,420.50. Transaction cost, Ksh13.00.',
+      'QJK3AB12CE Confirmed. Ksh500.00 sent to MARY ROE 0722000111 on 18/10/26 at 1:20 PM. New M-PESA balance is Ksh2,907.50. Transaction cost, Ksh7.00.',
+    ];
+    const [shape] = learnShapes(mpesa);
+    expect(shape.kind).toBe('spend');
+    expect(readWith(shape.pattern, mpesa[0])).toEqual({ amountCents: 125000, feeCents: 1300, payee: 'JOHN DOE' });
+    expect(readWith(shape.pattern, mpesa[1])).toEqual({ amountCents: 50000, feeCents: 700, payee: 'MARY ROE' });
+  });
+
+  it('a fee written as "100RWF" is read, and an id like QJK3AB12CD is not taken for an amount', () => {
+    const body = 'QJK3AB12CD You sent 5,000RWF to Sam. Fee:100RWF. Balance:RWF900.';
+    const [shape] = learnShapes([body]);
+    expect(readWith(shape.pattern, body)).toEqual({ amountCents: 500000, feeCents: 10000, payee: 'Sam' });
+  });
+});
+
+describe('choosing the fee', () => {
+  it('T-BU11.23 any other number can be marked as the fee, or none', () => {
+    const body = MOMO_MESSAGES[2]; // "… 1200 RWF … Fee:20 RWF. Balance 38699 RWF."
+    const [shape] = learnShapes([body]);
+    const [amount, fee, balance] = shape.amountGroups;
+    expect(shape.pattern.feeGroup).toBe(fee);
+    expect(readWith(withFee(shape.pattern, null), body)?.feeCents).toBe(0);
+    expect(readWith(withFee(shape.pattern, balance), body)?.feeCents).toBe(3869900);
+    // the amount can't also be the fee
+    expect(withFee(shape.pattern, amount)).toEqual(shape.pattern);
   });
 });
 

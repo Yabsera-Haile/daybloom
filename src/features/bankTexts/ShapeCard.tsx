@@ -4,13 +4,13 @@ import { t } from '@/i18n';
 import type { LearnedShape, ShapeKind } from '@/sms/learn';
 import { Card, Segmented, Text } from '@/ui';
 
-import { AmountChips, MarkedText, ReadsAs } from './parts';
+import { AmountChips, FeeChips, MarkedText, ReadsAs } from './parts';
 
 const KINDS: ShapeKind[] = ['spend', 'income', 'ignore'];
 
 /**
  * One kind of text a sender sends, as Daybloom understood it: an example, whether it's a payment,
- * and (for payments) which number is the amount. The person corrects either with a tap.
+ * and (for payments) which numbers are the amount and the fee. The person corrects any of it with a tap.
  */
 export function ShapeCard({
   shape,
@@ -40,12 +40,20 @@ export function ShapeCard({
       {shape.kind === 'spend' ? (
         <View className="gap-space-sm">
           {shape.amountGroups.length > 1 ? (
-            <AmountChips
-              pattern={shape.pattern}
-              body={example}
-              groups={shape.amountGroups}
-              onChange={(pattern) => onChange({ ...shape, pattern })}
-            />
+            <>
+              <AmountChips
+                pattern={shape.pattern}
+                body={example}
+                groups={shape.amountGroups}
+                onChange={(pattern) => onChange({ ...shape, pattern })}
+              />
+              <FeeChips
+                pattern={shape.pattern}
+                body={example}
+                groups={shape.amountGroups}
+                onChange={(pattern) => onChange({ ...shape, pattern })}
+              />
+            </>
           ) : null}
           <ReadsAs pattern={shape.pattern} body={example} currency={currency} />
         </View>

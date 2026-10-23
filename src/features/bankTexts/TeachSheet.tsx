@@ -10,7 +10,7 @@ import { addPattern, dismissUnmatched, toSave, type Unmatched } from '@/sms/stor
 import { useUi } from '@/state/ui';
 import { Button, Card, Segmented, Sheet, Text } from '@/ui';
 
-import { AmountChips, MarkedText, ReadsAs } from './parts';
+import { AmountChips, FeeChips, MarkedText, ReadsAs } from './parts';
 
 /**
  * A text that looked like a payment but had no known shape (BU-11): the person says whether it is
@@ -53,12 +53,20 @@ export function TeachSheet({ text, onClose }: { text: Unmatched; onClose: () => 
           />
         </View>
         {payment && shape.amountGroups.length > 1 ? (
-          <AmountChips
-            pattern={shape.pattern}
-            body={text.body}
-            groups={shape.amountGroups}
-            onChange={(pattern) => setShape({ ...shape, pattern })}
-          />
+          <>
+            <AmountChips
+              pattern={shape.pattern}
+              body={text.body}
+              groups={shape.amountGroups}
+              onChange={(pattern) => setShape({ ...shape, pattern })}
+            />
+            <FeeChips
+              pattern={shape.pattern}
+              body={text.body}
+              groups={shape.amountGroups}
+              onChange={(pattern) => setShape({ ...shape, pattern })}
+            />
+          </>
         ) : null}
         {payment ? <ReadsAs pattern={shape.pattern} body={text.body} currency={settings.currency} /> : null}
         <Button label={t.common.save} fullWidth onPress={save} />

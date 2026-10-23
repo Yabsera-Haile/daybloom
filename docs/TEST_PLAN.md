@@ -276,6 +276,8 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-BU11.19 | BU-11 | Component | Bank texts with "Appear on top" not allowed, then allowed | "Pop up over other apps" with Allow (opens the phone's setting), then "Pops up over other apps" |
 | T-BU11.20 | BU-11 | Manual (installed app) | Allow "Appear on top", send a payment text while another app is open; pick Dining, type "Lunch", Save | The card shows at the top over the other app; the expense is "Lunch" in Dining; Later keeps "Aline · MoMo"; left alone for 90 seconds it becomes a notification |
 | T-BU11.21 | BU-11 | Unit | Waiting: a City Bus text, its answer (Transport), a second City Bus text put off with Later; the inbox also has one held back | All three added once; the answer names the first; both others are Transport |
+| T-BU11.22 | BU-11 | Unit | M-Pesa texts ("Ksh1,250.00 sent to … Transaction cost, Ksh13.00") | 1,250.00 to JOHN DOE with a fee of 13.00; a fee written "100RWF" is read too |
+| T-BU11.23 | BU-11 | Unit | Mark another number as the fee, or "No fee" | The fee follows; the amount can't also be the fee |
 | T-BU11.12 | BU-11 | Manual (installed app, emulator `adb emu sms send`) | Set up MoMo from 20 texts; send a payment with Daybloom closed, reply "Lunch"; send one with Daybloom open | Shapes shown as above; notification "Paid 7,380 to Aline", the reply renames it; when open, "What was it for?" opens |
 | T-ST02.1 | ST-02 | E2E | Export data | File contains every event, task, habit, check and entry |
 | T-ST03.1 | ST-03 | E2E | Turn off Daybloom notifications in phone settings, open Reminder help | Notifications check shows "Off" with a button to fix it; "Send a test reminder" arrives within 1 minute once it's on |

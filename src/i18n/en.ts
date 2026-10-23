@@ -694,6 +694,8 @@ export const en = {
     kinds: { spend: 'Payment', income: 'Money in', ignore: 'Skip' } as Record<string, string>,
     whichAmount: 'Which number is the amount paid?',
     amountChoice: (amount: string) => `Amount ${amount}`,
+    whichFee: 'Which number is the fee?',
+    noFee: 'No fee',
     readsAs: (amount: string, payee: string | null) => (payee ? `Adds ${amount}, paid to ${payee}` : `Adds ${amount}`),
     andFee: (fee: string) => `, and a fee of ${fee}`,
     notAdded: 'Not added to spending',

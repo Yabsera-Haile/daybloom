@@ -1,10 +1,10 @@
 // Pieces shared by the bank-text screens (BU-11): a text with its amount marked, the "which number
-// is the amount?" chips, and what a text would add.
+// is the amount / the fee?" chips, and what a text would add.
 import { View } from 'react-native';
 
 import { t } from '@/i18n';
 import { money } from '@/i18n/format';
-import { pieces, readWith, withAmount, type PatternDef } from '@/sms/learn';
+import { pieces, readWith, withAmount, withFee, type PatternDef } from '@/sms/learn';
 import { useTheme } from '@/theme';
 import { ChoiceChip, Text } from '@/ui';
 
@@ -30,6 +30,10 @@ export function MarkedText({ pattern, body, groups }: { pattern: PatternDef; bod
   );
 }
 
+/** The numbers in the text by their capture group. */
+const numbersIn = (pattern: PatternDef, body: string, groups: number[]) =>
+  new Map(pieces(pattern, body, groups).flatMap((p) => (p.group ? [[p.group, p.text] as const] : [])));
+
 /** Each number in the text that could be the amount, to pick one. */
 export function AmountChips({
   pattern,
@@ -42,7 +46,7 @@ export function AmountChips({
   groups: number[];
   onChange: (pattern: PatternDef) => void;
 }) {
-  const values = new Map(pieces(pattern, body, groups).flatMap((p) => (p.group ? [[p.group, p.text] as const] : [])));
+  const values = numbersIn(pattern, body, groups);
   return (
     <View className="gap-2">
       <Text variant="labelMd" color="onSurfaceVariant">
@@ -59,6 +63,44 @@ export function AmountChips({
             />
           ) : null,
         )}
+      </View>
+    </View>
+  );
+}
+
+/** "Which number is the fee?": another number in the text, or none. */
+export function FeeChips({
+  pattern,
+  body,
+  groups,
+  onChange,
+}: {
+  pattern: PatternDef;
+  body: string;
+  groups: number[];
+  onChange: (pattern: PatternDef) => void;
+}) {
+  const values = numbersIn(pattern, body, groups);
+  const others = groups.filter((g) => g !== pattern.amountGroup && values.has(g));
+  return (
+    <View className="gap-2">
+      <Text variant="labelMd" color="onSurfaceVariant">
+        {t.sms.whichFee}
+      </Text>
+      <View accessibilityRole="radiogroup" accessibilityLabel={t.sms.whichFee} className="flex-row flex-wrap gap-2">
+        <ChoiceChip
+          label={t.sms.noFee}
+          selected={pattern.feeGroup === null}
+          onPress={() => onChange(withFee(pattern, null))}
+        />
+        {others.map((g) => (
+          <ChoiceChip
+            key={g}
+            label={values.get(g)!}
+            selected={pattern.feeGroup === g}
+            onPress={() => onChange(withFee(pattern, g))}
+          />
+        ))}
       </View>
     </View>
   );

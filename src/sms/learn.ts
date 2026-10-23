@@ -58,6 +58,26 @@ const CURRENCIES = new Set(
 );
 const isCurrency = (t: RawToken | undefined) => !!t && t.kind === 'word' && CURRENCIES.has(t.text.toLowerCase());
 
+/** An amount written against its currency: "Ksh1,250.00", "RWF500", "100RWF". */
+const NUMBER = String.raw`\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?`;
+const GLUED: { re: RegExp; currencyFirst: boolean }[] = [
+  { re: new RegExp(String.raw`^([A-Za-z]{1,4}|[$€£₦₵])(${NUMBER})(?![A-Za-z\d])`), currencyFirst: true },
+  { re: new RegExp(String.raw`^(${NUMBER})([A-Za-z]{2,4})(?![A-Za-z\d])`), currencyFirst: false },
+];
+
+function glued(rest: string): RawToken[] | null {
+  for (const { re, currencyFirst } of GLUED) {
+    const m = re.exec(rest);
+    if (!m) continue;
+    const [currency, number] = currencyFirst ? [m[1], m[2]] : [m[2], m[1]];
+    if (!CURRENCIES.has(currency.toLowerCase())) continue;
+    const word: RawToken = { kind: 'word', text: currency };
+    const num: RawToken = { kind: 'num', text: number };
+    return currencyFirst ? [word, num] : [num, word];
+  }
+  return null;
+}
+
 export function tokenize(text: string): RawToken[] {
   const out: RawToken[] = [];
   let rest = text;
@@ -65,6 +85,12 @@ export function tokenize(text: string): RawToken[] {
     const space = /^\s+/.exec(rest);
     if (space) {
       rest = rest.slice(space[0].length);
+      continue;
+    }
+    const split = glued(rest);
+    if (split) {
+      out.push(...split);
+      rest = rest.slice(split.reduce((n, t) => n + t.text.length, 0));
       continue;
     }
     let matched = false;
@@ -264,7 +290,8 @@ const PROMO = new Set([
   'http',
   'https',
 ]);
-const FEE = new Set(['fee', 'fees', 'charge', 'charges', 'commission']);
+// "Transaction cost" is M-Pesa's word for its fee
+const FEE = new Set(['fee', 'fees', 'charge', 'charges', 'commission', 'cost']);
 const BALANCE = new Set(['balance', 'bal', 'available', 'avail', 'limit', 'vat', 'tax']);
 
 function kindOf(t: Tok[]): ShapeKind {
@@ -403,6 +430,12 @@ export function shapeOf(body: string, kind: ShapeKind, amountIndex = 0): Learned
 export function withAmount(p: PatternDef, group: number | undefined): PatternDef {
   if (!group) return p;
   return { ...p, amountGroup: group, feeGroup: p.feeGroup === group ? null : p.feeGroup };
+}
+
+/** The pattern with another of its numbers as the fee, or no fee ("which number is the fee?"). */
+export function withFee(p: PatternDef, group: number | null): PatternDef {
+  if (group !== null && group === p.amountGroup) return p;
+  return { ...p, feeGroup: group };
 }
 
 // --------------------------------------------------------------------------------------------
