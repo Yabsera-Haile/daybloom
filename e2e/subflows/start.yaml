@@ -1,4 +1,4 @@
-# Shared start: a fresh app, onboarding skipped, on Today.
+# Shared start: a fresh app, onboarding and the tour skipped, on Today.
 appId: com.daybloom.app
 ---
 - launchApp:
@@ -7,6 +7,10 @@ appId: com.daybloom.app
     visible: "Skip"
     timeout: 20000
 - tapOn: "Skip"
+- extendedWaitUntil:
+    visible: "Skip tour"
+    timeout: 10000
+- tapOn: "Skip tour"
 - extendedWaitUntil:
     visible: "Daily Intentions"
     timeout: 10000

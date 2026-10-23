@@ -229,6 +229,13 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-EV06.1 | EV-06 | Unit | Titles "Lunch with Sam", "Morning walk", "Zoom call", "Quarterly review" (Work) | Fork-and-knife, walking, video, and the Work category icon |
 | T-EV07.1 | EV-07 | Component | Open "+ Add" → Event at 1:15 PM | Wed, Oct 23 · 2:00–3:00 PM · Personal · 10 min before; title focused |
 | T-ON01.1 | ON-01 | E2E | Fresh install, go through onboarding, skip name | Lands on Today with empty state; permission asked once |
+| T-ON01.2 | ON-01 | Component | Android with texts and a battery limit: skip name and reminders, allow texts, not now to the rest | Pages for reminders, payment texts, popping up and the battery in turn, then done ("Change any of these in Settings › Phone permissions"); the planner opens |
+| T-ON01.3 | ON-01 | Component | No bank texts on this phone, battery not limited | Reminders go straight to done |
+| T-ON01.4 | ON-01 | Component | Texts not allowed | No pop-up page |
+| T-ON02.1 | ON-02 | Component | Start the tour: Show me, Next, Next, Back | "1 of 9" Today, then + Add, then Week (Week tab opened), back to + Add |
+| T-ON02.2 | ON-02 | Component | From Habits to the end | Habits, Budget, Savings and bills, bank texts, Search, "You’re ready"; Start planning ends it on Today and remembers |
+| T-ON02.3 | ON-02 | Component | Skip tour on the first card | The tour ends and isn't shown again |
+| T-ON02.4 | ON-02 | Manual (installed app) | Fresh install; then Settings › Take the tour again | The part being explained is highlighted on each tab (savings scrolled into view); the tour comes back from Settings |
 | T-ST01.1 | ST-01 | E2E | Change week start to Monday | Week, Month and Habits all start on Monday |
 | T-ST04.1 | ST-04, NFR-04 | Unit | Each seasonal theme | All text colour pairs ≥ 4.5:1; "Follow the seasons" gives spring in October in the south, autumn in the north |
 | T-ST05.1 | ST-05 | Manual (installed app) | Pick Birdsong, then Vibrate only; send a test reminder each time | The reminder chirps, then only buzzes; the next real reminder does the same |
