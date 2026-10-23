@@ -135,6 +135,9 @@ export function listUnmatched(db: Db, senderId?: string): Unmatched[] {
     .reverse();
 }
 
+export const getUnmatched = (db: Db, id: string): Unmatched | undefined =>
+  db.select().from(smsUnmatched).where(eq(smsUnmatched.id, id)).get();
+
 export function dismissUnmatched(db: Db, id: string): void {
   db.delete(smsUnmatched).where(eq(smsUnmatched.id, id)).run();
 }

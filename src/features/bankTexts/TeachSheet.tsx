@@ -6,7 +6,7 @@ import { useSettings } from '@/data/hooks';
 import { t } from '@/i18n';
 import { retryUnmatched } from '@/sms/ingest';
 import { shapeOf } from '@/sms/learn';
-import { addPattern, dismissUnmatched, toSave, type Unmatched } from '@/sms/store';
+import { addPattern, dismissUnmatched, getUnmatched, toSave, type Unmatched } from '@/sms/store';
 import { useUi } from '@/state/ui';
 import { Button, Card, Segmented, Sheet, Text } from '@/ui';
 
@@ -16,7 +16,13 @@ import { AmountChips, FeeChips, MarkedText, ReadsAs } from './parts';
  * A text that looked like a payment but had no known shape (BU-11): the person says whether it is
  * one and which number is the amount, and Daybloom learns texts like it from then on.
  */
-export function TeachSheet({ text, onClose }: { text: Unmatched; onClose: () => void }) {
+export function TeachSheet({ textId }: { textId: string }) {
+  const closeSheet = useUi((s) => s.closeSheet);
+  const [text] = useState(() => getUnmatched(db, textId));
+  return text ? <TeachForm text={text} onClose={closeSheet} /> : null;
+}
+
+function TeachForm({ text, onClose }: { text: Unmatched; onClose: () => void }) {
   const settings = useSettings();
   const showToast = useUi((s) => s.showToast);
   const [shape, setShape] = useState(() => shapeOf(text.body, 'spend'));

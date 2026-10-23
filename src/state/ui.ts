@@ -20,7 +20,10 @@ export type SheetState =
    * New or edited expense (BU-08), dated by `day` when new. `ask`: "What was it for?" about a
    * payment read from a text (BU-11)
    */
-  | { kind: 'expense'; day: string; entryId?: string; ask?: boolean };
+  | { kind: 'expense'; day: string; entryId?: string; ask?: boolean }
+  /** A bank-text sender, and a text to teach (BU-11) */
+  | { kind: 'sender'; senderId: string }
+  | { kind: 'teach'; textId: string };
 
 export type Toast = { message: string; undo?: Undo; id: number };
 

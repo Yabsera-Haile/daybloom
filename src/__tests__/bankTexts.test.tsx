@@ -14,7 +14,7 @@ import { MOMO_MESSAGES, MOMO_NOISE, MOMO_SENDER } from '@/sms/fixtures';
 import { learnShapes } from '@/sms/learn';
 import { sms } from '@/sms/native';
 import { listSenders, listUnmatched, saveSender, toSave } from '@/sms/store';
-import { SenderSheet } from '@/features/bankTexts/SenderSheet';
+import { Overlays } from '@/features/sheets/Overlays';
 import { useUi } from '@/state/ui';
 import { refresh, setParams } from '@/test/screen';
 
@@ -123,7 +123,13 @@ describe('bank texts', () => {
     });
     const odd = 'You paid 2,500 RWF for airtime 0788000000 on 2026-10-17. Thank you for using MoMo.';
     ingest(getDb(), [{ address: MOMO_SENDER, body: odd, receivedAt: now }], 'USD');
-    await render(<BankTextsScreen />);
+    // the teach sheet opens above the screens, through Overlays
+    await render(
+      <>
+        <BankTextsScreen />
+        <Overlays />
+      </>,
+    );
     expect(screen.getByText('Texts Daybloom didn’t understand (1)')).toBeTruthy();
     await fireEvent.press(screen.getByText(odd));
     expect(screen.getByText('Adds 2,500.00')).toBeTruthy();
@@ -154,34 +160,37 @@ describe('bank texts', () => {
   });
 
   it('T-BU11.24 the sender sheet keeps changes when it closes and says what happened', async () => {
-    saveSender(getDb(), {
+    const senderId = saveSender(getDb(), {
       address: MOMO_SENDER,
       label: 'MoMo',
       shapes: learnShapes(MOMO_MESSAGES).map(toSave),
       readFrom: now,
     });
     const momo = () => listSenders(getDb())[0];
-    const onClose = jest.fn();
+    const open = () => useUi.getState().openSheet({ kind: 'sender', senderId });
 
     // tapped twice quickly: back where it was, nothing changed
-    let sheet = await render(<SenderSheet sender={momo()} onClose={onClose} />);
+    open();
+    let sheet = await render(<Overlays />);
     const toggle = screen.getByRole('switch', { name: 'Read this sender’s texts' });
     await fireEvent.press(toggle);
     await fireEvent.press(toggle);
     expect(screen.getByText('New MoMo payments are added')).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
     expect(useUi.getState().toast?.message).toBe('Saved');
+    expect(useUi.getState().sheet).toBeNull();
     expect(momo().enabled).toBe(true);
     await sheet.unmount();
 
     // switched off: saved on closing, with a message
-    sheet = await render(<SenderSheet sender={momo()} onClose={onClose} />);
+    open();
+    sheet = await render(<Overlays />);
     await fireEvent.press(screen.getByRole('switch', { name: 'Read this sender’s texts' }));
     expect(screen.getByText('Its texts are left alone')).toBeTruthy();
     expect(momo().enabled).toBe(true);
     await fireEvent.press(screen.getAllByRole('button', { name: 'Close' })[0]);
     expect(momo().enabled).toBe(false);
     expect(useUi.getState().toast?.message).toBe('MoMo texts are off');
-    expect(onClose).toHaveBeenCalledTimes(2);
+    expect(useUi.getState().sheet).toBeNull();
   });
 });

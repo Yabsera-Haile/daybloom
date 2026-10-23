@@ -5,12 +5,11 @@ import { AppState, Linking, Platform, Pressable, View } from 'react-native';
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
 import { useLive } from '@/data/live';
-import { SenderSheet } from '@/features/bankTexts/SenderSheet';
-import { TeachSheet } from '@/features/bankTexts/TeachSheet';
 import { t } from '@/i18n';
 import { saveSetting } from '@/settings';
 import { askToReadTexts, sms } from '@/sms/native';
-import { listSenders, listUnmatched, patternsOf, type Sender, type Unmatched } from '@/sms/store';
+import { listSenders, listUnmatched, patternsOf } from '@/sms/store';
+import { useUi } from '@/state/ui';
 import { Button, Card, Icon, Page, Row, RowGroup, Sticker, Switch, Text } from '@/ui';
 
 /**
@@ -23,8 +22,8 @@ export default function BankTextsScreen() {
   const senders = useLive(() => listSenders(db).map((s) => ({ ...s, shapes: patternsOf(db, s.id).length })), []);
   const unread = useLive(() => listUnmatched(db), []);
   const [denied, setDenied] = useState(false);
-  const [editing, setEditing] = useState<Sender | null>(null);
-  const [teaching, setTeaching] = useState<Unmatched | null>(null);
+  // the sender and teach sheets open above the screens, like every other sheet
+  const openSheet = useUi((s) => s.openSheet);
   // "Appear on top" is allowed in the phone's settings: check again on coming back from there
   const [popUp, setPopUp] = useState(() => sms?.canPopUp() ?? false);
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function BankTextsScreen() {
             icon="sms"
             title={s.label}
             subtitle={[s.address, s.enabled ? t.sms.shapes(s.shapes) : t.sms.off].join(' · ')}
-            onPress={() => setEditing(s)}
+            onPress={() => openSheet({ kind: 'sender', senderId: s.id })}
           />
         ))}
         <Row icon="add" title={t.sms.addSender} onPress={pick} />
@@ -140,7 +139,7 @@ export default function BankTextsScreen() {
               key={u.id}
               accessibilityRole="button"
               accessibilityHint={t.sms.teachTitle}
-              onPress={() => setTeaching(u)}
+              onPress={() => openSheet({ kind: 'teach', textId: u.id })}
               className="active:opacity-80">
               <Card className="flex-row items-center gap-space-sm p-space-md">
                 <Text variant="bodyMd" color="onSurfaceVariant" numberOfLines={3} style={{ flex: 1 }}>
@@ -159,9 +158,6 @@ export default function BankTextsScreen() {
           {t.sms.privacy}
         </Text>
       </View>
-
-      {editing ? <SenderSheet sender={editing} onClose={() => setEditing(null)} /> : null}
-      {teaching ? <TeachSheet text={teaching} onClose={() => setTeaching(null)} /> : null}
     </Page>
   );
 }

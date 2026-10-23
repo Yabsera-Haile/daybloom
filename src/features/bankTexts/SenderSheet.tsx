@@ -4,15 +4,23 @@ import { View } from 'react-native';
 
 import { db } from '@/db/client';
 import { t } from '@/i18n';
-import { removeSender, renameSender, setSenderEnabled, type Sender } from '@/sms/store';
+import { getSender, removeSender, renameSender, setSenderEnabled, type Sender } from '@/sms/store';
 import { useUi } from '@/state/ui';
 import { Button, Row, Sheet, Switch, Text, TextField } from '@/ui';
 
 /**
  * One sender: its name, on or off, learn its texts again, or stop reading it (BU-11). Changes are
- * kept when the sheet closes, and a short message says what happened.
+ * kept when the sheet closes, and a short message says what happened. Opened through Overlays, like
+ * every sheet above the screens.
  */
-export function SenderSheet({ sender, onClose }: { sender: Sender; onClose: () => void }) {
+export function SenderSheet({ senderId }: { senderId: string }) {
+  const closeSheet = useUi((s) => s.closeSheet);
+  // read once: the sheet edits its own copy until it closes
+  const [sender] = useState(() => getSender(db, senderId));
+  return sender ? <SenderForm sender={sender} onClose={closeSheet} /> : null;
+}
+
+function SenderForm({ sender, onClose }: { sender: Sender; onClose: () => void }) {
   const showToast = useUi((s) => s.showToast);
   const [label, setLabel] = useState(sender.label);
   const [enabled, setEnabled] = useState(sender.enabled);

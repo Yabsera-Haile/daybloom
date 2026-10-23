@@ -1,4 +1,6 @@
 import { db } from '@/db/client';
+import { SenderSheet } from '@/features/bankTexts/SenderSheet';
+import { TeachSheet } from '@/features/bankTexts/TeachSheet';
 import { ExpenseSheet } from '@/features/budget/ExpenseSheet';
 import { useLive } from '@/data/live';
 import { t } from '@/i18n';
@@ -25,7 +27,7 @@ function TaskSheet({ sheet }: { sheet: Extract<SheetState, { kind: 'task' }> }) 
 }
 
 const keyOf = (s: SheetState) =>
-  `${s.kind}:${'taskId' in s ? s.taskId : ''}:${'occurrence' in s ? s.occurrence.key : ''}:${'noteId' in s ? s.noteId : ''}:${'entryId' in s ? s.entryId : ''}`;
+  `${s.kind}:${'taskId' in s ? s.taskId : ''}:${'occurrence' in s ? s.occurrence.key : ''}:${'noteId' in s ? s.noteId : ''}:${'entryId' in s ? s.entryId : ''}:${'senderId' in s ? s.senderId : ''}:${'textId' in s ? s.textId : ''}`;
 
 /** The sheet that is open (one at a time) and the Undo bar, above every screen. */
 export function Overlays() {
@@ -42,6 +44,8 @@ export function Overlays() {
       {sheet?.kind === 'expense' ? (
         <ExpenseSheet key={keyOf(sheet)} day={sheet.day} entryId={sheet.entryId} ask={sheet.ask} />
       ) : null}
+      {sheet?.kind === 'sender' ? <SenderSheet key={keyOf(sheet)} senderId={sheet.senderId} /> : null}
+      {sheet?.kind === 'teach' ? <TeachSheet key={keyOf(sheet)} textId={sheet.textId} /> : null}
       <PickerHost />
       <Toast />
     </>
