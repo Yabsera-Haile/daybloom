@@ -25,6 +25,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAutoBills } from '@/budget/useAutoBills';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
+import { Tour } from '@/features/tour/Tour';
 import { useReminders } from '@/reminders/useReminders';
 import { useBankTexts } from '@/sms/useBankTexts';
 import { ThemeProvider } from '@/features/ThemeProvider';
@@ -78,6 +79,7 @@ export default function RootLayout() {
             <StatusBar style="dark" />
             <Screens />
             <Overlays />
+            <Tour />
             <Reminders />
           </ThemeProvider>
         </DatabaseProvider>

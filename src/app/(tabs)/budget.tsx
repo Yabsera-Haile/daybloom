@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { View } from 'react-native';
+import { useRef, useState } from 'react';
+import { View, type ScrollView } from 'react-native';
 
 import { listBills, markBillPaid, upcomingBills } from '@/budget/bills';
 import { allSpendCategories } from '@/budget/categories';
@@ -14,11 +14,11 @@ import { useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { BudgetSheet } from '@/features/budget/BudgetSheet';
 import { BillCard, BudgetCard, CategoryBars, EntryRow, GoalCard, ListCard } from '@/features/budget/parts';
-import { TabScreen } from '@/features/TabScreen';
+import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { money, monthDay, monthName, monthYear, timeOf } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { Button, Card, DateNavigator, EmptyState, IconButton, SectionHeader, Sticker, Text } from '@/ui';
+import { Button, Card, DateNavigator, EmptyState, IconButton, SectionHeader, Sticker, Text, useTourTarget } from '@/ui';
 
 /**
  * Budget (BU-01…10; design/daybloom/budget, with ideas from Cashew): how much is left this month or
@@ -64,8 +64,17 @@ export default function BudgetScreen() {
       : `${monthDay(range.start)} – ${monthDay(range.end)}`;
   const left = summary.budgetCents ? Math.max(0, Math.round((1 - summary.usedShare) * 100)) : 0;
 
+  // the tour scrolls down to savings goals to show them (ON-02)
+  const scroll = useRef<ScrollView>(null);
+  const savingsY = useRef(0);
+  const headerOffset = useHeaderOffset();
+  const savingsRef = useTourTarget<View>('savings', () =>
+    scroll.current?.scrollTo({ y: Math.max(0, savingsY.current - headerOffset), animated: false }),
+  );
+
   return (
     <TabScreen
+      ref={scroll}
       section={t.tabs.budget}
       onAdd={() => openSheet({ kind: 'expense', day: addDay })}
       addLabel={t.budget.addExpense}
@@ -206,7 +215,11 @@ export default function BudgetScreen() {
         )}
       </View>
 
-      <View className="gap-space-sm">
+      <View
+        ref={savingsRef}
+        collapsable={false}
+        onLayout={(e) => (savingsY.current = e.nativeEvent.layout.y)}
+        className="gap-space-sm">
         <SectionHeader
           title={t.budget.savings}
           icon="savings"

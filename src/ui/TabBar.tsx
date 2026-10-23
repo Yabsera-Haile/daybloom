@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
+import { useTourTarget, type TargetId } from './tourTarget';
 
 const tabIcons: Record<string, IconName> = {
   index: 'today',
@@ -19,6 +20,25 @@ const TOP = 8;
 /** Height of the tab bar, gesture bar included: pages leave this much room at the bottom. */
 export function useTabBarHeight(): number {
   return TOP + ITEM + Math.max(useSafeAreaInsets().bottom, 8);
+}
+
+function TabItem({ name, label, focused, onPress }: { name: string; label: string; focused: boolean; onPress: () => void }) {
+  // the tour points at each tab
+  const ref = useTourTarget<View>(`tab-${name}` as TargetId);
+  return (
+    <Pressable
+      ref={ref}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: focused }}
+      accessibilityLabel={label}
+      onPress={onPress}
+      className={`h-14 min-w-[60px] items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
+      <Icon name={tabIcons[name] ?? 'today'} filled={focused} color={focused ? 'primary' : 'onSurfaceVariant'} />
+      <Text variant="labelSm" color={focused ? 'primary' : 'onSurfaceVariant'}>
+        {label}
+      </Text>
+    </Pressable>
+  );
 }
 
 /**
@@ -40,20 +60,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
           if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params);
         };
-        return (
-          <Pressable
-            key={route.key}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: focused }}
-            accessibilityLabel={label}
-            onPress={onPress}
-            className={`h-14 min-w-[60px] items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
-            <Icon name={tabIcons[route.name] ?? 'today'} filled={focused} color={focused ? 'primary' : 'onSurfaceVariant'} />
-            <Text variant="labelSm" color={focused ? 'primary' : 'onSurfaceVariant'}>
-              {label}
-            </Text>
-          </Pressable>
-        );
+        return <TabItem key={route.key} name={route.name} label={label} focused={focused} onPress={onPress} />;
       })}
     </View>
   );

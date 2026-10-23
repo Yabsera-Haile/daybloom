@@ -8,6 +8,7 @@ import { Button, IconButton } from './Button';
 import { Icon, type IconName } from './Icon';
 import { Logo, Sticker, type StickerName } from './Sticker';
 import { Text } from './Text';
+import { useTourTarget } from './tourTarget';
 
 type CardProps = ViewProps & {
   tone?: 'lowest' | 'low' | 'container';
@@ -122,6 +123,8 @@ export function AppHeader({
   onSearch?: () => void;
   onMore?: () => void;
 }) {
+  const searchRef = useTourTarget<View>('search');
+  const menuRef = useTourTarget<View>('menu');
   return (
     <View className="h-16 flex-row items-center justify-between pl-margin pr-2">
       <View className="flex-row items-center gap-space-sm" accessible accessibilityLabel={`Daybloom, ${section}`}>
@@ -136,8 +139,14 @@ export function AppHeader({
         </View>
       </View>
       <View className="flex-row items-center">
-        <IconButton icon="search" tone="tonal" accessibilityLabel={t.header.search} onPress={onSearch} />
-        {onMore ? <IconButton icon="menu" tone="tonal" accessibilityLabel={t.header.more} onPress={onMore} /> : null}
+        <View ref={searchRef} collapsable={false}>
+          <IconButton icon="search" tone="tonal" accessibilityLabel={t.header.search} onPress={onSearch} />
+        </View>
+        {onMore ? (
+          <View ref={menuRef} collapsable={false}>
+            <IconButton icon="menu" tone="tonal" accessibilityLabel={t.header.more} onPress={onMore} />
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -145,8 +154,10 @@ export function AppHeader({
 
 /** Floating "+ Add" pill (one add button everywhere, DESIGN_REVIEW I7). */
 export function Fab({ label = t.common.add, onPress }: { label?: string; onPress?: () => void }) {
+  const ref = useTourTarget<View>('add');
   return (
     <Pressable
+      ref={ref}
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}

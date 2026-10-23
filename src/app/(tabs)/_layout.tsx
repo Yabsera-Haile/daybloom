@@ -1,14 +1,22 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
+import { useEffect } from 'react';
 
+import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
+import { TOUR_FLAG, useTour } from '@/features/tour/store';
 import { t } from '@/i18n';
+import { readFlag } from '@/settings';
 import { useTheme } from '@/theme';
 import { TabBar } from '@/ui';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
   const settings = useSettings();
+  // the tour, once (ON-02): after the first-run pages, or the first time after the update that added it
+  useEffect(() => {
+    if (settings.onboarded && !readFlag(db, TOUR_FLAG) && useTour.getState().step === null) useTour.getState().start();
+  }, [settings.onboarded]);
   if (!settings.onboarded) return <Redirect href="/onboarding" />;
   return (
     <Tabs

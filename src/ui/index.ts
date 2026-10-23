@@ -11,3 +11,4 @@ export { Logo, Sticker, type StickerName } from './Sticker';
 export { TabBar, useTabBarHeight } from './TabBar';
 export { Text, type TextProps } from './Text';
 export { Toast } from './Toast';
+export { findTarget, revealTarget, useTourTarget, type Rect, type TargetId } from './tourTarget';
