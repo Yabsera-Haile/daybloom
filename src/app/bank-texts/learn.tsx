@@ -31,6 +31,8 @@ export default function LearnScreen() {
   const { colors } = useTheme();
   const showToast = useUi((s) => s.showToast);
   const [loaded, setLoaded] = useState<Loaded | 'loading' | 'failed'>('loading');
+  // learning a sender again, or for the first time
+  const [existing] = useState(() => listSenders(db).some((s) => s.address === address));
   const [label, setLabel] = useState(
     () => listSenders(db).find((s) => s.address === address)?.label ?? labelFor(address),
   );
@@ -68,7 +70,7 @@ export default function LearnScreen() {
     saveSender(db, { address, label: name, shapes: shapes.map(toSave), readFrom: loaded.readAt });
     const chosen = payments.filter((p) => !skipped.has(p.id)).map((p) => p.text);
     const { added } = ingest(db, chosen, settings.currency);
-    showToast(t.sms.saved(added.length));
+    showToast(existing ? t.sms.relearned(name, added.length) : t.sms.saved(added.length));
     router.dismissTo('/bank-texts');
   };
 

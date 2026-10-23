@@ -14,6 +14,8 @@ import { MOMO_MESSAGES, MOMO_NOISE, MOMO_SENDER } from '@/sms/fixtures';
 import { learnShapes } from '@/sms/learn';
 import { sms } from '@/sms/native';
 import { listSenders, listUnmatched, saveSender, toSave } from '@/sms/store';
+import { SenderSheet } from '@/features/bankTexts/SenderSheet';
+import { useUi } from '@/state/ui';
 import { refresh, setParams } from '@/test/screen';
 
 // the phone's texts, faked: the Android module isn't there in tests
@@ -149,5 +151,37 @@ describe('bank texts', () => {
     await render(<BankTextsScreen />);
     expect(screen.getByText('Pops up over other apps')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Allow' })).toBeNull();
+  });
+
+  it('T-BU11.24 the sender sheet keeps changes when it closes and says what happened', async () => {
+    saveSender(getDb(), {
+      address: MOMO_SENDER,
+      label: 'MoMo',
+      shapes: learnShapes(MOMO_MESSAGES).map(toSave),
+      readFrom: now,
+    });
+    const momo = () => listSenders(getDb())[0];
+    const onClose = jest.fn();
+
+    // tapped twice quickly: back where it was, nothing changed
+    let sheet = await render(<SenderSheet sender={momo()} onClose={onClose} />);
+    const toggle = screen.getByRole('switch', { name: 'Read this sender’s texts' });
+    await fireEvent.press(toggle);
+    await fireEvent.press(toggle);
+    expect(screen.getByText('New MoMo payments are added')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    expect(useUi.getState().toast?.message).toBe('Saved');
+    expect(momo().enabled).toBe(true);
+    await sheet.unmount();
+
+    // switched off: saved on closing, with a message
+    sheet = await render(<SenderSheet sender={momo()} onClose={onClose} />);
+    await fireEvent.press(screen.getByRole('switch', { name: 'Read this sender’s texts' }));
+    expect(screen.getByText('Its texts are left alone')).toBeTruthy();
+    expect(momo().enabled).toBe(true);
+    await fireEvent.press(screen.getAllByRole('button', { name: 'Close' })[0]);
+    expect(momo().enabled).toBe(false);
+    expect(useUi.getState().toast?.message).toBe('MoMo texts are off');
+    expect(onClose).toHaveBeenCalledTimes(2);
   });
 });

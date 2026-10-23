@@ -712,6 +712,13 @@ export const en = {
 
     senderTitle: 'Sender',
     readOn: 'Read this sender’s texts',
+    readOnText: (name: string) => `New ${name} payments are added`,
+    readOffText: 'Its texts are left alone',
+    senderSaved: 'Saved',
+    turnedOn: (name: string) => `Reading ${name} texts again`,
+    turnedOff: (name: string) => `${name} texts are off`,
+    relearned: (name: string, n: number) =>
+      n ? `Learned ${name} texts again · added ${times(n, 'payment', 'payments')}` : `Learned ${name} texts again`,
     learnAgain: 'Learn its texts again',
     remove: 'Stop reading this sender',
     removeText: 'Expenses already added stay.',
