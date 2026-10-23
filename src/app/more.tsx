@@ -6,13 +6,14 @@ import { db } from '@/db/client';
 import { useLive } from '@/data/live';
 import { t } from '@/i18n';
 import { listSenders } from '@/sms/store';
+import { useTour } from '@/features/tour/store';
 import { Icon, Page, Row, RowGroup, Text, type IconName } from '@/ui';
 
 type Item = { icon: IconName; title: string; detail?: string; href?: Href; onPress?: () => void; right?: ReactNode };
 
 /**
  * More (D6), opened from the ≡ button in the header now that Budget has its tab: spending
- * categories, expenses from bank texts, Settings, reminder help. No profile or account (D8).
+ * categories, expenses from bank texts, Settings, reminder help, the tour. No profile or account (D8).
  */
 export default function MoreScreen() {
   const reading = useLive(
@@ -40,6 +41,15 @@ export default function MoreScreen() {
       rows: [
         { icon: 'settings', title: t.more.settings, href: '/settings' },
         { icon: 'notifications_active', title: t.more.help, detail: t.more.helpText, href: '/reminder-help' },
+        {
+          icon: 'touch_app',
+          title: t.more.tour,
+          detail: t.more.tourText,
+          onPress: () => {
+            router.dismissAll();
+            useTour.getState().start();
+          },
+        },
         ...(__DEV__
           ? [
               {

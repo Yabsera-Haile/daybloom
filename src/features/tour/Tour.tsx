@@ -6,6 +6,7 @@ import { t } from '@/i18n';
 import { shadows, useTheme } from '@/theme';
 import { Button, findTarget, revealTarget, Text, type Rect } from '@/ui';
 
+import { TourPicture } from './Pictures';
 import { tourSteps } from './steps';
 import { useTour } from './store';
 
@@ -14,8 +15,9 @@ const GAP = 14;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * The first-run tour (ON-02), drawn over the real app: the screen dims except the part being
- * explained, with a card saying what it does. Skip, Back and Next; Android's back goes back a step.
+ * The tour (ON-02), drawn over the real app: the screen dims except the part being explained, with
+ * a card saying what it does (and, for bank texts, a small picture of each screen). Skip, Back and
+ * Next; Android's back goes back a step.
  */
 export function Tour() {
   const step = useTour((s) => s.step);
@@ -26,7 +28,8 @@ export function Tour() {
 function TourStepView({ step }: { step: number }) {
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
-  const steps = useMemo(() => tourSteps(), []);
+  const part = useTour((s) => s.part);
+  const steps = useMemo(() => tourSteps(part), [part]);
   const go = useTour((s) => s.go);
   const stop = useTour((s) => s.stop);
   const s = steps[Math.min(step, steps.length - 1)];
@@ -64,7 +67,8 @@ function TourStepView({ step }: { step: number }) {
 
   const finish = () => {
     stop();
-    router.navigate('/');
+    // the whole tour ends on Today; the bank-texts part where it started
+    if (part === 'app') router.navigate('/');
   };
 
   const h = hole && {
@@ -76,12 +80,11 @@ function TourStepView({ step }: { step: number }) {
   const dim = { position: 'absolute' as const, backgroundColor: colors.scrim, opacity: 0.62 };
   // the card goes on the far side of the highlighted part
   const below = h ? h.y + h.height / 2 < height / 2 : false;
-  const cardPlace = h
-    ? below
-      ? { top: h.y + h.height + GAP }
-      : { bottom: height - h.y + GAP }
-    : { top: height * 0.3 };
-  const features = steps.length - 2;
+  const cardPlace = h ? (below ? { top: h.y + h.height + GAP } : { bottom: height - h.y + GAP }) : null;
+  // "3 of 14": the steps between the welcome and the goodbye (the bank-texts part has no goodbye)
+  const counted = part === 'app' ? steps.length - 2 : steps.length - 1;
+  const showCount = step > 0 && (part === 'texts' || !last);
+  const ending = last && part === 'app';
 
   return (
     // takes every touch: the app underneath waits until the tour is done
@@ -111,33 +114,43 @@ function TourStepView({ step }: { step: number }) {
       )}
 
       {ready ? (
+        // with nothing to point at, the card sits in the middle of the screen
         <View
-          accessibilityViewIsModal
-          accessibilityLiveRegion="polite"
-          className="absolute gap-space-sm rounded-3xl bg-surface-container-lowest p-space-md"
-          style={[shadows.float, cardPlace, { left: 16, width: Math.min(width - 32, 480) }]}>
-          {step > 0 && !last ? (
-            <Text variant="labelMd" color="primary">
-              {t.tour.count(step, features)}
+          pointerEvents="box-none"
+          style={[StyleSheet.absoluteFill, cardPlace ? null : { justifyContent: 'center', paddingHorizontal: 16 }]}>
+          <View
+            accessibilityViewIsModal
+            accessibilityLiveRegion="polite"
+            className="gap-space-sm rounded-3xl bg-surface-container-lowest p-space-md"
+            style={[
+              shadows.float,
+              { width: Math.min(width - 32, 480) },
+              cardPlace ? { position: 'absolute', left: 16, ...cardPlace } : null,
+            ]}>
+            {showCount ? (
+              <Text variant="labelMd" color="primary">
+                {t.tour.count(step, counted)}
+              </Text>
+            ) : null}
+            <Text variant="headlineSm" accessibilityRole="header">
+              {s.title}
             </Text>
-          ) : null}
-          <Text variant="headlineSm" accessibilityRole="header">
-            {s.title}
-          </Text>
-          <Text variant="bodyMd" color="onSurfaceVariant">
-            {s.text}
-          </Text>
-          <View className="mt-1 flex-row items-center justify-between gap-2">
-            {last ? <View /> : <Button label={t.tour.skip} variant="text" size="md" onPress={stop} />}
-            <View className="flex-row gap-2">
-              {step > 0 && !last ? (
-                <Button label={t.tour.back} variant="outline" size="md" onPress={() => go(step - 1)} />
-              ) : null}
-              <Button
-                label={step === 0 ? t.tour.start : last ? t.tour.finish : t.tour.next}
-                size="md"
-                onPress={last ? finish : () => go(step + 1)}
-              />
+            <Text variant="bodyMd" color="onSurfaceVariant">
+              {s.text}
+            </Text>
+            {s.picture ? <TourPicture id={s.picture} /> : null}
+            <View className="mt-1 flex-row items-center justify-between gap-2">
+              {ending ? <View /> : <Button label={t.tour.skip} variant="text" size="md" onPress={stop} />}
+              <View className="flex-row gap-2">
+                {step > 0 && !ending ? (
+                  <Button label={t.tour.back} variant="outline" size="md" onPress={() => go(step - 1)} />
+                ) : null}
+                <Button
+                  label={step === 0 ? t.tour.start : ending ? t.tour.finish : last ? t.tour.gotIt : t.tour.next}
+                  size="md"
+                  onPress={last ? finish : () => go(step + 1)}
+                />
+              </View>
             </View>
           </View>
         </View>

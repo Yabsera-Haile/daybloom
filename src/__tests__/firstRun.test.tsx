@@ -98,7 +98,7 @@ describe('the tour', () => {
     await render(<Tour />);
     expect(await screen.findByText('A quick look around')).toBeTruthy();
     await tap('Show me');
-    expect(await screen.findByText('1 of 9')).toBeTruthy();
+    expect(await screen.findByText('1 of 14')).toBeTruthy();
     expect(screen.getByText('Today')).toBeTruthy();
     await tap('Next');
     expect(await screen.findByText('Add anything')).toBeTruthy();
@@ -109,8 +109,8 @@ describe('the tour', () => {
     expect(await screen.findByText('Add anything')).toBeTruthy();
   });
 
-  it('T-ON02.2 the tour shows habits, budget, savings and bank texts, and ends on Today', async () => {
-    useTour.getState().go(5);
+  it('T-ON02.2 the tour shows habits, budget, savings and bank texts step by step, and ends on Today', async () => {
+    useTour.setState({ step: 5, part: 'app' });
     await render(<Tour />);
     expect(await screen.findByText('Habits')).toBeTruthy();
     await tap('Next');
@@ -119,6 +119,16 @@ describe('the tour', () => {
     expect(await screen.findByText('Savings and bills')).toBeTruthy();
     await tap('Next');
     expect(await screen.findByText('Spending from your bank texts')).toBeTruthy();
+    for (const title of [
+      'Pick who texts you',
+      'Check what it understood',
+      'Add this month’s payments',
+      'Say what it was for',
+      'Fees, and texts it doesn’t know',
+    ]) {
+      await tap('Next');
+      expect(await screen.findByText(title)).toBeTruthy();
+    }
     await tap('Next');
     expect(await screen.findByText('Search')).toBeTruthy();
     await tap('Next');
@@ -137,5 +147,21 @@ describe('the tour', () => {
     expect(useTour.getState().step).toBeNull();
     expect(readFlag(getDb(), TOUR_FLAG)).toBe(true);
     expect(screen.queryByText('A quick look around')).toBeNull();
+  });
+
+  it('T-ON02.5 "How it works" on bank texts shows just that part, and ends where it started', async () => {
+    useTour.getState().start('texts');
+    await render(<Tour />);
+    expect(await screen.findByText('Spending from your bank texts')).toBeTruthy();
+    await tap('Show me');
+    expect(await screen.findByText('1 of 5')).toBeTruthy();
+    expect(screen.getByText('Pick who texts you')).toBeTruthy();
+    for (let i = 0; i < 4; i++) await tap('Next');
+    expect(await screen.findByText('Fees, and texts it doesn’t know')).toBeTruthy();
+    await tap('Got it');
+    expect(useTour.getState().step).toBeNull();
+    expect(router.navigate).not.toHaveBeenCalled();
+    // this part alone doesn't count as having seen the tour
+    expect(readFlag(getDb(), TOUR_FLAG)).toBe(false);
   });
 });

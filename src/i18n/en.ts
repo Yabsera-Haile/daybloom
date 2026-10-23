@@ -441,6 +441,8 @@ export const en = {
     settings: 'Settings',
     help: 'Reminders not arriving?',
     helpText: 'Steps for Samsung, Xiaomi and others',
+    tour: 'Take the tour',
+    tourText: 'A quick look at what Daybloom can do',
     gallery: 'Component gallery',
     galleryText: 'Check the building blocks against the designs',
     private: 'Everything stays on this phone. No account needed.',
@@ -671,6 +673,7 @@ export const en = {
     unread: 'Texts Daybloom didn’t understand',
     unreadText: 'They look like payments but don’t match what Daybloom learned. Tap one to show it.',
     privacy: 'Daybloom reads texts only from the senders above, on this phone, and never sends them anywhere.',
+    howItWorks: 'How it works',
 
     pickTitle: 'Pick a sender',
     pickIntro: 'Who sends your payment texts? Senders whose texts mention money come first.',
@@ -1080,13 +1083,42 @@ export const en = {
       'Save towards goals bit by bit, and keep bills here so they’re added to your spending when they’re paid.',
     more: 'More',
     moreText: 'Spending categories, Settings, and help if reminders don’t arrive.',
-    moreTexts: 'Spending from your bank texts',
-    moreTextsText:
-      'Open More and pick MoMo, M-Pesa or your bank: each payment is added for you, with its fee, and you can say what it was for. Settings are here too.',
+    gotIt: 'Got it',
+    texts: 'Spending from your bank texts',
+    textsText:
+      'If you pay with MoMo, M-Pesa or a bank that texts you, Daybloom can add those payments to your budget for you. It starts here: tap ≡, then “Add expenses from bank texts”.',
+    textsHereText:
+      'Daybloom can add the payments from your MoMo, M-Pesa or bank texts to your budget for you. Here’s how it works, step by step.',
+    textsPick: 'Pick who texts you',
+    textsPickText:
+      'Daybloom lists who sends you texts, with money senders first. Pick yours, for example M-Money for MoMo. It reads only the senders you pick, and only on your phone.',
+    textsKinds: 'Check what it understood',
+    textsKindsText:
+      'It reads their last 100 texts and sorts them into kinds. Check each kind is right: Payment, Money in or Skip. If it chose the wrong number, tap the right amount or fee.',
+    textsMonth: 'Add this month’s payments',
+    textsMonthText:
+      'Choose which payments from this month to add now, and untick any you don’t want. From then on, each new payment is added as it comes.',
+    textsAsk: 'Say what it was for',
+    textsAskText:
+      'When a payment comes, Daybloom asks what it was for, even over another app. Type a name, pick a category, or tap Later. Next time it picks that category for the same shop or person.',
+    textsFees: 'Fees, and texts it doesn’t know',
+    textsFeesText:
+      'A fee becomes its own expense in Fees, so you see what each service costs. If a text looks like a payment but isn’t recognised, it’s listed on the bank texts page for you to show Daybloom once.',
+    pictures: {
+      sendersDetail: '54 texts · last today',
+      kindsBefore: 'Your payment of',
+      kindsAfter: (currency: string) => ` ${currency} to Aline was completed. Fee 0 ${currency}.`,
+      monthOne: '7,380 to Aline · Oct 15',
+      monthTwo: '1,400 to Kamali · Oct 14',
+      popUpHeading: 'MoMo · Paid 2,500 to Corner Cafe',
+      feesPayment: 'Bus to work · MoMo',
+      feesPaymentDetail: 'Transport',
+      feesFee: 'MoMo fee',
+    },
     search: 'Search',
     searchText: 'Find any plan, to-do, habit or expense.',
     done: 'You’re ready',
-    doneText: 'Take the tour again any time in Settings.',
+    doneText: 'Settings, help and this tour are under ≡ whenever you need them.',
   },
 
   help: {

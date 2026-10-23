@@ -5,6 +5,7 @@ import { AppState, Linking, Platform, Pressable, View } from 'react-native';
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
 import { useLive } from '@/data/live';
+import { useTour } from '@/features/tour/store';
 import { t } from '@/i18n';
 import { saveSetting } from '@/settings';
 import { askToReadTexts, sms } from '@/sms/native';
@@ -79,6 +80,13 @@ export default function BankTextsScreen() {
             ))}
           </View>
           <Button label={t.sms.start} icon="sms" fullWidth onPress={pick} />
+          <Button
+            label={t.sms.howItWorks}
+            icon="help"
+            variant="text"
+            fullWidth
+            onPress={() => useTour.getState().start('texts')}
+          />
         </Card>
         {permission}
       </Page>
@@ -151,6 +159,14 @@ export default function BankTextsScreen() {
           ))}
         </View>
       ) : null}
+
+      <Button
+        label={t.sms.howItWorks}
+        icon="help"
+        variant="outline"
+        fullWidth
+        onPress={() => useTour.getState().start('texts')}
+      />
 
       <View className="flex-row items-start justify-center gap-1 px-space-md">
         <Icon name="lock" size={16} />
