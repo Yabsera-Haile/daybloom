@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -22,7 +22,7 @@ import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { shortDay } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { Button, ChoiceChip, FormSection, Icon, PickerRow, RadioCard, Text, TextField } from '@/ui';
+import { Button, ChoiceChip, FormSection, Icon, KeyboardScrollView, PickerRow, RadioCard, Text, TextField } from '@/ui';
 import { pickDay } from '@/ui/pickers';
 
 import { MoneyField } from './parts';
@@ -89,7 +89,7 @@ export function BillForm({ bill }: { bill?: Bill }) {
         <Button label={t.common.save} size="md" align="center" className="mr-3" onPress={save} />
       </View>
 
-      <ScrollView
+      <KeyboardScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
@@ -214,7 +214,7 @@ export function BillForm({ bill }: { bill?: Bill }) {
             />
           </View>
         ) : null}
-      </ScrollView>
+      </KeyboardScrollView>
     </View>
   );
 }

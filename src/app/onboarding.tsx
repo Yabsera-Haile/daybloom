@@ -12,7 +12,7 @@ import { askForNotifications } from '@/reminders/scheduler';
 import { saveSetting } from '@/settings';
 import { sms } from '@/sms/native';
 import { shadows, useTheme } from '@/theme';
-import { Button, Icon, Logo, Sticker, Text, TextField, type IconName } from '@/ui';
+import { Button, Icon, Logo, Sticker, Text, TextField, useKeyboardHeight, type IconName } from '@/ui';
 
 type PageId = 'welcome' | 'name' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
 const ORDER: PageId[] = ['welcome', 'name', 'reminders', 'texts', 'popUp', 'background', 'done'];
@@ -99,6 +99,8 @@ export default function OnboardingScreen() {
   const { permissions, allowTexts, allowPopUp, allowBackground } = usePermissions();
   const [page, setPage] = useState<PageId>('welcome');
   const [name, setName] = useState(settings.name ?? '');
+  // the page ends above the keyboard while it's open, so what you type stays in view
+  const keyboard = useKeyboardHeight();
 
   // the pages that apply: a page stays while it's showing, even once what it asks for is allowed
   const pages = ORDER.filter((p) => p === page || applies(p, permissions));
@@ -120,7 +122,7 @@ export default function OnboardingScreen() {
   return (
     <View
       className="flex-1 bg-surface px-margin"
-      style={{ paddingTop: insets.top + 24, paddingBottom: insets.bottom + 40 }}>
+      style={{ paddingTop: insets.top + 24, paddingBottom: keyboard ? keyboard + 16 : insets.bottom + 40 }}>
       {/* progress + skip */}
       <View className="h-12 flex-row items-center justify-between">
         <View className="flex-row gap-1.5" importantForAccessibility="no-hide-descendants">

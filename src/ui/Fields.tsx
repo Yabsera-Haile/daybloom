@@ -4,6 +4,7 @@ import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 import { fontFamilyFor, typography, useTheme, type ColorName, type TypographyVariant } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { useFieldFocus } from './keyboard';
 import { usePressRetention } from './sheetContext';
 import { Text } from './Text';
 
@@ -11,10 +12,11 @@ type TextFieldProps = TextInputProps & { variant?: TypographyVariant; className?
 
 /** Text input in the design's type styles (custom fonts need the right file per weight). */
 export const TextField = forwardRef<TextInput, TextFieldProps>(function TextField(
-  { variant = 'bodyLg', style, className = '', ...rest },
+  { variant = 'bodyLg', style, className = '', onFocus, ...rest },
   ref,
 ) {
   const { colors } = useTheme();
+  const fieldFocused = useFieldFocus();
   const ty = typography[variant];
   return (
     <TextInput
@@ -22,6 +24,10 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
       placeholderTextColor={colors.outline}
       selectionColor={colors.primary}
       cursorColor={colors.primary}
+      onFocus={(e) => {
+        fieldFocused?.();
+        onFocus?.(e);
+      }}
       className={className}
       style={[
         {

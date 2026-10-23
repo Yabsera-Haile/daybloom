@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Keyboard, Modal, Platform, Pressable, ScrollView, View } from 'react-native';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { Keyboard, Modal, Pressable, View } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,6 +7,7 @@ import { t } from '@/i18n';
 import { shadows } from '@/theme';
 
 import { IconButton } from './Button';
+import { KeyboardScrollView, useKeyboardHeight } from './keyboard';
 import { InSheet } from './sheetContext';
 import { Text } from './Text';
 
@@ -25,27 +26,6 @@ type SheetProps = {
   /** Content runs edge to edge (menus); otherwise it gets the page margin. */
   flush?: boolean;
 };
-
-/**
- * How far the keyboard covers the sheet. Followed from this sheet's own show/hide events, starting
- * at zero: a keyboard left open by an earlier sheet doesn't leave a gap under this one.
- */
-function useKeyboardHeight(): number {
-  const [height, setHeight] = useState(0);
-  useEffect(() => {
-    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) =>
-      setHeight(e.endCoordinates.height),
-    );
-    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
-      setHeight(0),
-    );
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
-  return height;
-}
 
 /**
  * Bottom sheet from the designs: scrim, handle, rounded top. The ✕, the Android back button and a
@@ -83,8 +63,8 @@ export function Sheet({
       statusBarTranslucent
       navigationBarTranslucent
       onRequestClose={close}>
-      {/* Android reports the keyboard's height without the navigation bar under it */}
-      <View className="flex-1 justify-end" style={{ paddingBottom: keyboard ? keyboard + insets.bottom : 0 }}>
+      {/* the sheet sits on the keyboard; the height counts from this sheet's own opening */}
+      <View className="flex-1 justify-end" style={{ paddingBottom: keyboard }}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t.common.close}
@@ -129,13 +109,15 @@ export function Sheet({
               ) : null}
             </View>
           ) : null}
-          <ScrollView
+          {/* the sheet already sits above the keyboard; this keeps a field low in a tall sheet in view */}
+          <KeyboardScrollView
+            roomForKeyboard={false}
             keyboardShouldPersistTaps="handled"
             bounces={false}
             contentContainerClassName={flush ? '' : 'px-margin'}>
             {/* presses inside forgive a finger that drifts (see sheetContext.ts) */}
             <InSheet.Provider value>{children}</InSheet.Provider>
-          </ScrollView>
+          </KeyboardScrollView>
         </Animated.View>
       </View>
     </Modal>

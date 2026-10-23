@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
@@ -24,7 +24,19 @@ import {
 import { t } from '@/i18n';
 import { clockText } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { Button, ChoiceChip, FormSection, Icon, PickerRow, RadioCard, Segmented, Sheet, Text, TextField } from '@/ui';
+import {
+  Button,
+  ChoiceChip,
+  FormSection,
+  Icon,
+  KeyboardScrollView,
+  PickerRow,
+  RadioCard,
+  Segmented,
+  Sheet,
+  Text,
+  TextField,
+} from '@/ui';
 import { pickTime } from '@/ui/pickers';
 
 import { routineIconName, routineLook } from './shared';
@@ -138,7 +150,7 @@ export function HabitForm({
         />
       </View>
 
-      <ScrollView
+      <KeyboardScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
@@ -331,7 +343,7 @@ export function HabitForm({
             />
           </View>
         ) : null}
-      </ScrollView>
+      </KeyboardScrollView>
 
       {newRoutine ? <RoutineSheet onClose={() => setNewRoutine(false)} onCreated={(id) => setRoutineId(id)} /> : null}
       {habit && askDelete ? (

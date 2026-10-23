@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { t } from '@/i18n';
@@ -8,6 +8,7 @@ import { shadows } from '@/theme';
 
 import { IconButton } from './Button';
 import { Icon, type IconName } from './Icon';
+import { KeyboardScrollView } from './keyboard';
 import { Sheet } from './Sheet';
 import { SHEET_RETENTION, usePressRetention } from './sheetContext';
 import { Text } from './Text';
@@ -47,12 +48,12 @@ export function Page({
       {list ? (
         <View className="flex-1">{children}</View>
       ) : (
-        <ScrollView
+        <KeyboardScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerClassName="gap-space-lg px-margin pt-space-sm"
           contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
           {children}
-        </ScrollView>
+        </KeyboardScrollView>
       )}
     </View>
   );

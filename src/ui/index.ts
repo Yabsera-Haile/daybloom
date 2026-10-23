@@ -9,6 +9,7 @@ export { ChoiceSheet, Page, Row, RowGroup } from './Page';
 export { Sheet } from './Sheet';
 export { Logo, Sticker, type StickerName } from './Sticker';
 export { TabBar, useTabBarHeight } from './TabBar';
+export { KeyboardScrollView, useKeyboardHeight } from './keyboard';
 export { Text, type TextProps } from './Text';
 export { Toast } from './Toast';
 export { findTarget, revealTarget, useTourTarget, type Rect, type TargetId } from './tourTarget';

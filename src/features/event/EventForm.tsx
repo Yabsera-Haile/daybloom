@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { toDayKey } from '@/calendar/dates';
@@ -34,7 +34,7 @@ import {
 import { reminderOffsets } from '@/reminders/store';
 import { useUi } from '@/state/ui';
 import { fontFamilyFor, shadows, useTheme } from '@/theme';
-import { Button, ChoiceChip, Icon, PickerPill, Sheet, Switch, Text, TextField } from '@/ui';
+import { Button, ChoiceChip, Icon, KeyboardScrollView, PickerPill, Sheet, Switch, Text, TextField } from '@/ui';
 import { pickDay, pickTime } from '@/ui/pickers';
 
 import { REMINDER_CHOICES } from '../sheets/TaskForm';
@@ -306,7 +306,7 @@ export function EventForm({ initial }: { initial: Initial }) {
         />
       </View>
 
-      <ScrollView
+      <KeyboardScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
         contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
@@ -591,7 +591,7 @@ export function EventForm({ initial }: { initial: Initial }) {
             onPress={() => (editing.seriesId ? setAsking('delete') : remove('all'))}
           />
         ) : null}
-      </ScrollView>
+      </KeyboardScrollView>
 
       {editing && asking ? (
         <Sheet visible onClose={() => setAsking(null)} title={t.scope.titleEdit}>
