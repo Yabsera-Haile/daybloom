@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { shareBackup } from '@/backup/share';
 import { hemisphereForTimeZone, type WeekStart } from '@/calendar/dates';
@@ -10,7 +10,8 @@ import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
 import { SoundSheet, ThemeSheet, themeLabel } from '@/features/settings/LookSheets';
 import { themeFor } from '@/features/ThemeProvider';
-import { useNotificationStatus } from '@/features/useNotificationStatus';
+import { useTour } from '@/features/tour/store';
+import { usePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { saveSetting, type Settings } from '@/settings';
@@ -24,6 +25,8 @@ type Picker =
   'weekStart' | 'timeFormat' | 'defaultReminder' | 'sound' | 'theme' | 'hemisphere' | 'currency' | 'privacy' | null;
 
 const reminderLabel = (m: number | null) => (m === null ? t.settings.noReminder : t.reminders.detail(m));
+const allowedLabel = (on: boolean | null) =>
+  on === null ? undefined : on ? t.settings.allowedValue : t.settings.notAllowedValue;
 const currencyLabel = (code: string) => (t.currencies[code] ? `${t.currencies[code]} (${code})` : code);
 
 /** Settings (ST-01, SH-06): opened from More. Only what you change is saved; the rest follows the phone. */
@@ -32,7 +35,7 @@ export default function SettingsScreen() {
   const settings = useSettings();
   const today = useToday();
   const categories = useCategories();
-  const { status, turnOn } = useNotificationStatus();
+  const { permissions, allowReminders, allowTexts, allowPopUp, allowBackground } = usePermissions();
   const [name, setName] = useState(settings.name ?? '');
   const [picker, setPicker] = useState<Picker>(null);
   const save = <K extends keyof Settings>(key: K, value: Settings[K]) => saveSetting(db, key, value);
@@ -76,7 +79,7 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {status && !status.granted ? (
+      {permissions.reminders === false ? (
         <View className="gap-space-sm rounded-2xl bg-tertiary-fixed/50 p-space-md">
           <View className="flex-row items-start gap-3">
             <Icon name="notifications" color="tertiary" />
@@ -89,7 +92,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
           </View>
-          <Button label={t.settings.turnOn} size="md" align="end" onPress={turnOn} />
+          <Button label={t.settings.turnOn} size="md" align="end" onPress={allowReminders} />
         </View>
       ) : null}
 
@@ -186,6 +189,54 @@ export default function SettingsScreen() {
           subtitle={t.settings.reminderHelpText}
           onPress={() => router.push('/reminder-help')}
         />
+        <Row
+          icon="touch_app"
+          title={t.settings.tour}
+          subtitle={t.settings.tourText}
+          onPress={() => {
+            router.dismissAll();
+            useTour.getState().start();
+          }}
+        />
+      </RowGroup>
+
+      {/* ST-06: anything skipped on the first-run pages can be allowed here */}
+      <RowGroup heading={t.settings.permissions}>
+        <Row
+          first
+          icon="notifications"
+          title={t.settings.permReminders}
+          subtitle={t.settings.permRemindersText}
+          value={allowedLabel(permissions.reminders)}
+          onPress={permissions.reminders ? () => router.push('/reminder-help') : allowReminders}
+        />
+        {permissions.texts !== null ? (
+          <Row
+            icon="sms"
+            title={t.settings.permTexts}
+            subtitle={t.settings.permTextsText}
+            value={allowedLabel(permissions.texts)}
+            onPress={permissions.texts ? () => router.push('/bank-texts') : () => void allowTexts()}
+          />
+        ) : null}
+        {permissions.popUp !== null ? (
+          <Row
+            icon="mobile"
+            title={t.settings.permPopUp}
+            subtitle={t.settings.permPopUpText}
+            value={allowedLabel(permissions.popUp)}
+            onPress={allowPopUp}
+          />
+        ) : null}
+        {Platform.OS === 'android' && permissions.background !== null ? (
+          <Row
+            icon="battery_5_bar"
+            title={t.settings.permBackground}
+            subtitle={t.settings.permBackgroundText}
+            value={permissions.background ? t.settings.allowedValue : t.settings.limitedValue}
+            onPress={() => void allowBackground()}
+          />
+        ) : null}
       </RowGroup>
 
       <RowGroup heading={t.settings.yourData}>

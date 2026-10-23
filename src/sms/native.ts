@@ -26,13 +26,22 @@ declare class DaybloomSmsModule extends NativeModule<{ onText: () => void }> {
 
 export const sms = Platform.OS === 'android' ? requireOptionalNativeModule<DaybloomSmsModule>('DaybloomSms') : null;
 
-/** Asks to read texts (and to see new ones arrive). True when allowed. */
-export async function askToReadTexts(): Promise<boolean> {
-  if (!sms) return false;
-  if (sms.hasPermission()) return true;
-  const result = await PermissionsAndroid.requestMultiple([
-    PermissionsAndroid.PERMISSIONS.READ_SMS,
-    PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
-  ]);
-  return Object.values(result).every((r) => r === PermissionsAndroid.RESULTS.GRANTED);
+/**
+ * Asks to read texts (and to see new ones arrive). 'blocked' when the phone no longer shows the
+ * question (it was refused for good), so only its settings can allow it.
+ */
+export async function requestTexts(): Promise<'granted' | 'denied' | 'blocked'> {
+  if (!sms) return 'denied';
+  if (sms.hasPermission()) return 'granted';
+  const result = Object.values(
+    await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.READ_SMS,
+      PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
+    ]),
+  );
+  if (result.every((r) => r === PermissionsAndroid.RESULTS.GRANTED)) return 'granted';
+  return result.includes(PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) ? 'blocked' : 'denied';
 }
+
+/** Asks to read texts (and to see new ones arrive). True when allowed. */
+export const askToReadTexts = async (): Promise<boolean> => (await requestTexts()) === 'granted';

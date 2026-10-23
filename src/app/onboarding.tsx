@@ -1,16 +1,30 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
+import { usePermissions, type PhonePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { askForNotifications } from '@/reminders/scheduler';
 import { saveSetting } from '@/settings';
+import { sms } from '@/sms/native';
 import { shadows, useTheme } from '@/theme';
 import { Button, Icon, Logo, Sticker, Text, TextField, type IconName } from '@/ui';
+
+type PageId = 'welcome' | 'name' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
+const ORDER: PageId[] = ['welcome', 'name', 'reminders', 'texts', 'popUp', 'background', 'done'];
+
+/** Whether a page has anything to ask on this phone. */
+function applies(page: PageId, p: PhonePermissions): boolean {
+  if (page === 'texts') return !!sms && p.texts === false;
+  // popping up is only of use once texts are read
+  if (page === 'popUp') return !!sms && p.texts === true && p.popUp === false;
+  if (page === 'background') return p.background === false;
+  return true;
+}
 
 function Big({ icon, circle, color }: { icon: IconName; circle: string; color: 'onTertiaryFixed' | 'onPrimaryFixed' }) {
   return (
@@ -20,13 +34,79 @@ function Big({ icon, circle, color }: { icon: IconName; circle: string; color: '
   );
 }
 
-/** First run (ON-01): welcome → name (optional) → why reminders matter + permission → done. All skippable. */
+/** A page asking for one thing: icon, title, why, an example, a note, and its buttons. */
+function AskPage({
+  icon,
+  title,
+  text,
+  note,
+  children,
+  actions,
+}: {
+  icon: IconName;
+  title: string;
+  text: string;
+  note?: string;
+  children?: ReactNode;
+  actions: ReactNode;
+}) {
+  return (
+    <View className="flex-1">
+      <View className="flex-1 justify-center gap-space-lg">
+        <Big icon={icon} circle="bg-primary-fixed" color="onPrimaryFixed" />
+        <View>
+          <Text variant="displayLgMobile" accessibilityRole="header">
+            {title}
+          </Text>
+          <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
+            {text}
+          </Text>
+        </View>
+        {children}
+        {note ? (
+          <Text variant="bodySm" color="onSurfaceVariant">
+            {note}
+          </Text>
+        ) : null}
+      </View>
+      <View className="gap-space-sm">{actions}</View>
+    </View>
+  );
+}
+
+/** "Allowed" with a tick, once the person has allowed it in the phone's settings. */
+function Allowed() {
+  return (
+    <View className="flex-row items-center gap-2">
+      <Icon name="check_circle" color="primary" filled />
+      <Text variant="labelLg" color="primary">
+        {t.onboarding.allowed}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * First run (ON-01): welcome → name (optional) → reminders → on Android, payment texts, popping up
+ * over other apps (once texts are allowed) and running in the background (when the phone limits it)
+ * → done. Every page can be skipped; Settings › Phone permissions has them all later (ST-06). The
+ * tour follows (ON-02).
+ */
 export default function OnboardingScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const settings = useSettings();
-  const [step, setStep] = useState(1);
+  const { permissions, allowTexts, allowPopUp, allowBackground } = usePermissions();
+  const [page, setPage] = useState<PageId>('welcome');
   const [name, setName] = useState(settings.name ?? '');
+
+  // the pages that apply: a page stays while it's showing, even once what it asks for is allowed
+  const pages = ORDER.filter((p) => p === page || applies(p, permissions));
+  const index = pages.indexOf(page);
+  /** The next page that applies, judged on what is allowed now (just asked for or not). */
+  const nextAfter = (from: PageId, now: PhonePermissions = permissions) =>
+    ORDER.slice(ORDER.indexOf(from) + 1).find((p) => applies(p, now)) ?? 'done';
+  const next = () => setPage(nextAfter(page));
 
   const finish = () => {
     saveSetting(db, 'onboarded', true);
@@ -34,7 +114,7 @@ export default function OnboardingScreen() {
   };
   const saveName = () => {
     saveSetting(db, 'name', name);
-    setStep(3);
+    next();
   };
 
   return (
@@ -44,18 +124,18 @@ export default function OnboardingScreen() {
       {/* progress + skip */}
       <View className="h-12 flex-row items-center justify-between">
         <View className="flex-row gap-1.5" importantForAccessibility="no-hide-descendants">
-          {[1, 2, 3, 4].map((s) => (
+          {pages.map((p, i) => (
             <View
-              key={s}
-              className={`h-2 rounded-full ${s <= step ? 'w-6 bg-primary' : 'w-2'}`}
-              style={s > step ? { backgroundColor: colors.surfaceVariant } : undefined}
+              key={p}
+              className={`h-2 rounded-full ${i <= index ? 'w-6 bg-primary' : 'w-2'}`}
+              style={i > index ? { backgroundColor: colors.surfaceVariant } : undefined}
             />
           ))}
         </View>
-        {step < 4 ? <Button label={t.onboarding.skip} variant="text" onPress={finish} /> : null}
+        {page !== 'done' ? <Button label={t.onboarding.skip} variant="text" onPress={finish} /> : null}
       </View>
 
-      {step === 1 ? (
+      {page === 'welcome' ? (
         <View className="flex-1">
           <View className="flex-1 items-center justify-center gap-space-lg">
             <View className="h-60 w-72" importantForAccessibility="no-hide-descendants">
@@ -84,11 +164,11 @@ export default function OnboardingScreen() {
               </Text>
             </View>
           </View>
-          <Button label={t.onboarding.start} size="xl" fullWidth onPress={() => setStep(2)} />
+          <Button label={t.onboarding.start} size="xl" fullWidth onPress={next} />
         </View>
       ) : null}
 
-      {step === 2 ? (
+      {page === 'name' ? (
         <View className="flex-1">
           <View className="flex-1 justify-center gap-space-lg">
             <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />
@@ -115,66 +195,177 @@ export default function OnboardingScreen() {
           </View>
           <View className="gap-space-sm">
             <Button label={t.onboarding.continue} size="xl" fullWidth onPress={saveName} />
-            <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={() => setStep(3)} />
+            <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
           </View>
         </View>
       ) : null}
 
-      {step === 3 ? (
-        <View className="flex-1">
-          <View className="flex-1 justify-center gap-space-lg">
-            <Big icon="notifications" circle="bg-primary-fixed" color="onPrimaryFixed" />
-            <View>
-              <Text variant="displayLgMobile" accessibilityRole="header">
-                {t.onboarding.remindTitle}
-              </Text>
-              <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
-                {t.onboarding.remindText}
-              </Text>
-            </View>
-            <View
-              accessible
-              accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}, ${t.onboarding.exampleBody}`}
-              className="flex-row gap-3 rounded-2xl bg-surface-container-lowest p-space-md"
-              style={shadows.float}>
-              <Logo size={40} />
-              <View className="flex-1">
-                <View className="flex-row justify-between">
-                  <Text variant="labelMd" color="onSurfaceVariant">
-                    Daybloom
-                  </Text>
-                  <Text variant="labelMd" color="onSurfaceVariant">
-                    {t.onboarding.now}
-                  </Text>
-                </View>
-                <Text variant="bodyLg" weight="600">
-                  {t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}
+      {page === 'reminders' ? (
+        <AskPage
+          icon="notifications"
+          title={t.onboarding.remindTitle}
+          text={t.onboarding.remindText}
+          note={t.onboarding.remindNote}
+          actions={
+            <>
+              <Button
+                label={t.onboarding.allow}
+                size="xl"
+                fullWidth
+                onPress={async () => {
+                  await askForNotifications();
+                  next();
+                }}
+              />
+              <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+            </>
+          }>
+          <View
+            accessible
+            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}, ${t.onboarding.exampleBody}`}
+            className="flex-row gap-3 rounded-2xl bg-surface-container-lowest p-space-md"
+            style={shadows.float}>
+            <Logo size={40} />
+            <View className="flex-1">
+              <View className="flex-row justify-between">
+                <Text variant="labelMd" color="onSurfaceVariant">
+                  Daybloom
                 </Text>
-                <Text variant="bodyMd" color="onSurfaceVariant">
-                  {t.onboarding.exampleBody}
+                <Text variant="labelMd" color="onSurfaceVariant">
+                  {t.onboarding.now}
                 </Text>
               </View>
+              <Text variant="bodyLg" weight="600">
+                {t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}
+              </Text>
+              <Text variant="bodyMd" color="onSurfaceVariant">
+                {t.onboarding.exampleBody}
+              </Text>
             </View>
-            <Text variant="bodySm" color="onSurfaceVariant">
-              {t.onboarding.remindNote}
-            </Text>
           </View>
-          <View className="gap-space-sm">
-            <Button
-              label={t.onboarding.allow}
-              size="xl"
-              fullWidth
-              onPress={async () => {
-                await askForNotifications();
-                setStep(4);
-              }}
-            />
-            <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={() => setStep(4)} />
-          </View>
-        </View>
+        </AskPage>
       ) : null}
 
-      {step === 4 ? (
+      {page === 'texts' ? (
+        <AskPage
+          icon="sms"
+          title={t.onboarding.textsTitle}
+          text={t.onboarding.textsText}
+          note={t.onboarding.textsNote}
+          actions={
+            <>
+              <Button
+                label={t.onboarding.allowTexts}
+                size="xl"
+                fullWidth
+                onPress={async () => {
+                  const texts = await allowTexts();
+                  setPage(nextAfter('texts', { ...permissions, texts, popUp: sms?.canPopUp() ?? null }));
+                }}
+              />
+              <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+            </>
+          }>
+          {/* a payment text, and the expense it becomes */}
+          <View
+            accessible
+            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.textsExample(settings.currency)} ${t.onboarding.textsExampleAdded}`}
+            className="gap-space-sm">
+            <View className="max-w-[90%] self-start rounded-2xl rounded-bl-md bg-surface-container-high p-space-sm">
+              <Text variant="labelMd" color="onSurfaceVariant">
+                M-Money
+              </Text>
+              <Text variant="bodyMd">{t.onboarding.textsExample(settings.currency)}</Text>
+            </View>
+            <View className="self-center">
+              <Icon name="expand_more" color="primary" />
+            </View>
+            <View
+              className="flex-row items-center gap-3 rounded-2xl bg-surface-container-lowest p-space-sm"
+              style={shadows.card}>
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-fixed">
+                <Icon name="restaurant" size={20} color="onPrimaryFixed" />
+              </View>
+              <Text variant="bodyLg" style={{ flex: 1 }}>
+                {t.onboarding.textsExampleAdded}
+              </Text>
+              <Text variant="labelLg">2,500</Text>
+            </View>
+          </View>
+        </AskPage>
+      ) : null}
+
+      {page === 'popUp' ? (
+        <AskPage
+          icon="mobile"
+          title={t.onboarding.popUpTitle}
+          text={t.onboarding.popUpText}
+          note={permissions.popUp ? undefined : t.onboarding.popUpNote}
+          actions={
+            permissions.popUp ? (
+              <>
+                <Allowed />
+                <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
+              </>
+            ) : (
+              <>
+                <Button label={t.onboarding.openSettings} size="xl" fullWidth onPress={allowPopUp} />
+                <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+              </>
+            )
+          }>
+          {/* what the pop-up looks like */}
+          <View
+            accessible
+            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.popUpExampleHeading}, ${t.onboarding.popUpExampleTitle}`}
+            className="gap-2 rounded-3xl bg-surface-container-lowest p-space-md"
+            style={shadows.float}>
+            <Text variant="labelMd" color="onSurfaceVariant">
+              {t.onboarding.popUpExampleHeading}
+            </Text>
+            <Text variant="headlineSm">{t.onboarding.popUpExampleTitle}</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {[
+                t.budget.starterCategories.dining,
+                t.budget.starterCategories.groceries,
+                t.budget.starterCategories.transport,
+              ].map((label, i) => (
+                <View
+                  key={label}
+                  className={`h-9 justify-center rounded-full px-3 ${i === 0 ? 'bg-primary' : 'border-[1.5px] border-outline-variant'}`}>
+                  <Text variant="labelMd" color={i === 0 ? 'onPrimary' : 'onSurface'}>
+                    {label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </AskPage>
+      ) : null}
+
+      {page === 'background' ? (
+        <AskPage
+          icon="battery_5_bar"
+          title={t.onboarding.backgroundTitle}
+          text={t.onboarding.backgroundText}
+          note={permissions.background ? undefined : t.onboarding.backgroundNote}
+          actions={
+            permissions.background ? (
+              <>
+                <Allowed />
+                <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
+              </>
+            ) : (
+              <>
+                <Button label={t.onboarding.openSettings} size="xl" fullWidth onPress={() => void allowBackground()} />
+                <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+              </>
+            )
+          }
+        />
+      ) : null}
+
+      {page === 'done' ? (
         <View className="flex-1">
           <View className="flex-1 justify-center gap-space-lg">
             <Big icon="local_florist" circle="bg-primary-fixed" color="onPrimaryFixed" />
@@ -205,6 +396,9 @@ export default function OnboardingScreen() {
                 </View>
               ))}
             </View>
+            <Text variant="bodySm" color="onSurfaceVariant">
+              {t.onboarding.permissionsLater}
+            </Text>
           </View>
           <Pressable
             accessibilityRole="button"
