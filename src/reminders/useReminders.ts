@@ -6,7 +6,7 @@ import { AppState } from 'react-native';
 import { getBill, markBillPaid } from '@/budget/bills';
 import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
-import { onDataChanged } from '@/data/live';
+import { onDataChanged, onlyTouched } from '@/data/live';
 import { getHabit, setHabitDone } from '@/habits/store';
 import { findOccurrence } from '@/planner/events';
 import { setTaskDone } from '@/planner/tasks';
@@ -61,13 +61,28 @@ function handle(response: Notifications.NotificationResponse) {
 }
 
 /** Keeps reminders scheduled and answers taps and buttons. Mounted once, after the database is ready. */
+/** Tables no reminder is made from (any other change, or a new table, works the reminders out again). */
+const NO_REMINDERS = new Set([
+  'entries',
+  'budget_categories',
+  'budget_plans',
+  'goals',
+  'hour_notes',
+  'week_intentions',
+  'sms_senders',
+  'sms_patterns',
+  'sms_unmatched',
+]);
+
 export function useReminders(): void {
   useEffect(() => {
     if (!remindersAvailable) return;
     void setUpNotifications().then(syncReminders);
 
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const stopData = onDataChanged(() => {
+    const stopData = onDataChanged((tables) => {
+      // spending, savings and bank texts never change a reminder: no need to work them all out again
+      if (onlyTouched(tables, NO_REMINDERS)) return;
       clearTimeout(timer);
       timer = setTimeout(() => void syncReminders(), 800);
     });

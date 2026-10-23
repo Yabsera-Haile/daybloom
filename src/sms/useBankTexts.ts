@@ -6,7 +6,7 @@ import { AppState } from 'react-native';
 import { getEntry } from '@/budget/entries';
 import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
-import { onDataChanged } from '@/data/live';
+import { onDataChanged, touched } from '@/data/live';
 import { readSettings } from '@/settings';
 import { useUi } from '@/state/ui';
 import { useTheme } from '@/theme';
@@ -22,6 +22,9 @@ export function askAbout(entryId: string): void {
   ui.openSheet({ kind: 'expense', day: toDayKey(new Date(entry.occurredAt)), entryId, ask: true });
 }
 
+/** What the Android side is told comes from these tables. */
+const CONFIG_TABLES = new Set(['sms_senders', 'sms_patterns', 'settings', 'budget_categories', 'entries']);
+
 export function useBankTexts(): void {
   const { colors } = useTheme();
 
@@ -30,7 +33,9 @@ export function useBankTexts(): void {
     if (!sms) return;
     const push = () => void pushConfig(db, colors).catch(() => undefined);
     push();
-    return onDataChanged(push);
+    return onDataChanged((tables) => {
+      if (touched(tables, CONFIG_TABLES)) push();
+    });
   }, [colors]);
 
   useEffect(() => {
