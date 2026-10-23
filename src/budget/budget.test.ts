@@ -56,6 +56,7 @@ describe('money', () => {
     expect(money(1000000, 'USD', { whole: true })).toBe('10,000');
     expect(money(150000, 'KES')).toBe('1,500.00');
     expect(money(150000, 'JPY')).toBe('1,500'); // no cents in yen
+    expect(money(250000, 'RWF')).toBe('2,500'); // nor in Rwandan francs
   });
 
   it('months and weeks, and the ones before and after', () => {
