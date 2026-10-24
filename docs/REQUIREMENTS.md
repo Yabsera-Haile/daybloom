@@ -48,6 +48,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | UX-07 | Error messages: one short sentence saying what happened and what to do | M |
 | UX-08 | Status messages are encouraging, never shaming ("Finding your pace", not "Behind") | M |
 | UX-09 | One consistent "+ Add" button on Today, Week and Month (DESIGN_REVIEW I7) | M |
+| UX-10 | The field being typed in is never hidden by the keyboard: pages, forms, sheets and the first-run pages move it above the keyboard, also when another field is tapped while it's open | M |
 
 ### A.3 Non-functional
 
@@ -108,7 +109,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | TD-15 | Tapping an empty hour adds a short hour note (or an event via the chooser); hour notes can be ticked; their text is readable (A1) | M |
 | TD-16 | Several items in the same hour stack inside that row; all-day events show in an "All day" row above 7 AM | M |
 | TD-17 | Tapping an event opens its detail (G2) | M |
-| TD-18 | Daily quote at the bottom, rotating from a bundled list | S |
+| TD-18 | Daily quote just under the date card, as a light line (no box), rotating from a bundled list | S |
 | TD-19 | "Up next" card near the top: the next event, its time, place and how soon ("in 45 min") | S |
 
 
@@ -214,10 +215,10 @@ The "Coming soon" teaser is removed (D13).
 | ID | Requirement | Priority |
 |---|---|---|
 | ON-01 | Onboarding of short steps: welcome → your name (optional) → why reminders matter + notification permission → on Android, reading payment texts (BU-11), popping up over other apps (only once texts are allowed) and running in the background (only when the phone limits Daybloom's battery use) → done. Each page explains why, with an example, and asks for one thing; pages that don't apply are left out. Week start and time format come from the phone. Skippable; everything can be allowed later in Settings (ST-06). | M |
-| ON-02 | Tour (D19): after onboarding (and once after the update that added it), a short tour over the real app dims the screen except the part being explained, with a card saying what it does: Today, + Add, Week, Month, Habits, Budget, savings and bills, More (bank texts on Android), Search. It moves between tabs as it goes. Skip, Back, Next; Android back steps back. Finishing or skipping is remembered; Settings › Take the tour again shows it again. | S |
+| ON-02 | Tour (D19): after onboarding (and once after the update that added it), a short tour over the real app dims the screen except the part being explained, with a card saying what it does: Today, + Add, Week, Month, Habits, Budget, savings and bills, More, Search. On Android, expenses from bank texts get a card for where it starts and one each for picking a sender, checking what Daybloom understood, adding this month’s payments, saying what a payment was for, and fees and unknown texts, each with a small picture of that screen. It moves between tabs as it goes. Skip, Back, Next; Android back steps back. Finishing or skipping is remembered; Settings › Take the tour again and More › Take the tour show it again, and the bank texts screen’s How it works shows just the bank-texts part. | S |
 | ST-01 | Settings: first name, week start, 12/24-hour, usual reminder, reminder sound, categories (rename, recolor, reorder), colours, seasons on/off + hemisphere, currency, calm mode, reminder help, privacy & about | M |
 | ST-02 | Export all data to a file (backup) | S |
-| ST-04 | Colours (D16): a spring, summer, autumn or winter colour theme, or "Follow the seasons" (changes on the first day of each season where you live). Every theme keeps text contrast ≥ 4.5:1. | S |
+| ST-04 | Colours (D16): a spring (cherry blossom, tulips, fresh leaves), summer (turquoise sea, coral, sunflower), autumn (sage, terracotta, butterscotch) or winter (icy blue, cranberry, evergreen) colour theme, or "Follow the seasons" (changes on the first day of each season where you live). The season pictured on Today, Week and Month follows the colours chosen. Every theme keeps text contrast ≥ 4.5:1. | S |
 | ST-05 | Reminder sound (D17): the phone's own sound, one of Daybloom's (Chime, Bell, Birdsong, Marimba, Gentle ring) or vibrate only. Tapping one plays it; "Send a test reminder" sends one in 5 seconds with that sound. Reminders always vibrate. | M |
 | ST-06 | Phone permissions (Settings): reminders, read payment texts, pop up over other apps and run in the background, each with whether it's allowed and a tap to allow it (asking the phone, or opening its settings once it no longer asks). Rows that don't apply to the phone are hidden. | M |
 | ST-03 | "Reminders not arriving?" screen: live checks (notifications on, on-time reminders allowed, battery saving), step-by-step help for Samsung, Xiaomi, OnePlus/Oppo and other phones, and a "Send a test reminder" button | M |

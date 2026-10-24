@@ -232,12 +232,16 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-ON01.2 | ON-01 | Component | Android with texts and a battery limit: skip name and reminders, allow texts, not now to the rest | Pages for reminders, payment texts, popping up and the battery in turn, then done ("Change any of these in Settings › Phone permissions"); the planner opens |
 | T-ON01.3 | ON-01 | Component | No bank texts on this phone, battery not limited | Reminders go straight to done |
 | T-ON01.4 | ON-01 | Component | Texts not allowed | No pop-up page |
-| T-ON02.1 | ON-02 | Component | Start the tour: Show me, Next, Next, Back | "1 of 9" Today, then + Add, then Week (Week tab opened), back to + Add |
-| T-ON02.2 | ON-02 | Component | From Habits to the end | Habits, Budget, Savings and bills, bank texts, Search, "You’re ready"; Start planning ends it on Today and remembers |
+| T-ON02.1 | ON-02 | Component | Start the tour: Show me, Next, Next, Back | "1 of 14" Today, then + Add, then Week (Week tab opened), back to + Add |
+| T-ON02.2 | ON-02 | Component | From Habits to the end | Habits, Budget, Savings and bills, bank texts (Pick who texts you, Check what it understood, Add this month’s payments, Say what it was for, Fees and texts it doesn’t know), Search, "You’re ready"; Start planning ends it on Today and remembers |
 | T-ON02.3 | ON-02 | Component | Skip tour on the first card | The tour ends and isn't shown again |
+| T-ON02.5 | ON-02 | Component | Bank texts › How it works, through to Got it | Just the bank-texts cards ("1 of 5"…); ends on the same screen; the whole tour still counts as not seen |
 | T-ON02.4 | ON-02 | Manual (installed app) | Fresh install; then Settings › Take the tour again | The part being explained is highlighted on each tab (savings scrolled into view); the tour comes back from Settings |
 | T-ST01.1 | ST-01 | E2E | Change week start to Monday | Week, Month and Habits all start on Monday |
 | T-ST04.1 | ST-04, NFR-04 | Unit | Each seasonal theme | All text colour pairs ≥ 4.5:1; "Follow the seasons" gives spring in October in the south, autumn in the north |
+| T-ST04.2 | ST-04 | Unit | Spring, summer and winter against autumn | Their main and pale main colours are more than 40° of hue from autumn's; spring's Wellness and Work chips are apart |
+| T-ST04.3 | ST-04 | Unit | Winter or Spring chosen in October; Follow the seasons north and south | The season pictured is the one chosen; with Follow the seasons, autumn in the north and spring in the south |
+| T-UX10.1 | UX-10 | Manual (installed app) | Type a name on the first-run page; type in a habit's or event's lowest field; in a tall sheet | The field and its buttons stay above the keyboard |
 | T-ST05.1 | ST-05 | Manual (installed app) | Pick Birdsong, then Vibrate only; send a test reminder each time | The reminder chirps, then only buzzes; the next real reminder does the same |
 | T-SR01.1 | SR-01 | E2E | Search "tax" | Finds the task and the event, grouped by date; tap opens it |
 
