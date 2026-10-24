@@ -21,9 +21,13 @@ export function Sticker({ name, size = 80, rotate = 0 }: StickerProps) {
   );
 }
 
-export function Logo({ size = 32 }: { size?: number }) {
+/** The Daybloom mark; `round` crops its rounded square to a circle, to sit among the stickers. */
+export function Logo({ size = 32, round = false }: { size?: number; round?: boolean }) {
   return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={round ? { width: size, height: size, borderRadius: size / 2, overflow: 'hidden' } : undefined}>
       <SvgXml xml={logoSvg} width={size} height={size} />
     </View>
   );

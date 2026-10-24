@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
@@ -12,7 +12,7 @@ import { askForNotifications } from '@/reminders/scheduler';
 import { saveSetting } from '@/settings';
 import { sms } from '@/sms/native';
 import { shadows, useTheme } from '@/theme';
-import { Button, Icon, Logo, Sticker, Text, TextField, useKeyboardHeight, type IconName } from '@/ui';
+import { Button, Icon, Logo, Sticker, Text, TextField, useKeyboardHeight, type IconName, type StickerName } from '@/ui';
 
 type PageId = 'welcome' | 'name' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
 const ORDER: PageId[] = ['welcome', 'name', 'reminders', 'texts', 'popUp', 'background', 'done'];
@@ -34,6 +34,67 @@ function Big({ icon, circle, color }: { icon: IconName; circle: string; color: '
   );
 }
 
+/**
+ * The welcome picture: a season sticker in each corner and the round logo in the middle, worked out
+ * from one size so it stays centred, and smaller on narrow or short phones.
+ */
+function SeasonsArt() {
+  const { width, height, fontScale } = useWindowDimensions();
+  // large text leaves less room for the picture
+  const room = height / Math.max(1, fontScale);
+  const k = Math.min(1, (width - 32) / 264, room < 520 ? 0.65 : room < 720 ? 0.8 : 1);
+  const w = 264 * k;
+  const h = 232 * k;
+  const sticker = 96 * k;
+  const logo = 72 * k;
+  const ring = 5 * k;
+  const spots: [StickerName, number, number, number][] = [
+    ['spring', 0, 4 * k, -12],
+    ['summer', w - sticker, 0, 12],
+    ['autumn', 8 * k, h - sticker, 6],
+    ['winter', w - sticker - 8 * k, h - sticker - 4 * k, -6],
+  ];
+  return (
+    <View style={{ width: w, height: h }} importantForAccessibility="no-hide-descendants">
+      {spots.map(([name, left, top, rotate]) => (
+        <View key={name} style={{ position: 'absolute', left, top }}>
+          <Sticker name={name} size={sticker} rotate={rotate} />
+        </View>
+      ))}
+      <View
+        className="bg-surface-container-lowest"
+        style={[
+          shadows.float,
+          {
+            position: 'absolute',
+            left: (w - logo) / 2 - ring,
+            top: (h - logo) / 2 - ring,
+            padding: ring,
+            borderRadius: logo / 2 + ring,
+          },
+        ]}>
+        <Logo size={logo} round />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * The middle of a page: centred when it fits, and scrolling when it doesn't (a small phone with large
+ * text), so it never runs into the buttons below.
+ */
+function Middle({ center = false, children }: { center?: boolean; children: ReactNode }) {
+  return (
+    <ScrollView
+      className="flex-1"
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      contentContainerClassName={`flex-grow justify-center gap-space-lg py-space-sm ${center ? 'items-center' : ''}`}>
+      {children}
+    </ScrollView>
+  );
+}
+
 /** A page asking for one thing: icon, title, why, an example, a note, and its buttons. */
 function AskPage({
   icon,
@@ -52,7 +113,7 @@ function AskPage({
 }) {
   return (
     <View className="flex-1">
-      <View className="flex-1 justify-center gap-space-lg">
+      <Middle>
         <Big icon={icon} circle="bg-primary-fixed" color="onPrimaryFixed" />
         <View>
           <Text variant="displayLgMobile" accessibilityRole="header">
@@ -68,8 +129,8 @@ function AskPage({
             {note}
           </Text>
         ) : null}
-      </View>
-      <View className="gap-space-sm">{actions}</View>
+      </Middle>
+      <View className="mt-space-lg gap-space-sm">{actions}</View>
     </View>
   );
 }
@@ -139,24 +200,8 @@ export default function OnboardingScreen() {
 
       {page === 'welcome' ? (
         <View className="flex-1">
-          <View className="flex-1 items-center justify-center gap-space-lg">
-            <View className="h-60 w-72" importantForAccessibility="no-hide-descendants">
-              <View className="absolute left-0 top-2">
-                <Sticker name="spring" size={96} rotate={-12} />
-              </View>
-              <View className="absolute right-0 top-0">
-                <Sticker name="summer" size={96} rotate={12} />
-              </View>
-              <View className="absolute bottom-0 left-3">
-                <Sticker name="autumn" size={96} rotate={6} />
-              </View>
-              <View className="absolute bottom-1 right-3">
-                <Sticker name="winter" size={96} rotate={-6} />
-              </View>
-              <View className="absolute left-[96px] top-[72px] rounded-[23px]" style={shadows.float}>
-                <Logo size={96} />
-              </View>
-            </View>
+          <Middle center>
+            <SeasonsArt />
             <View className="items-center">
               <Text variant="displayLgMobile" accessibilityRole="header" style={{ textAlign: 'center' }}>
                 {t.onboarding.welcome}
@@ -165,14 +210,14 @@ export default function OnboardingScreen() {
                 {t.onboarding.welcomeText}
               </Text>
             </View>
-          </View>
+          </Middle>
           <Button label={t.onboarding.start} size="xl" fullWidth onPress={next} />
         </View>
       ) : null}
 
       {page === 'name' ? (
         <View className="flex-1">
-          <View className="flex-1 justify-center gap-space-lg">
+          <Middle>
             <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />
             <View>
               <Text variant="displayLgMobile" accessibilityRole="header">
@@ -194,8 +239,8 @@ export default function OnboardingScreen() {
               variant="headlineMd"
               className="h-14 rounded-xl border-[1.5px] border-primary bg-surface-container-lowest px-4"
             />
-          </View>
-          <View className="gap-space-sm">
+          </Middle>
+          <View className="mt-space-lg gap-space-sm">
             <Button label={t.onboarding.continue} size="xl" fullWidth onPress={saveName} />
             <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
           </View>
@@ -369,7 +414,7 @@ export default function OnboardingScreen() {
 
       {page === 'done' ? (
         <View className="flex-1">
-          <View className="flex-1 justify-center gap-space-lg">
+          <Middle>
             <Big icon="local_florist" circle="bg-primary-fixed" color="onPrimaryFixed" />
             <View>
               <Text variant="displayLgMobile" accessibilityRole="header">
@@ -401,7 +446,7 @@ export default function OnboardingScreen() {
             <Text variant="bodySm" color="onSurfaceVariant">
               {t.onboarding.permissionsLater}
             </Text>
-          </View>
+          </Middle>
           <Pressable
             accessibilityRole="button"
             onPress={finish}
