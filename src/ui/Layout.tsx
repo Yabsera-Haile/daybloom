@@ -130,10 +130,10 @@ export function AppHeader({
       <View className="flex-row items-center gap-space-sm" accessible accessibilityLabel={`Daybloom, ${section}`}>
         <Logo size={32} />
         <View>
-          <Text variant="headlineSm" color="primary" style={{ lineHeight: 20 }}>
+          <Text variant="headlineSm" color="primary">
             Daybloom
           </Text>
-          <Text variant="labelSm" color="onSurfaceVariant">
+          <Text variant="labelSm" color="onSurfaceVariant" style={{ marginTop: -2 }}>
             {section}
           </Text>
         </View>
