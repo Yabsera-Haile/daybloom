@@ -317,8 +317,11 @@ export function EventForm({ initial }: { initial: Initial }) {
             accessibilityLabel={t.event.titleLabel}
             placeholder={t.event.titlePlaceholder}
             value={title}
-            onChangeText={(v) => draft.set('title', v)}
+            onChangeText={(v) => draft.set('title', v.replace(/\n/g, ' '))}
             variant="headlineLg"
+            multiline
+            submitBehavior="blurAndSubmit"
+            returnKeyType="done"
             className="border-b-[1.5px] border-primary pb-2"
           />
           {editing ? null : (

@@ -7,7 +7,7 @@ import { t } from '@/i18n';
 import { clockText, shortDay } from '@/i18n/format';
 import { setTaskDone, type TaskRow } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { Button, Card, Checkbox, FilterChip, Icon, IconButton, Text, UrgentBadge } from '@/ui';
+import { Button, Card, Checkbox, FilterChip, Icon, IconButton, Text, UrgentBadge, useNarrow } from '@/ui';
 
 import { TaskForm } from '../sheets/TaskForm';
 
@@ -67,14 +67,16 @@ export function Intentions({ day, isToday, tasks }: { day: string; isToday: bool
   const { addingTask, setAddingTask } = useUi();
   const [filter, setFilter] = useState<Filter>('all');
   const urgent = tasks.filter((x) => x.urgent).length;
+  // on a narrow screen the Add button goes under the title, which keeps its line
+  const narrow = useNarrow();
   const shown = tasks
     .filter((x) => filter === 'all' || (filter === 'urgent') === x.urgent)
     .sort((a, b) => Number(a.done) - Number(b.done)); // done ones sink, otherwise list order
 
   return (
     <Card>
-      <View className="flex-row items-center justify-between gap-2">
-        <View className="flex-1 flex-row items-center gap-space-sm">
+      <View className={narrow ? 'gap-space-sm' : 'flex-row items-center justify-between gap-2'}>
+        <View className={`flex-row items-center gap-space-sm ${narrow ? '' : 'flex-1'}`}>
           <Icon name="checklist" color="primary" />
           <View className="flex-1">
             <Text variant="headlineMd" accessibilityRole="header">

@@ -13,7 +13,7 @@ import { updateHourNote } from '@/planner/notes';
 import type { TaskRow } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
 import { useTheme, type ColorName } from '@/theme';
-import { Card, Icon, IconButton, Text, UrgentBadge, type IconName } from '@/ui';
+import { Card, Icon, IconButton, Text, UrgentBadge, useNarrow, type IconName } from '@/ui';
 
 export type TimelineMarker = {
   key: string;
@@ -48,6 +48,21 @@ export function EventCard({ occurrence: o, compact = false }: { occurrence: Even
   const look = lookFor(category?.colorKey);
   const when = o.allDay ? null : timeRange(o.startAt, o.endAt, settings.timeFormat);
   const detail = [when, o.location].filter(Boolean).join(' · ');
+  // beside the title on a wide screen; under it on a narrow one, so the title keeps its width
+  const stacked = useNarrow() && !compact;
+  const tags =
+    category || o.urgent ? (
+      <View className={stacked ? 'mt-1 flex-row flex-wrap gap-1' : 'items-end gap-1'}>
+        {category ? (
+          <View className="rounded-full bg-surface-container-lowest/80 px-2 py-0.5">
+            <Text variant="labelSm" style={{ color: look.detail }}>
+              {category.name}
+            </Text>
+          </View>
+        ) : null}
+        {o.urgent ? <UrgentBadge /> : null}
+      </View>
+    ) : null;
   return (
     <Pressable
       accessibilityRole="button"
@@ -76,17 +91,9 @@ export function EventCard({ occurrence: o, compact = false }: { occurrence: Even
             {detail}
           </Text>
         ) : null}
+        {stacked ? tags : null}
       </View>
-      <View className="items-end gap-1">
-        {category ? (
-          <View className="rounded-full bg-surface-container-lowest/80 px-2 py-0.5">
-            <Text variant="labelSm" style={{ color: look.detail }}>
-              {category.name}
-            </Text>
-          </View>
-        ) : null}
-        {o.urgent ? <UrgentBadge /> : null}
-      </View>
+      {stacked ? null : tags}
     </Pressable>
   );
 }
@@ -208,7 +215,7 @@ export function Timeline({ day, isToday, now, events, tasks, notes, markers = []
 
   return (
     <Card>
-      <View className="mb-space-md flex-row items-center justify-between">
+      <View className="mb-space-md flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <View className="flex-row items-center gap-space-sm">
           <Icon name="schedule" color="primary" />
           <Text variant="headlineMd" accessibilityRole="header">

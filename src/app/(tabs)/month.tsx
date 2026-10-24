@@ -18,7 +18,7 @@ import { monthOf } from '@/planner/monthGoal';
 import { tasksBetween } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
 import { shadows, useTheme, type CategoryKey } from '@/theme';
-import { DateNavigator, Icon, IconButton, Text, UrgentBadge, Button } from '@/ui';
+import { DateNavigator, Icon, IconButton, Text, UrgentBadge, Button, useNarrow } from '@/ui';
 
 const firstOfMonth = (day: string) => `${day.slice(0, 8)}01`;
 const lastOfMonth = (day: string) => {
@@ -53,6 +53,7 @@ function TimedRow({ plan, day, tinted }: { plan: Plan; day: string; tinted?: boo
   const openSheet = useUi((s) => s.openSheet);
   const label = useLabelColors()(plan);
   const tf = settings.timeFormat;
+  const stacked = useNarrow();
   let when: string;
   if (plan.kind === 'task')
     when = plan.task.dueTime ? `${t.month.due}\n${clockText(plan.task.dueTime, tf)}` : t.month.endOfDay;
@@ -78,10 +79,17 @@ function TimedRow({ plan, day, tinted }: { plan: Plan; day: string; tinted?: boo
       <Text variant="labelMd" color={urgent ? 'secondary' : 'onSurfaceVariant'} style={{ width: 64, paddingTop: 2 }}>
         {when}
       </Text>
-      <Text variant="bodyMd" weight={urgent ? '600' : undefined} done={plan.done} style={{ flex: 1 }}>
-        {titleOf(plan)}
-      </Text>
-      {urgent ? <UrgentBadge /> : null}
+      <View style={{ flex: 1 }}>
+        <Text variant="bodyMd" weight={urgent ? '600' : undefined} done={plan.done}>
+          {titleOf(plan)}
+        </Text>
+        {stacked && urgent ? (
+          <View className="mt-1 flex-row">
+            <UrgentBadge />
+          </View>
+        ) : null}
+      </View>
+      {!stacked && urgent ? <UrgentBadge /> : null}
     </Pressable>
   );
 }
@@ -365,7 +373,7 @@ export default function MonthScreen() {
 
           {/* Coming up this month (MO-07) */}
           <View className="gap-space-sm">
-            <View className="flex-row items-end justify-between">
+            <View className="flex-row flex-wrap items-end justify-between gap-x-3">
               <Text variant="headlineSm" accessibilityRole="header">
                 {t.month.comingUp}
               </Text>

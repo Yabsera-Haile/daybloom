@@ -119,6 +119,7 @@ Each usability session also covers: find what's on next Friday; move a task to t
 |---|---|---|---|
 | T-NFR04.1 | NFR-04 | Accessibility Scanner on every screen | No contrast or tap-target errors |
 | T-NFR04.2 | NFR-04 | Max system font size, 360dp phone | Nothing cut off or overlapping; habit and month grids still usable |
+| T-NFR13.1 | NFR-13 | Emulator at 360×640dp, 320×568dp, and 320dp with 130% text (`adb shell wm size`, `wm density`, `settings put system font_scale`), with a filled-in planner: every tab, page, form, sheet, first-run page and tour card | No word broken mid-way, nothing cut off or overlapping (2026-10-24: passed after the fixes in "Fit small phones and large text") |
 | T-NFR04.3 | NFR-04 | Add an event, tick a task, tick a habit, record an expense, all with TalkBack only | Possible; every control announced clearly |
 | T-NFR04.4 | NFR-04 | Unit check of every text/background token pair used | ≥ 4.5:1 (≥ 3:1 for stripes and icons) |
 | T-NFR04.5 | NFR-04 | Unticked checkbox and habit circle outlines against their backgrounds | ≥ 3:1 |

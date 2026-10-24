@@ -161,8 +161,11 @@ export function HabitForm({
             accessibilityLabel={t.habits.nameLabel}
             placeholder={t.habits.namePlaceholder}
             value={name}
-            onChangeText={setName}
+            onChangeText={(v) => setName(v.replace(/\n/g, ' '))}
             variant="headlineLg"
+            multiline
+            submitBehavior="blurAndSubmit"
+            returnKeyType="done"
             className="border-b-[1.5px] border-primary pb-2"
           />
           {habit ? null : (

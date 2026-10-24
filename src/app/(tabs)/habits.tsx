@@ -224,7 +224,7 @@ export default function HabitsScreen() {
             {/* Daily habits (HB-04, HB-06, HB-08) */}
             {daily.length ? (
               <View className="gap-space-sm">
-                <View className="flex-row items-end justify-between">
+                <View className="flex-row flex-wrap items-end justify-between gap-x-3">
                   <View className="flex-row items-center gap-2">
                     <Icon name="sunny" color="primary" />
                     <Text variant="headlineMd" accessibilityRole="header">

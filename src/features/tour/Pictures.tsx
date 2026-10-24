@@ -75,7 +75,7 @@ export function TourPicture({ id }: { id: PictureId }) {
           </Text>
           {p.kindsAfter(currency)}
         </Text>
-        <View className="flex-row gap-1.5">
+        <View className="flex-row flex-wrap gap-1.5">
           <Chip label={t.sms.kinds.spend} on />
           <Chip label={t.sms.kinds.income} />
           <Chip label={t.sms.kinds.ignore} />
@@ -105,7 +105,7 @@ export function TourPicture({ id }: { id: PictureId }) {
             {p.popUpHeading}
           </Text>
           <Text variant="headlineSm">{t.sms.askTitle}</Text>
-          <View className="flex-row gap-1.5">
+          <View className="flex-row flex-wrap gap-1.5">
             <Chip label={t.budget.starterCategories.dining} on />
             <Chip label={t.budget.starterCategories.groceries} />
           </View>

@@ -5,7 +5,7 @@ import { t } from '@/i18n';
 import { clockText, timeOf } from '@/i18n/format';
 import { useUi } from '@/state/ui';
 import { useTheme } from '@/theme';
-import { Icon, Text, UrgentBadge } from '@/ui';
+import { Icon, Text, UrgentBadge, useNarrow } from '@/ui';
 
 import type { Plan } from './plans';
 
@@ -16,6 +16,8 @@ export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
   const categories = useCategories();
   const openSheet = useUi((s) => s.openSheet);
   const tf = settings.timeFormat;
+  // beside the title on a wide screen; under it on a narrow one, so the title keeps its width
+  const stacked = useNarrow();
 
   if (plan.kind === 'task') {
     const x = plan.task;
@@ -46,9 +48,14 @@ export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
             <Text variant="bodySm" color={x.urgent && !x.done ? 'secondary' : 'onSurfaceVariant'}>
               {detail}
             </Text>
+            {stacked && x.urgent && !x.done ? (
+              <View className="mt-1 flex-row">
+                <UrgentBadge />
+              </View>
+            ) : null}
           </View>
         </View>
-        {x.urgent && !x.done ? <UrgentBadge /> : null}
+        {!stacked && x.urgent && !x.done ? <UrgentBadge /> : null}
       </Pressable>
     );
   }
@@ -86,10 +93,20 @@ export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
               {subtitle}
             </Text>
           ) : null}
+          {stacked && (o.urgent || !allDay) ? (
+            <View className="mt-1 flex-row flex-wrap items-center gap-2">
+              {allDay ? null : (
+                <Text variant="labelMd" color="onSurfaceVariant">
+                  {timeOf(o.startAt, tf)}
+                </Text>
+              )}
+              {o.urgent ? <UrgentBadge /> : null}
+            </View>
+          ) : null}
         </View>
       </View>
-      {o.urgent ? <UrgentBadge /> : null}
-      {allDay ? null : (
+      {!stacked && o.urgent ? <UrgentBadge /> : null}
+      {stacked || allDay ? null : (
         <Text variant="labelMd" color="onSurfaceVariant">
           {timeOf(o.startAt, tf)}
         </Text>

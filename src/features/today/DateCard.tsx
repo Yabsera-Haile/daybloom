@@ -29,7 +29,7 @@ export function DateCard({
     <Card tone="low" shadow className="flex-row items-start justify-between gap-space-sm">
       <View className="flex-1">
         <Text variant="headlineLg" accessibilityRole="header">
-          {longDay(day)}
+          {longDay(day).replace(/ (?=\d+$)/, '\u00A0')}
         </Text>
         <Text variant="labelMd" color="onSurfaceVariant">
           {t.today.dayOfYear(season ? t.seasons[season] : null, n, total)}

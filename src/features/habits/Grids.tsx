@@ -9,7 +9,7 @@ import { setHabitDone, type Habit, type HabitCheck } from '@/habits/store';
 import { t } from '@/i18n';
 import { fullDay, monthDay, weekdayLetter } from '@/i18n/format';
 import { shadows } from '@/theme';
-import { HabitCircle, Icon, Text } from '@/ui';
+import { HabitCircle, Icon, Text, useNarrow } from '@/ui';
 
 import { routineIconName, routineLook, type HabitGroup } from './shared';
 
@@ -17,7 +17,18 @@ const CELL = 28;
 const GAP = 4;
 
 /** Name (wraps to 2 lines, HB-08) and its streak (when 2+) or note. */
-function HabitName({ habit, streak, onPress }: { habit: Habit; streak: number; onPress: () => void }) {
+function HabitName({
+  habit,
+  streak,
+  onPress,
+  own = false,
+}: {
+  habit: Habit;
+  streak: number;
+  onPress: () => void;
+  /** On its own line, above the circles */
+  own?: boolean;
+}) {
   const detail =
     streak >= 2 ? (habit.frequency === 'daily' ? t.habits.streak(streak) : t.habits.weekStreak(streak)) : habit.note;
   return (
@@ -25,7 +36,7 @@ function HabitName({ habit, streak, onPress }: { habit: Habit; streak: number; o
       accessibilityRole="button"
       accessibilityHint={t.habits.history}
       onPress={onPress}
-      className="flex-1 pr-1">
+      className={own ? 'w-full pb-1' : 'flex-1 pr-1'}>
       <Text variant="bodyMd" weight="500" numberOfLines={2} style={{ lineHeight: 18 }}>
         {habit.name}
       </Text>
@@ -54,11 +65,14 @@ export function DailyGrid({
   today: string;
   weekStart: WeekStart;
 }) {
+  // under 360dp there's no room for a name beside seven days
+  const own = useNarrow(360);
   return (
     <View className="rounded-2xl bg-surface-container-lowest p-3" style={shadows.card}>
       <View className="flex-row items-end pb-2">
-        <Text variant="labelSm" color="onSurfaceVariant" style={{ flex: 1 }}>
-          {t.habits.habit}
+        {/* the names have their own lines on a very narrow screen, so the label isn't needed */}
+        <Text variant="labelSm" color="onSurfaceVariant" numberOfLines={1} style={{ flex: 1 }}>
+          {own ? '' : t.habits.habit}
         </Text>
         {days.map((d) => (
           <View
@@ -87,11 +101,14 @@ export function DailyGrid({
             {g.habits.map((h) => {
               const done = donePeriods(h, checks, weekStart);
               return (
-                <View key={h.id} className="min-h-touch flex-row items-center py-1.5">
+                <View
+                  key={h.id}
+                  className={`min-h-touch flex-row flex-wrap items-center py-1.5 ${own ? 'justify-end' : ''}`}>
                   <HabitName
                     habit={h}
                     streak={currentStreak(h, done, today, weekStart)}
                     onPress={() => openHistory(h)}
+                    own={own}
                   />
                   {days.map((d) => (
                     <View key={d} style={{ width: CELL, marginLeft: GAP }} className="items-center">

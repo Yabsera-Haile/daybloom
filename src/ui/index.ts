@@ -7,6 +7,7 @@ export { Icon, type IconName } from './Icon';
 export { AppHeader, Card, DateNavigator, EmptyState, Fab, SectionHeader } from './Layout';
 export { ChoiceSheet, Page, Row, RowGroup } from './Page';
 export { Sheet } from './Sheet';
+export { useNarrow } from './narrow';
 export { Logo, Sticker, type StickerName } from './Sticker';
 export { TabBar, useTabBarHeight } from './TabBar';
 export { KeyboardScrollView, useKeyboardHeight } from './keyboard';

@@ -156,7 +156,7 @@ function DayCard({
   }
 
   const header = (
-    <View className="flex-row items-center justify-between">
+    <View className="flex-row flex-wrap items-center justify-between gap-x-3 gap-y-1">
       <View className="flex-row items-center gap-space-sm">
         <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-variant">
           <Text variant="labelMd" color="onSurfaceVariant">
@@ -408,7 +408,7 @@ export default function WeekScreen() {
 
       {/* Weekly spread (WK-06..09) */}
       <View className="gap-space-sm" onLayout={(e) => (spreadY.current = e.nativeEvent.layout.y)}>
-        <View className="flex-row items-end justify-between">
+        <View className="flex-row flex-wrap items-end justify-between gap-x-3">
           <Text variant="headlineMd" accessibilityRole="header">
             {t.week.spread}
           </Text>

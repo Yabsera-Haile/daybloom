@@ -32,9 +32,14 @@ function TabItem({ name, label, focused, onPress }: { name: string; label: strin
       accessibilityState={{ selected: focused }}
       accessibilityLabel={label}
       onPress={onPress}
-      className={`h-14 min-w-[60px] items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
+      className={`h-14 min-w-[56px] flex-shrink items-center justify-center gap-0.5 rounded-2xl px-2 ${focused ? 'bg-primary-fixed/60' : ''}`}>
       <Icon name={tabIcons[name] ?? 'today'} filled={focused} color={focused ? 'primary' : 'onSurfaceVariant'} />
-      <Text variant="labelSm" color={focused ? 'primary' : 'onSurfaceVariant'}>
+      <Text
+        variant="labelSm"
+        color={focused ? 'primary' : 'onSurfaceVariant'}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}>
         {label}
       </Text>
     </Pressable>

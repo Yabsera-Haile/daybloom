@@ -99,8 +99,11 @@ export function BillForm({ bill }: { bill?: Bill }) {
           accessibilityLabel={t.budget.bill.nameLabel}
           placeholder={t.budget.bill.namePlaceholder}
           value={title}
-          onChangeText={(v) => draft.set('title', v)}
+          onChangeText={(v) => draft.set('title', v.replace(/\n/g, ' '))}
           variant="headlineLg"
+          multiline
+          submitBehavior="blurAndSubmit"
+          returnKeyType="done"
           className={`border-b-[1.5px] pb-2 ${tried && !title.trim() ? 'border-error' : 'border-primary'}`}
         />
 

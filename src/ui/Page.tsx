@@ -9,6 +9,7 @@ import { shadows } from '@/theme';
 import { IconButton } from './Button';
 import { Icon, type IconName } from './Icon';
 import { KeyboardScrollView } from './keyboard';
+import { useNarrow } from './narrow';
 import { Sheet } from './Sheet';
 import { SHEET_RETENTION, usePressRetention } from './sheetContext';
 import { Text } from './Text';
@@ -39,7 +40,14 @@ export function Page({
             iconColor="onSurface"
             onPress={() => router.back()}
           />
-          <Text variant="headlineMd" accessibilityRole="header" numberOfLines={1} style={{ flex: 1 }}>
+          {/* a long title shrinks a little to fit on one line (small phones, large text) */}
+          <Text
+            variant="headlineMd"
+            accessibilityRole="header"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
+            style={{ flex: 1 }}>
             {title}
           </Text>
         </View>
@@ -92,6 +100,8 @@ type RowProps = {
 /** A settings row: icon, title (and subtitle), value, chevron. */
 export function Row({ icon, title, subtitle, value, onPress, right, first = false }: RowProps) {
   const pressRetentionOffset = usePressRetention();
+  // on a narrow screen the value sits under the title instead of squeezing it
+  const stacked = useNarrow();
   const body = (
     <>
       <Icon name={icon} />
@@ -102,8 +112,13 @@ export function Row({ icon, title, subtitle, value, onPress, right, first = fals
             {subtitle}
           </Text>
         ) : null}
+        {value && stacked ? (
+          <Text variant="labelLg" color="primary" style={{ marginTop: 2 }}>
+            {value}
+          </Text>
+        ) : null}
       </View>
-      {value ? (
+      {value && !stacked ? (
         <Text variant="bodyMd" color="onSurfaceVariant" style={{ textAlign: 'right', maxWidth: 140 }}>
           {value}
         </Text>

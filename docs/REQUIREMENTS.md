@@ -66,6 +66,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | NFR-10 | Android download < 40 MB | S |
 | NFR-11 | Animations respect the phone's reduce-motion setting | M |
 | NFR-12 | Money stored as whole cents (no rounding errors) | M |
+| NFR-13 | Screen sizes: every screen works from 320dp to 412dp+ wide (small budget phones to large ones like a Galaxy S24 Ultra), with the phone's text at up to 130%. Under 400dp (or with large text), a value, tag or button beside a title moves under it instead of squeezing it; headings with a side note wrap; long page titles shrink a little; tab labels shrink rather than cut; first-run pages scroll when they don't fit | M |
 
 ---
 
