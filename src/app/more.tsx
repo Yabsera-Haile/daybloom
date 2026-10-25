@@ -7,7 +7,7 @@ import { useLive } from '@/data/live';
 import { t } from '@/i18n';
 import { listSenders } from '@/sms/store';
 import { useTour } from '@/features/tour/store';
-import { Icon, Page, Row, RowGroup, Text, type IconName } from '@/ui';
+import { Columns, Icon, Page, Row, RowGroup, Text, type IconName } from '@/ui';
 
 type Item = { icon: IconName; title: string; detail?: string; href?: Href; onPress?: () => void; right?: ReactNode };
 
@@ -64,23 +64,26 @@ export default function MoreScreen() {
     },
   ];
 
-  return (
-    <Page title={t.tabs.more}>
-      {sections.map((section) => (
-        <RowGroup key={section.heading} heading={section.heading}>
-          {section.rows.map((row, i) => (
-            <Row
-              key={row.title}
-              first={i === 0}
-              icon={row.icon}
-              title={row.title}
-              subtitle={row.detail}
-              right={row.right}
-              onPress={row.onPress ?? (row.href ? () => router.push(row.href!) : undefined)}
-            />
-          ))}
-        </RowGroup>
+  const groups = sections.map((section) => (
+    <RowGroup key={section.heading} heading={section.heading}>
+      {section.rows.map((row, i) => (
+        <Row
+          key={row.title}
+          first={i === 0}
+          icon={row.icon}
+          title={row.title}
+          subtitle={row.detail}
+          right={row.right}
+          onPress={row.onPress ?? (row.href ? () => router.push(row.href!) : undefined)}
+        />
       ))}
+    </RowGroup>
+  ));
+
+  return (
+    // on a wide screen the groups sit side by side (D20)
+    <Page title={t.tabs.more} columns>
+      <Columns left={groups.slice(0, 1)} right={groups.slice(1)} />
       <View className="flex-row items-center justify-center gap-1">
         <Icon name="lock" size={16} />
         <Text variant="bodySm" color="onSurfaceVariant">

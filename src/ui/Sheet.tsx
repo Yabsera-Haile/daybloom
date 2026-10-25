@@ -10,6 +10,7 @@ import { IconButton } from './Button';
 import { KeyboardScrollView, useKeyboardHeight } from './keyboard';
 import { InSheet } from './sheetContext';
 import { Text } from './Text';
+import { centred, MAX } from './wide';
 
 type SheetProps = {
   visible: boolean;
@@ -75,7 +76,8 @@ export function Sheet({
           entering={SlideInDown.duration(220)}
           accessibilityViewIsModal
           className="max-h-[90%] rounded-t-2xl bg-surface-container-lowest pt-3"
-          style={[shadows.float, { paddingBottom: (keyboard ? 0 : insets.bottom) + 16 }]}>
+          // on a wide screen the sheet keeps to the middle, no wider than Material's 640dp (D20)
+          style={[shadows.float, centred(MAX.sheet), { paddingBottom: (keyboard ? 0 : insets.bottom) + 16 }]}>
           <View className="mb-space-sm h-1.5 w-12 self-center rounded-full bg-surface-variant" />
           {title ? (
             <View className="flex-row items-start justify-between gap-2 px-margin pb-space-sm">

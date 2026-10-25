@@ -12,7 +12,19 @@ import { askForNotifications } from '@/reminders/scheduler';
 import { saveSetting } from '@/settings';
 import { sms } from '@/sms/native';
 import { shadows, useTheme } from '@/theme';
-import { Button, Icon, Logo, Sticker, Text, TextField, useKeyboardHeight, type IconName, type StickerName } from '@/ui';
+import {
+  Button,
+  centred,
+  Icon,
+  Logo,
+  MAX,
+  Sticker,
+  Text,
+  TextField,
+  useKeyboardHeight,
+  type IconName,
+  type StickerName,
+} from '@/ui';
 
 type PageId = 'welcome' | 'name' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
 const ORDER: PageId[] = ['welcome', 'name', 'reminders', 'texts', 'popUp', 'background', 'done'];
@@ -197,282 +209,290 @@ export default function OnboardingScreen() {
 
   return (
     <View
-      className="flex-1 bg-surface px-margin"
+      className="flex-1 bg-surface"
       style={{ paddingTop: insets.top + 24, paddingBottom: keyboard ? keyboard + 16 : insets.bottom + 40 }}>
-      {/* progress + skip */}
-      <View className="h-12 flex-row items-center justify-between">
-        <View className="flex-row gap-1.5" importantForAccessibility="no-hide-descendants">
-          {pages.map((p, i) => (
-            <View
-              key={p}
-              className={`h-2 rounded-full ${i <= index ? 'w-6 bg-primary' : 'w-2'}`}
-              style={i > index ? { backgroundColor: colors.surfaceVariant } : undefined}
-            />
-          ))}
-        </View>
-        {page !== 'done' ? <Button label={t.onboarding.skip} variant="text" onPress={finish} /> : null}
-      </View>
-
-      {page === 'welcome' ? (
-        <View className="flex-1">
-          <Middle center>
-            <SeasonsArt />
-            <View className="items-center">
-              <Text variant="displayLgMobile" accessibilityRole="header" style={{ textAlign: 'center' }}>
-                {t.onboarding.welcome}
-              </Text>
-              <Text variant="bodyLg" color="onSurfaceVariant" style={{ textAlign: 'center', marginTop: 8 }}>
-                {t.onboarding.welcomeText}
-              </Text>
-            </View>
-          </Middle>
-          <Button label={t.onboarding.start} size="xl" fullWidth onPress={next} />
-        </View>
-      ) : null}
-
-      {page === 'name' ? (
-        <View className="flex-1">
-          <Middle toEnd={keyboard > 0}>
-            {/* the wave makes room for the box while typing */}
-            {keyboard ? null : <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />}
-            <View>
-              <Text variant="displayLgMobile" accessibilityRole="header">
-                {t.onboarding.nameTitle}
-              </Text>
-              <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
-                {t.onboarding.nameText}
-              </Text>
-            </View>
-            <TextField
-              autoFocus
-              accessibilityLabel={t.onboarding.nameLabel}
-              placeholder={t.onboarding.nameLabel}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              returnKeyType="next"
-              onSubmitEditing={saveName}
-              variant="headlineMd"
-              className="h-14 rounded-xl border-[1.5px] border-primary bg-surface-container-lowest px-4"
-            />
-          </Middle>
-          <View className="mt-space-lg gap-space-sm">
-            <Button label={t.onboarding.continue} size="xl" fullWidth onPress={saveName} />
-            <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
-          </View>
-        </View>
-      ) : null}
-
-      {page === 'reminders' ? (
-        <AskPage
-          icon="notifications"
-          title={t.onboarding.remindTitle}
-          text={t.onboarding.remindText}
-          note={t.onboarding.remindNote}
-          actions={
-            <>
-              <Button
-                label={t.onboarding.allow}
-                size="xl"
-                fullWidth
-                onPress={async () => {
-                  await askForNotifications();
-                  next();
-                }}
+      {/* on a wide screen the pages keep to a centred column (D20) */}
+      <View className="flex-1 px-margin" style={centred(MAX.firstRun)}>
+        {/* progress + skip */}
+        <View className="h-12 flex-row items-center justify-between">
+          <View className="flex-row gap-1.5" importantForAccessibility="no-hide-descendants">
+            {pages.map((p, i) => (
+              <View
+                key={p}
+                className={`h-2 rounded-full ${i <= index ? 'w-6 bg-primary' : 'w-2'}`}
+                style={i > index ? { backgroundColor: colors.surfaceVariant } : undefined}
               />
-              <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
-            </>
-          }>
-          <View
-            accessible
-            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}, ${t.onboarding.exampleBody}`}
-            className="flex-row gap-3 rounded-2xl bg-surface-container-lowest p-space-md"
-            style={shadows.float}>
-            <Logo size={40} />
-            <View className="flex-1">
-              <View className="flex-row justify-between">
-                <Text variant="labelMd" color="onSurfaceVariant">
-                  Daybloom
+            ))}
+          </View>
+          {page !== 'done' ? <Button label={t.onboarding.skip} variant="text" onPress={finish} /> : null}
+        </View>
+
+        {page === 'welcome' ? (
+          <View className="flex-1">
+            <Middle center>
+              <SeasonsArt />
+              <View className="items-center">
+                <Text variant="displayLgMobile" accessibilityRole="header" style={{ textAlign: 'center' }}>
+                  {t.onboarding.welcome}
                 </Text>
-                <Text variant="labelMd" color="onSurfaceVariant">
-                  {t.onboarding.now}
+                <Text variant="bodyLg" color="onSurfaceVariant" style={{ textAlign: 'center', marginTop: 8 }}>
+                  {t.onboarding.welcomeText}
                 </Text>
               </View>
-              <Text variant="bodyLg" weight="600">
-                {t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}
-              </Text>
-              <Text variant="bodyMd" color="onSurfaceVariant">
-                {t.onboarding.exampleBody}
-              </Text>
-            </View>
+            </Middle>
+            <Button label={t.onboarding.start} size="xl" fullWidth onPress={next} />
           </View>
-        </AskPage>
-      ) : null}
+        ) : null}
 
-      {page === 'texts' ? (
-        <AskPage
-          icon="sms"
-          title={t.onboarding.textsTitle}
-          text={t.onboarding.textsText}
-          note={t.onboarding.textsNote}
-          actions={
-            <>
-              <Button
-                label={t.onboarding.allowTexts}
-                size="xl"
-                fullWidth
-                onPress={async () => {
-                  const texts = await allowTexts();
-                  setPage(nextAfter('texts', { ...permissions, texts, popUp: sms?.canPopUp() ?? null }));
-                }}
-              />
-              <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
-            </>
-          }>
-          {/* a payment text, and the expense it becomes */}
-          <View
-            accessible
-            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.textsExample(settings.currency)} ${t.onboarding.textsExampleAdded}`}
-            className="gap-space-sm">
-            <View className="max-w-[90%] self-start rounded-2xl rounded-bl-md bg-surface-container-high p-space-sm">
-              <Text variant="labelMd" color="onSurfaceVariant">
-                M-Money
-              </Text>
-              <Text variant="bodyMd">{t.onboarding.textsExample(settings.currency)}</Text>
-            </View>
-            <View className="self-center">
-              <Icon name="expand_more" color="primary" />
-            </View>
-            <View
-              className="flex-row items-center gap-3 rounded-2xl bg-surface-container-lowest p-space-sm"
-              style={shadows.card}>
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-fixed">
-                <Icon name="restaurant" size={20} color="onPrimaryFixed" />
+        {page === 'name' ? (
+          <View className="flex-1">
+            <Middle toEnd={keyboard > 0}>
+              {/* the wave makes room for the box while typing */}
+              {keyboard ? null : <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />}
+              <View>
+                <Text variant="displayLgMobile" accessibilityRole="header">
+                  {t.onboarding.nameTitle}
+                </Text>
+                <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
+                  {t.onboarding.nameText}
+                </Text>
               </View>
-              <Text variant="bodyLg" style={{ flex: 1 }}>
-                {t.onboarding.textsExampleAdded}
-              </Text>
-              <Text variant="labelLg">2,500</Text>
+              <TextField
+                autoFocus
+                accessibilityLabel={t.onboarding.nameLabel}
+                placeholder={t.onboarding.nameLabel}
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                returnKeyType="next"
+                onSubmitEditing={saveName}
+                variant="headlineMd"
+                className="h-14 rounded-xl border-[1.5px] border-primary bg-surface-container-lowest px-4"
+              />
+            </Middle>
+            <View className="mt-space-lg gap-space-sm">
+              <Button label={t.onboarding.continue} size="xl" fullWidth onPress={saveName} />
+              <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
             </View>
           </View>
-        </AskPage>
-      ) : null}
+        ) : null}
 
-      {page === 'popUp' ? (
-        <AskPage
-          icon="mobile"
-          title={t.onboarding.popUpTitle}
-          text={t.onboarding.popUpText}
-          note={permissions.popUp ? undefined : t.onboarding.popUpNote}
-          actions={
-            permissions.popUp ? (
+        {page === 'reminders' ? (
+          <AskPage
+            icon="notifications"
+            title={t.onboarding.remindTitle}
+            text={t.onboarding.remindText}
+            note={t.onboarding.remindNote}
+            actions={
               <>
-                <Allowed />
-                <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
-              </>
-            ) : (
-              <>
-                <Button label={t.onboarding.openSettings} size="xl" fullWidth onPress={allowPopUp} />
+                <Button
+                  label={t.onboarding.allow}
+                  size="xl"
+                  fullWidth
+                  onPress={async () => {
+                    await askForNotifications();
+                    next();
+                  }}
+                />
                 <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
               </>
-            )
-          }>
-          {/* what the pop-up looks like */}
-          <View
-            accessible
-            accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.popUpExampleHeading}, ${t.onboarding.popUpExampleTitle}`}
-            className="gap-2 rounded-3xl bg-surface-container-lowest p-space-md"
-            style={shadows.float}>
-            <Text variant="labelMd" color="onSurfaceVariant">
-              {t.onboarding.popUpExampleHeading}
-            </Text>
-            <Text variant="headlineSm">{t.onboarding.popUpExampleTitle}</Text>
-            <View className="flex-row flex-wrap gap-2">
-              {[
-                t.budget.starterCategories.dining,
-                t.budget.starterCategories.groceries,
-                t.budget.starterCategories.transport,
-              ].map((label, i) => (
-                <View
-                  key={label}
-                  className={`h-9 justify-center rounded-full px-3 ${i === 0 ? 'bg-primary' : 'border-[1.5px] border-outline-variant'}`}>
-                  <Text variant="labelMd" color={i === 0 ? 'onPrimary' : 'onSurface'}>
-                    {label}
+            }>
+            <View
+              accessible
+              accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}, ${t.onboarding.exampleBody}`}
+              className="flex-row gap-3 rounded-2xl bg-surface-container-lowest p-space-md"
+              style={shadows.float}>
+              <Logo size={40} />
+              <View className="flex-1">
+                <View className="flex-row justify-between">
+                  <Text variant="labelMd" color="onSurfaceVariant">
+                    Daybloom
+                  </Text>
+                  <Text variant="labelMd" color="onSurfaceVariant">
+                    {t.onboarding.now}
                   </Text>
                 </View>
-              ))}
+                <Text variant="bodyLg" weight="600">
+                  {t.onboarding.exampleTitle(clock(15, 0, settings.timeFormat))}
+                </Text>
+                <Text variant="bodyMd" color="onSurfaceVariant">
+                  {t.onboarding.exampleBody}
+                </Text>
+              </View>
             </View>
-          </View>
-        </AskPage>
-      ) : null}
+          </AskPage>
+        ) : null}
 
-      {page === 'background' ? (
-        <AskPage
-          icon="battery_5_bar"
-          title={t.onboarding.backgroundTitle}
-          text={t.onboarding.backgroundText}
-          note={permissions.background ? undefined : t.onboarding.backgroundNote}
-          actions={
-            permissions.background ? (
+        {page === 'texts' ? (
+          <AskPage
+            icon="sms"
+            title={t.onboarding.textsTitle}
+            text={t.onboarding.textsText}
+            note={t.onboarding.textsNote}
+            actions={
               <>
-                <Allowed />
-                <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
-              </>
-            ) : (
-              <>
-                <Button label={t.onboarding.openSettings} size="xl" fullWidth onPress={() => void allowBackground()} />
+                <Button
+                  label={t.onboarding.allowTexts}
+                  size="xl"
+                  fullWidth
+                  onPress={async () => {
+                    const texts = await allowTexts();
+                    setPage(nextAfter('texts', { ...permissions, texts, popUp: sms?.canPopUp() ?? null }));
+                  }}
+                />
                 <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
               </>
-            )
-          }
-        />
-      ) : null}
-
-      {page === 'done' ? (
-        <View className="flex-1">
-          <Middle>
-            <Big icon="local_florist" circle="bg-primary-fixed" color="onPrimaryFixed" />
-            <View>
-              <Text variant="displayLgMobile" accessibilityRole="header">
-                {t.onboarding.doneTitle(settings.name)}
-              </Text>
-              <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
-                {t.onboarding.doneText}
-              </Text>
-            </View>
-            <View className="gap-1 rounded-2xl bg-surface-container-lowest p-space-sm" style={shadows.card}>
-              {(
-                [
-                  ['first_page', t.onboarding.weekStarts(t.settings.weekdays[settings.weekStart])],
-                  ['schedule', t.onboarding.timesLook(clock(13, 15, settings.timeFormat))],
-                  [
-                    'notifications',
-                    settings.defaultReminder === null
-                      ? t.onboarding.noReminders
-                      : t.onboarding.reminders(t.reminders.detail(settings.defaultReminder)),
-                  ],
-                ] as [IconName, string][]
-              ).map(([icon, text]) => (
-                <View key={icon} className="min-h-touch flex-row items-center gap-space-md px-space-sm">
-                  <Icon name={icon} />
-                  <Text variant="bodyLg">{text}</Text>
+            }>
+            {/* a payment text, and the expense it becomes */}
+            <View
+              accessible
+              accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.textsExample(settings.currency)} ${t.onboarding.textsExampleAdded}`}
+              className="gap-space-sm">
+              <View className="max-w-[90%] self-start rounded-2xl rounded-bl-md bg-surface-container-high p-space-sm">
+                <Text variant="labelMd" color="onSurfaceVariant">
+                  M-Money
+                </Text>
+                <Text variant="bodyMd">{t.onboarding.textsExample(settings.currency)}</Text>
+              </View>
+              <View className="self-center">
+                <Icon name="expand_more" color="primary" />
+              </View>
+              <View
+                className="flex-row items-center gap-3 rounded-2xl bg-surface-container-lowest p-space-sm"
+                style={shadows.card}>
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-fixed">
+                  <Icon name="restaurant" size={20} color="onPrimaryFixed" />
                 </View>
-              ))}
+                <Text variant="bodyLg" style={{ flex: 1 }}>
+                  {t.onboarding.textsExampleAdded}
+                </Text>
+                <Text variant="labelLg">2,500</Text>
+              </View>
             </View>
-            <Text variant="bodySm" color="onSurfaceVariant">
-              {t.onboarding.permissionsLater}
-            </Text>
-          </Middle>
-          <Pressable
-            accessibilityRole="button"
-            onPress={finish}
-            className="h-14 items-center justify-center rounded-full bg-primary active:opacity-80">
-            <Text variant="labelLg" color="onPrimary">
-              {t.onboarding.open}
-            </Text>
-          </Pressable>
-        </View>
-      ) : null}
+          </AskPage>
+        ) : null}
+
+        {page === 'popUp' ? (
+          <AskPage
+            icon="mobile"
+            title={t.onboarding.popUpTitle}
+            text={t.onboarding.popUpText}
+            note={permissions.popUp ? undefined : t.onboarding.popUpNote}
+            actions={
+              permissions.popUp ? (
+                <>
+                  <Allowed />
+                  <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
+                </>
+              ) : (
+                <>
+                  <Button label={t.onboarding.openSettings} size="xl" fullWidth onPress={allowPopUp} />
+                  <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+                </>
+              )
+            }>
+            {/* what the pop-up looks like */}
+            <View
+              accessible
+              accessibilityLabel={`${t.onboarding.example}: ${t.onboarding.popUpExampleHeading}, ${t.onboarding.popUpExampleTitle}`}
+              className="gap-2 rounded-3xl bg-surface-container-lowest p-space-md"
+              style={shadows.float}>
+              <Text variant="labelMd" color="onSurfaceVariant">
+                {t.onboarding.popUpExampleHeading}
+              </Text>
+              <Text variant="headlineSm">{t.onboarding.popUpExampleTitle}</Text>
+              <View className="flex-row flex-wrap gap-2">
+                {[
+                  t.budget.starterCategories.dining,
+                  t.budget.starterCategories.groceries,
+                  t.budget.starterCategories.transport,
+                ].map((label, i) => (
+                  <View
+                    key={label}
+                    className={`h-9 justify-center rounded-full px-3 ${i === 0 ? 'bg-primary' : 'border-[1.5px] border-outline-variant'}`}>
+                    <Text variant="labelMd" color={i === 0 ? 'onPrimary' : 'onSurface'}>
+                      {label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </AskPage>
+        ) : null}
+
+        {page === 'background' ? (
+          <AskPage
+            icon="battery_5_bar"
+            title={t.onboarding.backgroundTitle}
+            text={t.onboarding.backgroundText}
+            note={permissions.background ? undefined : t.onboarding.backgroundNote}
+            actions={
+              permissions.background ? (
+                <>
+                  <Allowed />
+                  <Button label={t.onboarding.continue} size="xl" fullWidth onPress={next} />
+                </>
+              ) : (
+                <>
+                  <Button
+                    label={t.onboarding.openSettings}
+                    size="xl"
+                    fullWidth
+                    onPress={() => void allowBackground()}
+                  />
+                  <Button label={t.onboarding.notNow} variant="text" fullWidth onPress={next} />
+                </>
+              )
+            }
+          />
+        ) : null}
+
+        {page === 'done' ? (
+          <View className="flex-1">
+            <Middle>
+              <Big icon="local_florist" circle="bg-primary-fixed" color="onPrimaryFixed" />
+              <View>
+                <Text variant="displayLgMobile" accessibilityRole="header">
+                  {t.onboarding.doneTitle(settings.name)}
+                </Text>
+                <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
+                  {t.onboarding.doneText}
+                </Text>
+              </View>
+              <View className="gap-1 rounded-2xl bg-surface-container-lowest p-space-sm" style={shadows.card}>
+                {(
+                  [
+                    ['first_page', t.onboarding.weekStarts(t.settings.weekdays[settings.weekStart])],
+                    ['schedule', t.onboarding.timesLook(clock(13, 15, settings.timeFormat))],
+                    [
+                      'notifications',
+                      settings.defaultReminder === null
+                        ? t.onboarding.noReminders
+                        : t.onboarding.reminders(t.reminders.detail(settings.defaultReminder)),
+                    ],
+                  ] as [IconName, string][]
+                ).map(([icon, text]) => (
+                  <View key={icon} className="min-h-touch flex-row items-center gap-space-md px-space-sm">
+                    <Icon name={icon} />
+                    <Text variant="bodyLg">{text}</Text>
+                  </View>
+                ))}
+              </View>
+              <Text variant="bodySm" color="onSurfaceVariant">
+                {t.onboarding.permissionsLater}
+              </Text>
+            </Middle>
+            <Pressable
+              accessibilityRole="button"
+              onPress={finish}
+              className="h-14 items-center justify-center rounded-full bg-primary active:opacity-80">
+              <Text variant="labelLg" color="onPrimary">
+                {t.onboarding.open}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }

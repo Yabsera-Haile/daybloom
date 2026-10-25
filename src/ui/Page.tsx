@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { t } from '@/i18n';
-import { shadows } from '@/theme';
+import { shadows, spacing } from '@/theme';
 
 import { IconButton } from './Button';
 import { Icon, type IconName } from './Icon';
@@ -13,26 +13,31 @@ import { useNarrow } from './narrow';
 import { Sheet } from './Sheet';
 import { SHEET_RETENTION, usePressRetention } from './sheetContext';
 import { Text } from './Text';
+import { centred, ContentWidth, MAX, useWide } from './wide';
 
 /**
  * A screen opened on top of the tabs: back arrow, title, scrolling page (design shell data-back).
  * With `list`, the child is the scrolling list itself (a virtualized list can't sit in a ScrollView).
+ * On a wide screen it keeps to a centred column; with `columns`, a wider one for <Columns> (D20).
  */
 export function Page({
   title,
   children,
   right,
   list = false,
+  columns = false,
 }: {
   title: string;
   children: ReactNode;
   right?: ReactNode;
   list?: boolean;
+  columns?: boolean;
 }) {
   const insets = useSafeAreaInsets();
+  const column = centred(columns ? MAX.columns : MAX.page);
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-      <View className="h-16 flex-row items-center justify-between pl-1 pr-margin">
+      <View className="h-16 flex-row items-center justify-between pl-1 pr-margin" style={column}>
         <View className="flex-1 flex-row items-center gap-1">
           <IconButton
             icon="arrow_back"
@@ -54,16 +59,45 @@ export function Page({
         {right}
       </View>
       {list ? (
-        <View className="flex-1">{children}</View>
+        <View className="flex-1" style={column}>
+          {children}
+        </View>
       ) : (
         <KeyboardScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerClassName="gap-space-lg px-margin pt-space-sm"
-          contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+          contentContainerStyle={[column, { paddingBottom: insets.bottom + 48 }]}>
           {children}
         </KeyboardScrollView>
       )}
     </View>
+  );
+}
+
+/**
+ * Two columns side by side on a wide screen, in a `<Page columns>` (Settings, More; D20); on a
+ * phone the left one's parts, then the right one's, as before.
+ */
+export function Columns({ left, right }: { left: ReactNode; right: ReactNode }) {
+  const { width } = useWindowDimensions();
+  const { panes } = useWide();
+  if (!panes) {
+    return (
+      <>
+        {left}
+        {right}
+      </>
+    );
+  }
+  // each column's width, so rows in it stack like on a phone when it's narrow
+  const each = (Math.min(width, MAX.columns) - 2 * spacing.margin - spacing.spaceLg) / 2;
+  return (
+    <ContentWidth.Provider value={each}>
+      <View className="flex-row items-start gap-space-lg">
+        <View className="flex-1 gap-space-lg">{left}</View>
+        <View className="flex-1 gap-space-lg">{right}</View>
+      </View>
+    </ContentWidth.Provider>
   );
 }
 

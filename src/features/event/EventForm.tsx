@@ -34,7 +34,19 @@ import {
 import { reminderOffsets } from '@/reminders/store';
 import { useUi } from '@/state/ui';
 import { fontFamilyFor, shadows, useTheme } from '@/theme';
-import { Button, ChoiceChip, Icon, KeyboardScrollView, PickerPill, Sheet, Switch, Text, TextField } from '@/ui';
+import {
+  Button,
+  centred,
+  ChoiceChip,
+  Icon,
+  KeyboardScrollView,
+  MAX,
+  PickerPill,
+  Sheet,
+  Switch,
+  Text,
+  TextField,
+} from '@/ui';
 import { pickDay, pickTime } from '@/ui/pickers';
 
 import { REMINDER_CHOICES } from '../sheets/TaskForm';
@@ -283,33 +295,36 @@ export function EventForm({ initial }: { initial: Initial }) {
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
       {/* Top bar: Cancel and Save always visible (EV-03) */}
-      <View className="h-16 flex-row items-center justify-between border-b border-surface-variant px-1">
-        <Button
-          label={t.common.cancel}
-          variant="text"
-          align="center"
-          onPress={() => {
-            draft.clear();
-            router.back();
-          }}
-        />
-        <Text variant="headlineSm" accessibilityRole="header">
-          {editing ? t.event.editTitle : t.event.newTitle}
-        </Text>
-        <Button
-          label={t.common.save}
-          size="md"
-          align="center"
-          className={`mr-3 ${canSave ? '' : 'opacity-50'}`}
-          disabled={!canSave}
-          onPress={() => save()}
-        />
+      {/* on a wide screen the bar's buttons line up with the form's centred column (D20) */}
+      <View className="border-b border-surface-variant">
+        <View className="h-16 flex-row items-center justify-between px-1" style={centred(MAX.page)}>
+          <Button
+            label={t.common.cancel}
+            variant="text"
+            align="center"
+            onPress={() => {
+              draft.clear();
+              router.back();
+            }}
+          />
+          <Text variant="headlineSm" accessibilityRole="header">
+            {editing ? t.event.editTitle : t.event.newTitle}
+          </Text>
+          <Button
+            label={t.common.save}
+            size="md"
+            align="center"
+            className={`mr-3 ${canSave ? '' : 'opacity-50'}`}
+            disabled={!canSave}
+            onPress={() => save()}
+          />
+        </View>
       </View>
 
       <KeyboardScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        contentContainerStyle={[centred(MAX.page), { paddingBottom: insets.bottom + 48 }]}>
         <DraftNotice draft={draft} />
         <View>
           <TextField

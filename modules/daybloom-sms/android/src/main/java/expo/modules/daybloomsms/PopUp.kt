@@ -51,9 +51,12 @@ internal object PopUp {
     // one at a time: the next shows when this one closes
     if (shown != null) return waiting.addLast(payment)
     val view = build(app, config, payment)
+    // on a tablet the card keeps to 560dp in the middle, like the app's own sheets (D20)
+    val metrics = app.resources.displayMetrics
+    val widest = (560 * metrics.density).toInt()
     @Suppress("DEPRECATION")
     val params = WindowManager.LayoutParams(
-      MATCH_PARENT,
+      if (metrics.widthPixels > widest) widest else MATCH_PARENT,
       WRAP_CONTENT,
       WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
       // touches outside the card go to the app underneath

@@ -8,6 +8,7 @@ import { useUi } from '@/state/ui';
 import { shadows } from '@/theme';
 
 import { Text } from './Text';
+import { centred, MAX } from './wide';
 
 const SHOW_MS = 7000; // FR-02: Undo stays at least 5 seconds
 
@@ -35,7 +36,7 @@ export function Toast() {
       <View
         accessibilityLiveRegion="polite"
         className="min-h-touch flex-row items-center justify-between gap-2 rounded-2xl bg-inverse-surface pl-space-md pr-1"
-        style={shadows.float}>
+        style={[shadows.float, centred(MAX.toast)]}>
         <Text variant="bodyMd" color="inverseOnSurface" style={{ flex: 1, paddingVertical: 12 }}>
           {toast.message}
         </Text>

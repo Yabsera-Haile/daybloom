@@ -22,7 +22,19 @@ import { DraftNotice } from '@/features/DraftNotice';
 import { t } from '@/i18n';
 import { shortDay } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { Button, ChoiceChip, FormSection, Icon, KeyboardScrollView, PickerRow, RadioCard, Text, TextField } from '@/ui';
+import {
+  Button,
+  centred,
+  ChoiceChip,
+  FormSection,
+  Icon,
+  KeyboardScrollView,
+  MAX,
+  PickerRow,
+  RadioCard,
+  Text,
+  TextField,
+} from '@/ui';
 import { pickDay } from '@/ui/pickers';
 
 import { MoneyField } from './parts';
@@ -73,26 +85,29 @@ export function BillForm({ bill }: { bill?: Bill }) {
 
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-      <View className="h-16 flex-row items-center justify-between border-b border-surface-variant px-1">
-        <Button
-          label={t.common.cancel}
-          variant="text"
-          align="center"
-          onPress={() => {
-            draft.clear();
-            router.back();
-          }}
-        />
-        <Text variant="headlineSm" accessibilityRole="header">
-          {bill ? t.budget.bill.editTitle : t.budget.bill.newTitle}
-        </Text>
-        <Button label={t.common.save} size="md" align="center" className="mr-3" onPress={save} />
+      {/* on a wide screen the bar's buttons line up with the form's centred column (D20) */}
+      <View className="border-b border-surface-variant">
+        <View className="h-16 flex-row items-center justify-between px-1" style={centred(MAX.page)}>
+          <Button
+            label={t.common.cancel}
+            variant="text"
+            align="center"
+            onPress={() => {
+              draft.clear();
+              router.back();
+            }}
+          />
+          <Text variant="headlineSm" accessibilityRole="header">
+            {bill ? t.budget.bill.editTitle : t.budget.bill.newTitle}
+          </Text>
+          <Button label={t.common.save} size="md" align="center" className="mr-3" onPress={save} />
+        </View>
       </View>
 
       <KeyboardScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-md"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        contentContainerStyle={[centred(MAX.page), { paddingBottom: insets.bottom + 48 }]}>
         <DraftNotice draft={draft} />
         <TextField
           autoFocus={!bill}

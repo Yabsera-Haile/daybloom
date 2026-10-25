@@ -19,7 +19,7 @@ import {
 } from '@/planner/search';
 import { useUi } from '@/state/ui';
 import { shadows, useTheme, type ColorName } from '@/theme';
-import { FilterChip, Icon, IconButton, Sticker, Text, TextField, UrgentBadge, type IconName } from '@/ui';
+import { centred, FilterChip, Icon, IconButton, MAX, Sticker, Text, TextField, UrgentBadge, type IconName } from '@/ui';
 
 /** The title with the searched word highlighted. */
 function Highlighted({ text, query, done }: { text: string; query: string; done?: boolean }) {
@@ -234,7 +234,7 @@ export default function SearchScreen() {
 
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-      <View className="h-16 flex-row items-center gap-1 pl-1 pr-margin">
+      <View className="h-16 flex-row items-center gap-1 pl-1 pr-margin" style={centred(MAX.page)}>
         <IconButton
           icon="arrow_back"
           accessibilityLabel={t.common.back}
@@ -266,7 +266,7 @@ export default function SearchScreen() {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="gap-space-md px-margin pt-space-sm"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}>
+        contentContainerStyle={[centred(MAX.page), { paddingBottom: insets.bottom + 48 }]}>
         {!query.trim() ? (
           <View className="gap-space-sm">
             {recent.length ? (
