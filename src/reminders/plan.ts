@@ -42,6 +42,8 @@ export type ReminderData = {
   at: number;
   /** Changes when anything shown changes, so the scheduler replaces it */
   sig: string;
+  /** A file:// picture shown beside the text (the companion pet, MS-03) */
+  largeIcon?: string;
 };
 
 export type PlannedReminder = {

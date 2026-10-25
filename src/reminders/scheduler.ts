@@ -5,8 +5,10 @@ import { isRunningInExpoGo } from 'expo';
 import { Platform } from 'react-native';
 
 import { db } from '@/db/client';
+import { petPicture } from '@/features/pet/picture';
 import { t } from '@/i18n';
-import { readSettings, type ReminderSound } from '@/settings';
+import { petLine, withPet, type PetVoice } from '@/pet/remind';
+import { readSettings, type ReminderSound, type Settings } from '@/settings';
 import { defaultColors as colors } from '@/theme';
 
 import * as Notifications from './notifications';
@@ -101,6 +103,17 @@ export async function askForNotifications(): Promise<boolean> {
   return (await Notifications.requestPermissionsAsync()).granted;
 }
 
+/** The companion that sends the reminders, with its picture (MS-03); none when off or in Calm mode. */
+function petVoice(settings: Settings): PetVoice | null {
+  if (settings.pet === 'off' || settings.calm) return null;
+  return {
+    kind: settings.pet,
+    name: settings.petName ?? t.pet.names[settings.pet],
+    personality: settings.petPersonality,
+    picture: Platform.OS === 'android' ? petPicture(settings.pet) : null,
+  };
+}
+
 function contentOf(
   r: Pick<PlannedReminder, 'title' | 'body' | 'urgent' | 'atStart' | 'data'>,
   sound: ReminderSound,
@@ -143,9 +156,11 @@ export function syncReminders(): Promise<void> {
         const settings = readSettings(db);
         const sound = settings.reminderSound;
         const channelId = await ensureChannel(sound);
-        // the sound is part of each reminder's signature: choosing another sound moves them all
-        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart).map(
-          (r) => ({ ...r, data: { ...r.data, sig: r.data.sig + '|' + sound } }),
+        // the sound is part of each reminder's signature: choosing another sound moves them all; the
+        // pet says its line after the time and title (MS-03)
+        const pet = petVoice(settings);
+        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart).map((r) =>
+          withPet({ ...r, data: { ...r.data, sig: r.data.sig + '|' + sound } }, pet),
         );
         const scheduled = (await Notifications.getAllScheduledNotificationsAsync())
           .filter((n) => PLANNED.test(n.identifier))
@@ -201,13 +216,16 @@ export async function remindAgain(content: Notifications.NotificationContent, mi
 export async function sendTestReminder(inSeconds = 60): Promise<boolean> {
   if (!remindersAvailable) return false;
   if (!(await askForNotifications())) return false;
-  const sound = readSettings(db).reminderSound;
+  const settings = readSettings(db);
+  const sound = settings.reminderSound;
   const channelId = await ensureChannel(sound);
+  const pet = petVoice(settings);
   await Notifications.scheduleNotificationAsync({
     identifier: `test.${Date.now()}`,
     content: {
       title: t.notify.testTitle,
-      body: t.notify.testBody,
+      body: pet ? `${t.notify.testBody} · ${petLine(pet, 'test')}` : t.notify.testBody,
+      data: pet?.picture ? { largeIcon: pet.picture } : undefined,
       color: colors.primary,
       sound: soundFor(sound) ?? false,
       vibrate: VIBRATION,

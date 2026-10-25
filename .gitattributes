@@ -1,0 +1,2 @@
+# patch-package needs its patches exactly as written, with Unix line endings, on every machine
+patches/*.patch text eol=lf
