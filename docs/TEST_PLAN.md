@@ -343,6 +343,8 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-UX04.2 | UX-04 | Installed app: tick a to-do; delete an event | "Done: …" in a sage pill for about a second; "Event deleted · Undo" for 5 seconds |
 | T-MS03.6 | MS-03 | Installed app: Settings › Reminder sound › Send a test reminder, with the cat on | The cat's picture beside the text, and its line after it |
 | T-MS12.3 | MS-12 | Installed app: watch the napping cat for a few minutes; open Week, Month, Habits, Budget; tick a habit on Habits | It wakes, yawns, stretches and leaps off; it's found napping in that tab's spot, covering no buttons; it leaps in on Habits and cheers |
+| T-MS12.4 | MS-12 | The cat on a 412dp phone; on a 1280dp tablet | Bubble on its left, 205dp wide; never wider than 220dp |
+| T-MS12.5 | MS-12 | A 320dp phone: the pet near the left edge, then near the right | The bubble opens on the other side and stays 20dp clear of the edge (2026-10-25: checked at 320dp with 130% text: two lines, a margin to spare) |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |
 
 ### Google Calendar, step A (device calendar)

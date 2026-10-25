@@ -1,6 +1,6 @@
 import { useIsFocused } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Pressable, View } from 'react-native';
+import { AppState, Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -27,11 +27,12 @@ import {
   type PetKind,
   type PetSignals,
 } from '@/pet/mood';
-import { shadows } from '@/theme';
+import { shadows, spacing } from '@/theme';
 import { Text, useTourTarget } from '@/ui';
 
 import { arts } from './art';
 import type { PetArt, PoseName } from './art/types';
+import { bubbleFit } from './bubble';
 import { PetFigure, type Move, type PetFigureHandle } from './PetFigure';
 import { elsewhere, useRoam, type Spot } from './roam';
 
@@ -39,8 +40,6 @@ import { elsewhere, useRoam, type Spot } from './roam';
 const NAP_AFTER = 12_000;
 /** How long a speech bubble stays. */
 const SAY_FOR = 4_500;
-/** The widest a speech bubble gets. */
-const BUBBLE = 200;
 /** How long it naps in one spot while you watch before it may wander to another tab (ms). */
 const WANDER_AFTER: [number, number] = [60_000, 150_000];
 
@@ -144,6 +143,10 @@ function Pet({
   const later = useLater();
   // the tour stops to meet it (ON-02)
   const tourRef = useTourTarget<View>('pet');
+  // where it sits across the screen, so its speech bubble stays on screen
+  const { width: screen } = useWindowDimensions();
+  const [petX, setPetX] = useState<number | null>(null);
+  const measure = useCallback(() => tourRef.current?.measureInWindow((x) => setPetX(x)), [tourRef]);
   const spot = useRoam((s) => s.spot);
   const landing = useRoam((s) => s.landing);
   const here = spot === at;
@@ -179,11 +182,15 @@ function Pet({
   // the speech bubble
   const said = useRef(0);
   const [line, setLine] = useState<{ text: string; id: number } | null>(null);
-  const say = useCallback((lines: string[]) => {
-    const text = lines[said.current % lines.length];
-    said.current += 1;
-    setLine({ text, id: said.current });
-  }, []);
+  const say = useCallback(
+    (lines: string[]) => {
+      measure();
+      const text = lines[said.current % lines.length];
+      said.current += 1;
+      setLine({ text, id: said.current });
+    },
+    [measure],
+  );
   useEffect(() => {
     if (!line) return;
     const timer = setTimeout(() => setLine(null), SAY_FOR);
@@ -379,8 +386,10 @@ function Pet({
     say(linesFor(expression, signals));
   };
 
+  // the bubble opens where there's room, a page margin clear of the screen's edge (MS-12)
+  const fit = bubbleFit(bubble, petX, width, screen, spacing.margin);
   return (
-    <View ref={tourRef} collapsable={false} style={{ width, height }}>
+    <View ref={tourRef} collapsable={false} onLayout={measure} style={{ width, height }}>
       <Animated.View style={jump}>
         <Pressable
           accessibilityRole="button"
@@ -398,13 +407,14 @@ function Pet({
         </Pressable>
       </Animated.View>
       {line ? (
-        // a 200dp holder beside the face; the bubble inside is only as wide as its words
+        // a holder beside the face as wide as the room there; the bubble inside is only as wide as
+        // its words, and a long line wraps
         <View
           pointerEvents="none"
-          className={`absolute ${bubble === 'left' ? 'items-end' : 'items-start'}`}
+          className={`absolute ${fit.side === 'left' ? 'items-end' : 'items-start'}`}
           style={[
-            { width: BUBBLE, bottom: height * 0.45 },
-            bubble === 'left' ? { right: width * 0.82 } : { left: width * 0.82 },
+            { width: fit.width, bottom: height * 0.45 },
+            fit.side === 'left' ? { right: width * 0.82 } : { left: width * 0.82 },
           ]}>
           <Animated.View
             key={line.id}
@@ -416,7 +426,7 @@ function Pet({
             <Text variant="petSpeech">{line.text}</Text>
             <View
               className="absolute h-3 w-3 rotate-45 bg-surface-container-lowest"
-              style={[{ bottom: 12 }, bubble === 'left' ? { right: -5 } : { left: -5 }]}
+              style={[{ bottom: 12 }, fit.side === 'left' ? { right: -5 } : { left: -5 }]}
             />
           </Animated.View>
         </View>
