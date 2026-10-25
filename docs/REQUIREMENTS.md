@@ -67,6 +67,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | NFR-11 | Animations respect the phone's reduce-motion setting | M |
 | NFR-12 | Money stored as whole cents (no rounding errors) | M |
 | NFR-13 | Screen sizes: every screen works from 320dp to 412dp+ wide (small budget phones to large ones like a Galaxy S24 Ultra), with the phone's text at up to 130%. Under 400dp (or with large text), a value, tag or button beside a title moves under it instead of squeezing it; headings with a side note wrap; long page titles shrink a little; tab labels shrink rather than cut; first-run pages scroll when they don't fit | M |
+| NFR-14 | Tablets and foldables: phones (under 600dp) keep the phone design. On a wider screen nothing stretches edge to edge: pages, forms and first-run pages keep to a centred column, sheets and the pop-up to the middle. From 720dp each tab shows two panes side by side, each scrolling on its own (Today: to-dos | timeline; Week: the week | day-by-day spread; Month: grid | chosen day, goal, coming up; Habits: daily | weekly; Budget: budget | spending, bills, savings), and Settings and More show two columns. From 840dp the tabs move to a rail on the left. Widths count large text as less room. Tablets and unfolded foldables turn with the device; phones stay upright | M |
 
 ---
 

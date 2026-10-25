@@ -119,6 +119,12 @@ Each usability session also covers: find what's on next Friday; move a task to t
 |---|---|---|---|
 | T-NFR04.1 | NFR-04 | Accessibility Scanner on every screen | No contrast or tap-target errors |
 | T-NFR04.2 | NFR-04 | Max system font size, 360dp phone | Nothing cut off or overlapping; habit and month grids still usable |
+| T-NFR14.1 | NFR-14 | Screen sizes 375dp (the test window), 412dp, 800dp, 1280dp, and 800dp with 130% text | One page; one page; two panes; two panes and a rail; one page |
+| T-NFR14.2 | NFR-14 | A row in a 360dp pane on a 1280dp tablet | Stacks like on a small phone (useNarrow counts the pane) |
+| T-NFR14.3 | NFR-14 | Screens 412×915, 800×1280, 1280×800, 673×841 (an unfolded foldable) | Only the phone stays upright |
+| T-NFR14.4 | NFR-14 | Today, Week, Month and Budget on a 1280dp tablet | Timeline, spread, coming up and recent spending are in the second pane, not the first |
+| T-NFR14.5 | NFR-14 | Today on a phone | No second pane; the timeline is in the page as designed |
+| T-NFR14.6 | NFR-14 | Emulator at 800×1280dp and 1280×800dp (`adb shell wm size 1600x2560` / `2560x1600`, `wm density 320`), with a filled-in planner: every tab, Settings, More, a form, a sheet, the first-run pages and the tour; then back at phone size | Nothing stretched across the screen; panes and rail as above; the tour points at rail tabs; phones look as before |
 | T-NFR13.1 | NFR-13 | Emulator at 360×640dp, 320×568dp, and 320dp with 130% text (`adb shell wm size`, `wm density`, `settings put system font_scale`), with a filled-in planner: every tab, page, form, sheet, first-run page and tour card | No word broken mid-way, nothing cut off or overlapping (2026-10-24: passed after the fixes in "Fit small phones and large text") |
 | T-NFR04.3 | NFR-04 | Add an event, tick a task, tick a habit, record an expense, all with TalkBack only | Possible; every control announced clearly |
 | T-NFR04.4 | NFR-04 | Unit check of every text/background token pair used | ≥ 4.5:1 (≥ 3:1 for stripes and icons) |
