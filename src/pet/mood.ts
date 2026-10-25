@@ -1,6 +1,6 @@
 // The pet's mood (MS-04, MS-11), worked out from the planner each time and never stored (FR-13):
-// happy once you've done something today, sulking while a habit slips or to-dos sit overdue,
-// content otherwise. It forgives at once: one thing done today makes it happy again.
+// sulking while a habit slips or to-dos sit overdue, until that's dealt with; otherwise happy once
+// you've done something today, content before. (Finishing anything still gets a happy hop.)
 import { and, eq, gte, isNull } from 'drizzle-orm';
 
 import { toDayKey } from '@/calendar/dates';
@@ -20,16 +20,15 @@ export type Expression = 'happy' | 'content' | 'sad' | 'cross';
 export interface PetSignals {
   /** Habit ticks made and to-dos finished today (catching up on yesterday counts too). */
   doneToday: number;
-  /** Daily habits missed yesterday and the day before, by name. */
+  /** Daily habits with no tick today, yesterday or the day before, by name. */
   slipping: string[];
   /** Day to-dos left unfinished on earlier days (FR-15). */
   overdue: number;
 }
 
 export function moodOf(s: PetSignals): Mood {
-  if (s.doneToday > 0) return 'happy';
   if (s.slipping.length > 0 || s.overdue > 0) return 'sulky';
-  return 'content';
+  return s.doneToday > 0 ? 'happy' : 'content';
 }
 
 /** Sulking shows as sad for a gentle pet and cross for a cheeky one. */
@@ -46,7 +45,6 @@ export function isBedtime(now: Date): boolean {
 
 /** What the mood is worked out from, read from the planner for `today`. */
 export function petSignals(db: Db, today: string): PetSignals {
-  const yesterday = addDaysToKey(today, -1);
   const dayBefore = addDaysToKey(today, -2);
   const checks = checksBetween(db, dayBefore, today);
   const start = localDayStart(today);
@@ -60,10 +58,11 @@ export function petSignals(db: Db, today: string): PetSignals {
     .from(tasks)
     .where(and(eq(tasks.done, true), isNull(tasks.deletedAt), gte(tasks.doneAt, start)))
     .all();
-  // a daily habit slips when two whole days pass without a tick (not counting days before it was added)
+  // a daily habit slips when two whole days pass without a tick (not counting days before it was
+  // added), until it's ticked again
   const slipping = listHabits(db)
     .filter((h) => h.frequency === 'daily' && toDayKey(new Date(h.createdAt)) <= dayBefore)
-    .filter((h) => !checks.some((c) => c.habitId === h.id && (c.period === yesterday || c.period === dayBefore)))
+    .filter((h) => !checks.some((c) => c.habitId === h.id))
     .map((h) => h.name);
   return {
     doneToday: ticked.length + finished.length,

@@ -28,11 +28,12 @@ const habitAdded = (name: string, daysAgo: number) => {
 };
 
 describe('pet mood (MS-11)', () => {
-  it('T-MS11.1 content with nothing slipping; sulking while things slip; one thing done today forgives', () => {
+  it('T-MS11.1 content to start; happy once something is done; sulking while things slip, whatever else is done', () => {
     expect(moodOf({ doneToday: 0, slipping: [], overdue: 0 })).toBe('content');
+    expect(moodOf({ doneToday: 2, slipping: [], overdue: 0 })).toBe('happy');
     expect(moodOf({ doneToday: 0, slipping: ['Read'], overdue: 0 })).toBe('sulky');
     expect(moodOf({ doneToday: 0, slipping: [], overdue: 2 })).toBe('sulky');
-    expect(moodOf({ doneToday: 1, slipping: ['Read'], overdue: 2 })).toBe('happy');
+    expect(moodOf({ doneToday: 3, slipping: ['Read'], overdue: 0 })).toBe('sulky');
   });
 
   it('T-MS10.1 sulking is sad for a gentle pet and cross for a cheeky one', () => {
@@ -48,6 +49,12 @@ describe('pet mood (MS-11)', () => {
     habitAdded('Stretch', 1);
     setHabitDone(db, read, addDaysToKey(today, -1), true, 0);
     expect(petSignals(db, today).slipping).toEqual(['Drink water']);
+  });
+
+  it('T-MS11.4 ticking a slipping habit today puts it right', () => {
+    const water = habitAdded('Drink water', 5);
+    setHabitDone(db, water, today, true, 0);
+    expect(petSignals(db, today).slipping).toEqual([]);
   });
 
   it('T-MS11.3 to-dos left on earlier days count as overdue; finishing one or ticking a habit today counts as done', () => {
