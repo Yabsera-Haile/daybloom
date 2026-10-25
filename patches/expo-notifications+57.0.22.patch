@@ -1,0 +1,22 @@
+diff --git a/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/notifications/model/NotificationContent.java b/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/notifications/model/NotificationContent.java
+index 191b64e..c08e4ba 100644
+--- a/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/notifications/model/NotificationContent.java
++++ b/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/notifications/model/NotificationContent.java
+@@ -103,6 +103,17 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
+   @Nullable
+   @Override
+   public Object getImage(@NonNull Context context, @NonNull Continuation<? super Bitmap> $completion) {
++    // A picture for this notification alone, from its data's "largeIcon" (a file:// URI): Daybloom
++    // shows the companion pet on reminders this way. Without one, the app-wide icon as before.
++    if (mBody != null) {
++      String picture = mBody.optString("largeIcon", "");
++      if (!picture.isEmpty()) {
++        Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(picture).getPath());
++        if (bitmap != null) {
++          return bitmap;
++        }
++      }
++    }
+     try {
+       ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+       if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
