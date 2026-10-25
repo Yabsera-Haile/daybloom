@@ -11,8 +11,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import type { Season } from '@/calendar/dates';
 import { Text } from '@/ui';
 
+import { dress } from './art/outfits';
 import type { FaceName, Part, PetArt, PoseName } from './art/types';
 
 /** Short moves the figure can make; each one ends, so nothing redraws between them (battery). */
@@ -44,7 +46,12 @@ type Props = {
   width: number;
   /** Turned round, facing right (side views are drawn facing left). */
   flip?: boolean;
+  /** Dressed for the season (MS-13), or as it is. */
+  season?: Season | null;
 };
+
+/** Room drawn above the box, in its units, for a hat's pom-pom. */
+const ROOM = 14;
 
 const ease = Easing.inOut(Easing.sin);
 const t = (to: number, duration: number) => withTiming(to, { duration, easing: ease });
@@ -62,7 +69,7 @@ const earAngle = (art: PetArt, face: FaceName) =>
 const parsed = new Map<string, SkSVG | null>();
 function svgOf(art: PetArt, markup: string | undefined): SkSVG | null {
   if (!markup) return null;
-  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${art.box[0]} ${art.box[1]}">${art.defs}${markup}</svg>`;
+  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${-ROOM} ${art.box[0]} ${art.box[1] + ROOM}">${art.defs}${markup}</svg>`;
   if (!parsed.has(xml)) {
     const svg = Skia.SVG.MakeFromString(xml);
     if (!svg) console.warn('A pet drawing could not be read:', markup.slice(0, 80));
@@ -76,7 +83,10 @@ function svgOf(art: PetArt, markup: string | undefined): SkSVG | null {
  * pivot inside the drawing. Whole-body moves (a hop, a squash) move the canvas. Moves are played
  * on request (see Companion); with none playing, nothing redraws.
  */
-export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({ art, pose, face, width, flip }, ref) {
+export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
+  { art, pose, face, width, flip, season },
+  ref,
+) {
   const [bw, bh] = art.box;
   const height = (width * bh) / bw;
   const p = art[pose];
@@ -216,6 +226,7 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
     transform: [{ translateY: -zzz.value * height * 0.25 }, { translateX: zzz.value * width * 0.08 }],
   }));
 
+  const worn = useMemo(() => dress(art, pose, season), [art, pose, season]);
   const drawings = useMemo(
     () => ({
       tail: svgOf(art, p.tail?.svg),
@@ -228,21 +239,32 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
       eyes: svgOf(art, faceArt?.eyes),
       face: svgOf(art, faceArt ? faceArt.rest : (p as { face?: string }).face),
       front: svgOf(art, p.front),
+      hat: svgOf(art, worn.hat),
+      over: svgOf(art, worn.over),
+      neck: svgOf(art, worn.neck),
     }),
-    [art, p, faceArt],
+    [art, p, faceArt, worn],
   );
 
   const [sx, sy, srx, sry] = art.shadow;
   const at = (part: Part | undefined) => (part ? { x: part.pivot[0], y: part.pivot[1] } : { x: 0, y: 0 });
-  const full = { x: 0, y: 0, width: bw, height: bh };
+  const full = { x: 0, y: -ROOM, width: bw, height: bh + ROOM };
+  const scale = width / bw;
+  // a scarf goes over the collar, or behind the head where the head hides the neck
+  const neck = drawings.neck ? <ImageSVG svg={drawings.neck} {...full} /> : null;
 
   return (
     <View style={{ width, height }} pointerEvents="none">
       <Animated.View style={[{ width, height, transformOrigin: '50% 100%' }, whole]}>
-        <Canvas style={{ width, height }}>
-          {/* turned round inside the drawing, so it turns in the same frame as the pose changes */}
+        {/* a little taller than the pet, for a hat; turned round inside the drawing, so it turns in
+            the same frame as the pose changes */}
+        <Canvas style={{ position: 'absolute', left: 0, top: -ROOM * scale, width, height: height + ROOM * scale }}>
           <Group
-            transform={flip ? [{ translateX: width }, { scaleX: -1 }, { scale: width / bw }] : [{ scale: width / bw }]}>
+            transform={[
+              { translateY: ROOM * scale },
+              ...(flip ? [{ translateX: width }, { scaleX: -1 }] : []),
+              { scale },
+            ]}>
             {/* the ground shadow is drawn by Skia itself (a canvas of only SVG drawings shows nothing) */}
             <Oval
               x={sx - srx}
@@ -270,6 +292,7 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
             <Group origin={at(p.body)} transform={bodyMove}>
               <ImageSVG svg={drawings.body} {...full} />
             </Group>
+            {worn.neckBehind ? neck : null}
             <Group origin={at(p.head)} transform={headMove}>
               {drawings.leftEar ? (
                 <Group origin={at(p.ears?.[0])} transform={leftEarMove}>
@@ -288,8 +311,11 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
                 </Group>
               ) : null}
               {drawings.face ? <ImageSVG svg={drawings.face} {...full} /> : null}
+              {drawings.hat ? <ImageSVG svg={drawings.hat} {...full} /> : null}
+              {drawings.over ? <ImageSVG svg={drawings.over} {...full} /> : null}
             </Group>
             {drawings.front ? <ImageSVG svg={drawings.front} {...full} /> : null}
+            {worn.neckBehind ? null : neck}
           </Group>
         </Canvas>
       </Animated.View>

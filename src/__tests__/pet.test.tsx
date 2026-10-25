@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { eq } from 'drizzle-orm';
+import { Skia } from '@shopify/react-native-skia';
 import { AppState } from 'react-native';
 
 import { habits } from '@/db/schema';
@@ -16,6 +17,8 @@ const mockBedtime = jest.fn(() => false);
 jest.mock('@/pet/mood', () => ({ ...jest.requireActual('@/pet/mood'), isBedtime: () => mockBedtime() }));
 
 const getDb = withTestDb();
+/** The beanie's wool, so a drawing with it in is the winter outfit. */
+const BERRY = '#C4505B';
 
 /** A daily habit added a few days ago and never ticked: it's slipping. */
 const slipping = (name: string) => {
@@ -175,6 +178,20 @@ describe('companion pet', () => {
       expect(screen.getByLabelText('Mochi the cat, a little sad')).toBeTruthy();
       expect(screen.queryByText(/Drink water/)).toBeNull();
     }, 0.1);
+  });
+
+  it('T-MS13.3 in winter it wears a beanie, unless the season pictures are off', async () => {
+    const drawn = jest.spyOn(Skia.SVG, 'MakeFromString');
+    const beanie = () => drawn.mock.calls.some(([xml]) => xml.includes(BERRY));
+    saveSetting(getDb(), 'theme', 'winter');
+    saveSetting(getDb(), 'seasons', false);
+    const view = await render(<Companion at="today" />);
+    expect(beanie()).toBe(false);
+    await view.unmount();
+    saveSetting(getDb(), 'seasons', true);
+    await render(<Companion at="today" />);
+    expect(beanie()).toBe(true);
+    drawn.mockRestore();
   });
 
   it('T-MS12.9 it comes in from the side its last tab is on in the tab bar', () => {

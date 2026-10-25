@@ -10,11 +10,13 @@ import { Icon, Text, TextField } from '@/ui';
 import { arts } from './art';
 import type { FaceName } from './art/types';
 import { PetFigure } from './PetFigure';
+import { useOutfit } from './season';
 
-/** A still picture of a pet. */
+/** A still picture of a pet, dressed for the season. */
 function Portrait({ kind, face, width }: { kind: PetKind; face: FaceName; width: number }) {
   const art = arts[kind];
-  return art ? <PetFigure art={art} pose="sit" face={face} width={width} /> : null;
+  const season = useOutfit();
+  return art ? <PetFigure art={art} pose="sit" face={face} width={width} season={season} /> : null;
 }
 
 /** A choice card: picked ones get the primary border. */

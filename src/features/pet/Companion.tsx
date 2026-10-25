@@ -34,6 +34,7 @@ import type { FaceName, PetArt, PoseName } from './art/types';
 import { bubbleFit } from './bubble';
 import { PetFigure, type Move, type PetFigureHandle } from './PetFigure';
 import { enterSide, useRoam, type Spot } from './roam';
+import { useOutfit } from './season';
 
 /** How long a pet stays up after waking or cheering, unless it's sulking (it waits up for you then). */
 const NAP_AFTER = 12_000;
@@ -150,6 +151,7 @@ function Pet({
   const sulky = mood === 'sulky';
   const expression = expressionOf(mood, personality);
   const bedtime = isBedtime(new Date(now));
+  const season = useOutfit();
   const figure = useRef<PetFigureHandle>(null);
   const later = useLater();
   // the tour stops to meet it (ON-02)
@@ -435,6 +437,7 @@ function Pet({
             face={face}
             width={width}
             flip={doing === 'landing' && fromLeft}
+            season={season}
           />
         </Pressable>
       </Animated.View>

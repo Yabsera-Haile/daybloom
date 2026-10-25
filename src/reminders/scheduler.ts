@@ -4,8 +4,10 @@
 import { isRunningInExpoGo } from 'expo';
 import { Platform } from 'react-native';
 
+import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
 import { petPicture } from '@/features/pet/picture';
+import { outfitFor } from '@/features/pet/season';
 import { t } from '@/i18n';
 import { cheekyNudge, petLine, withPet, type PetVoice } from '@/pet/remind';
 import { readSettings, type ReminderSound, type Settings } from '@/settings';
@@ -108,12 +110,14 @@ export async function askForNotifications(): Promise<boolean> {
 /** The companion that sends the reminders, with its picture (MS-03); none when off or in Calm mode. */
 function petVoice(settings: Settings): PetVoice | null {
   if (settings.pet === 'off' || settings.calm) return null;
+  // dressed for the season (MS-13)
+  const season = outfitFor(settings, toDayKey(new Date()));
   return {
     kind: settings.pet,
     name: settings.petName ?? t.pet.names[settings.pet],
     personality: settings.petPersonality,
-    picture: Platform.OS === 'android' ? petPicture(settings.pet) : null,
-    crossPicture: Platform.OS === 'android' ? petPicture(settings.pet, 'cross') : null,
+    picture: Platform.OS === 'android' ? petPicture(settings.pet, 'happy', season) : null,
+    crossPicture: Platform.OS === 'android' ? petPicture(settings.pet, 'cross', season) : null,
   };
 }
 
