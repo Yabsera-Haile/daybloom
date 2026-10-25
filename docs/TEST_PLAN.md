@@ -361,10 +361,22 @@ For every screen there's also one component test per state (filled, empty, permi
 
 | Test ID | Covers | Scenario | Expected |
 |---|---|---|---|
-| T-GC01 | GC-01, GC-02 | Phone with Google account; turn on, pick 2 calendars | Their events appear, visually distinct |
-| T-GC02 | GC-02 | Receive an invite in Google Calendar | Appears after the phone syncs |
-| T-GC03 | GC-03 | Turn off | Google events gone; Daybloom data untouched |
-| T-GC04 | GC-04 | Refuse calendar permission | App works; explanation shown |
+| T-GC01.3 | GC-01 | A calendar unticked; then Stop showing them | Its events leave Daybloom; then all of them; nothing is removed from the phone |
+| T-GC02.1 | GC-02 | A one-off, a weekly repeat with an occurrence left out (EXDATE), one moved and one cancelled, a holiday, an invitation; a calendar not shown | Each on its days, the left-out and cancelled ones gone, the holiday all day and read-only, the invitation "invited"; nothing from the hidden calendar; a second pull and a push change nothing |
+| T-GC02.2 | GC-02, GC-03 | Changed and deleted on the phone; one also changed in Daybloom first | The phone's changes come in; Daybloom's change stays and goes to the phone |
+| T-GC03.1 | GC-03 | Save an event to a calendar; rename it; delete it; Undo | On the phone at each step; back as a new event after Undo; a pull changes nothing |
+| T-GC03.2 | GC-03 | An all-day weekly event made in Daybloom (New York) | On the phone at midnight UTC with a one-day length; still on its Mondays |
+| T-GC03.3 | GC-03 | A daily run: rename one occurrence, cancel one, move all an hour, split from the 10th | The phone gets a changed and a cancelled occurrence; they go when all move; the first series stops and a second starts; a pull changes nothing |
+| T-GC04.1 | GC-04 | New event with a calendar chosen; another with the box unticked | The first in the calendar, the second only in Daybloom |
+| T-GC04.2 | GC-04 | Untick an event already in the calendar | Gone from the phone, still in Daybloom |
+| T-GC05.1 | GC-05 | Answer an invitation Yes | "accepted" here at once and on the phone |
+| T-GC05.2 | GC-05 | A holiday's details | "In your calendar", how to change it; Copy, no Edit or Delete |
+| T-GC06.1 | GC-06 | A one-off and a weekly event with a changed occurrence, copied to a calendar | Three items on the phone; pushing and pulling again change nothing; the calendar shows the same as before |
+| T-GC01.1 | GC-01, GC-02 | Installed app, emulator: Settings › Your calendars › Show; a calendar with events; Today, Week, Month | Asked once; the calendars listed with colours; their events marked with a small calendar |
+| T-GC03.4 | GC-03, GC-04 | Installed app on a phone with Google Calendar: add an event in Daybloom (ticked), change it, delete it; then add and change one in Google Calendar | Each appears in Google Calendar on the web within a minute or two; Google's changes appear in Daybloom when it comes back |
+| T-GC05.3 | GC-05 | Installed app: answer a real invitation Yes | The organizer sees "accepted" |
+| T-GC07.1 | GC-07 | Refuse the calendar permission, then again for good | The app keeps working; the second time it opens the phone's settings |
+| T-GC08.1 | GC-08 | An event made in Google Calendar with a notification; an event made in Daybloom with a reminder | One reminder each: Google Calendar's for the first, Daybloom's for the second |
 
 ### Google Calendar, step B (Google API)
 

@@ -253,14 +253,18 @@ The "Coming soon" teaser is removed (D13).
 
 ### C.2 Google Calendar integration
 
-Step A (device calendar bridge):
+Step A (the phone's own calendars, read and write, no sign-in; D26). Android first; iPhone later through Apple's calendar:
 
 | ID | Requirement | Priority |
 |---|---|---|
-| GC-01 | "Show my Google Calendar" switch and a choice of calendars | L |
-| GC-02 | Google events (including received invites) appear on Today, Week and Month, visually distinct | L |
-| GC-03 | Turning it off removes Google events from view; Daybloom data untouched | L |
-| GC-04 | Refusing calendar permission leaves the app fully working, with a plain explanation | L |
+| GC-01 | Settings › Your calendars: "Show your phone's calendars" asks once for the calendar permission, then shows the phone's calendars (Google and any other account) with their colours to tick; "Stop showing them" takes their events out of Daybloom and leaves the calendars untouched | L |
+| GC-02 | Their events (repeats, changed and cancelled occurrences, holidays, invitations) appear on Today, Week, Month and in search, marked with a small calendar; changes made on the phone or in Google come in at start, when the app comes back and every 5 minutes | L |
+| GC-03 | Changing an event from a calendar in Daybloom (this occurrence, this and the following, all of them, cancelling one, deleting with Undo) changes it in that calendar, whose own sync takes it to Google; if both sides changed an event before they met, the change made in Daybloom wins | L |
+| GC-04 | New events go to the calendar chosen in Settings (the Google account's own calendar by default): "Add to Google Calendar" is ticked on the event form and can be unticked; unticking an existing event keeps it only in Daybloom | L |
+| GC-05 | Event details say which calendar an event is in and open it in the calendar app; an invitation shows your answer and takes Yes, Maybe or No, which goes back to the organizer; an event Daybloom may only read (someone else's invitation, a read-only calendar such as holidays) can be copied but not changed or deleted | L |
+| GC-06 | The events made in Daybloom can be copied to the chosen calendar once (repeats and changed occurrences included), and appear once afterwards | L |
+| GC-07 | Refusing the calendar permission leaves the app fully working, with a plain explanation; "Not now" for good sends the person to the phone's settings | L |
+| GC-08 | No double reminders: Daybloom reminds about events whose reminder was set in Daybloom (as before), not about events made in other apps, which their calendar app reminds about | L |
 
 Step B (Google Calendar API):
 

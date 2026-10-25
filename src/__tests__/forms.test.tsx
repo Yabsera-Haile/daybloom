@@ -80,7 +80,7 @@ describe("event form with the phone's calendars", () => {
     ]);
   });
 
-  it('T-GC01.4 an event Daybloom may only read can be copied, not changed or deleted', async () => {
+  it('T-GC05.2 an event Daybloom may only read can be copied, not changed or deleted', async () => {
     getDb()
       .insert(events)
       .values({

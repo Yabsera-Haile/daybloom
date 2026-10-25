@@ -218,7 +218,7 @@ Each milestone ends with an installable build on a real phone.
 Done in v5 (2026-10-25); see [section 7](#7-post-mvp-pet-mascot) and the v5 status above.
 
 ### Phase 4: Google Calendar integration
-See [section 8](#8-post-mvp-google-calendar-integration).
+See [section 8](#8-post-mvp-google-calendar-integration). **Step A built (2026-10-26, branch `calendars`; GC-01…GC-08, D26), and it reads and writes:** Settings › Your calendars, phone events in Daybloom's events table (source 'device'), a two-way sync (`src/calendarSync`: pull, push, fingerprints) over Daybloom's own Android module (`modules/daybloom-calendar`), "Add to Google Calendar" ticked on the event form, invitations answered in event details, and a one-time copy of earlier events. Step B (sign-in, Google's API) only if something needs it: guests with invitation emails, Meet links, instant updates.
 
 ### Phase 5: iOS release
 The code is iOS-ready throughout. This phase covers the Apple Developer account, iOS QA (notifications, EventKit), the store listing and review.
@@ -244,7 +244,7 @@ The code is iOS-ready throughout. This phase covers the Apple Developer account,
 
 ## 8. Post-MVP: Google Calendar integration
 
-**Step A, device calendar bridge (no Google sign-in):** Android phones already sync Google Calendar into the phone's calendar store. Through `expo-calendar`, Daybloom shows those events, including invites, on Today, Week and Month with a distinct look (a small Google-calendar marker and the calendar's own color as the stripe). It needs only the calendar permission: no OAuth, no Google verification, and it works offline.
+**Step A, device calendar bridge (no Google sign-in), built in both directions:** Android phones already sync Google Calendar into the phone's calendar store. Daybloom shows those events, including invites, on Today, Week and Month (marked with a small calendar, in Daybloom's colours), and writes its events there too, so the phone's sync takes them to Google. It needs only the calendar permission: no OAuth, no Google verification, and it works offline. On Android it uses Daybloom's own module, since expo-calendar can't write weekday repeats or change one occurrence there; iPhone will use expo-calendar.
 
 **Step B, Google Calendar API (full integration):**
 - Sign in with Google with the narrowest calendar scope that works.
