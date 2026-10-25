@@ -350,6 +350,11 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS12.8 | MS-12 | A slipping habit: stay on Habits, then on Week | Comes over sad both times; says what's wrong on Habits, not again on Week |
 | T-MS12.9 | MS-12 | Today to Month; Budget to Week; Habits to Budget | In from the left; the right; the left |
 | T-MS04.5 | MS-04, MS-12 | The faces side by side (`node scripts/show-pets.mjs cat`) | Happy has open, shiny eyes; "beaming" squeezes them shut |
+| T-MS13.1 | MS-13 | Season pictures on, Follow the seasons, north and south, 15 January; a fixed Spring theme; season pictures off | Winter; summer; spring; no outfit |
+| T-MS13.2 | MS-13 | Every pet, pose and season | A hat each time; the dragon's horns drawn over the beanie only; a scarf only in winter and autumn where the neck shows |
+| T-MS13.3 | MS-13 | Colours: Winter, with season pictures off, then on | No beanie, then the beanie |
+| T-MS13.4 | MS-13 | `node scripts/show-pets.mjs <cat\|dog\|dragon> out.png --outfits` | Every mood readable in every season and pose: eyes, brows, tears, cross marks and mouths uncovered (2026-10-25: checked for all three) |
+| T-MS13.5 | MS-13 | Installed app: Colours › Winter, then each season; a test reminder | The pet in its outfit on every tab, the pom-pom not cut off; the reminder picture dressed too (2026-10-25: autumn and winter checked on the emulator: asleep, sitting, test reminder) |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |
 
 ### Google Calendar, step A (device calendar)
