@@ -320,6 +320,18 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS06 | MS-06 | Reduce motion on | Pet shows a still pose |
 | T-MS07 | MS-07 | A week of test data | Notification count = user reminder count |
 | T-MS08 | MS-08 | Add a test pet with art + message file only | Works without code changes |
+| T-MS01.2 | MS-01, MS-02, MS-10 | Save a name with spaces, Cheeky, then an unknown pet | Name trimmed and kept, personality kept, the unknown pet refused |
+| T-MS04.2 | MS-04 | 10:30 PM, 6:59 AM, 7:00 AM, 9:59 PM | Asleep, asleep, awake, awake |
+| T-MS04.3 | MS-04 | Bedtime with a habit slipping; tap the pet | Stays asleep; "It’s late. Sleep well!" |
+| T-MS05.1 | MS-05 | Calm mode on, then Companion off | No pet either way |
+| T-MS10.1 | MS-10 | Sulking with each personality | Gentle shows sad, Cheeky shows cross |
+| T-MS10.2 | MS-10 | Gentle, "Drink water" not ticked for two days; tap the pet | "a little sad"; "I miss Drink water. Shall we try today?" |
+| T-MS10.3 | MS-10, MS-02 | Cheeky named Biscuit, same habit; tap | "Biscuit the cat, cross with you"; "Ahem. Drink water? Two days now." |
+| T-MS11.1 | MS-11 | Nothing; a slipping habit; overdue to-dos; one thing done today with both | Content; sulky; sulky; happy |
+| T-MS11.2 | MS-11 | Habits added 5 and 1 days ago, one ticked yesterday | Only the untouched older habit slips |
+| T-MS11.3 | MS-11 | A to-do left yesterday; then finished, and a habit ticked today | Overdue 1, done 0; then overdue 0, done 2 |
+| T-MS12.1 | MS-12 | Nothing to show; tap the pet | Asleep; wakes and says hello |
+| T-MS12.2 | MS-12 | Emulator: open Today; leave a to-do on yesterday; switch to Cheeky; move the to-do to today and tick it | Napping on the date card beside ‹ Today ›; sad; cross with a cross mark; wakes happy with a line, naps after a while (2026-10-25: passed) |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |
 
 ### Google Calendar, step A (device calendar)

@@ -236,7 +236,7 @@ The "Coming soon" teaser is removed (D13).
 
 | ID | Requirement | Priority |
 |---|---|---|
-| MS-01 | User picks a pet (cat, puppy, bird to start) in onboarding or Settings and can change it any time | L |
+| MS-01 | User picks a companion pet (the cat first; dog, bird, dragon and fairy to follow) in Settings, later also in onboarding, and can change it or turn it off any time | L |
 | MS-02 | User can name the pet; the name appears in its messages | L |
 | MS-03 | Reminders show the pet's image and a message in its voice; time and title always come first | L |
 | MS-04 | The pet reacts in the app: idle, happy (task or habit done), reminding, sleeping (quiet hours), celebrating (streaks, "In rhythm" weeks) | L |
@@ -245,6 +245,9 @@ The "Coming soon" teaser is removed (D13).
 | MS-07 | The pet never sends notifications other than the user's own reminders | L |
 | MS-08 | A new pet needs only art + a message file, with no code changes | L |
 | MS-09 | The pet can live in the header, on the right next to search | L |
+| MS-10 | Personality, chosen in Settings: Gentle (the default: gets a little sad when a habit slips, never scolds) or Cheeky (gets cross when a habit slips or to-dos pile up, and says so) | L |
+| MS-11 | The pet's mood is worked out from the planner and never stored: happy once a habit is ticked or a to-do finished today; sulking (sad or cross, by personality) while a daily habit goes two days without a tick or to-dos sit on earlier days; content otherwise. One thing done today makes it happy again | L |
+| MS-12 | It lives on Today's date card, napping unless there's something to show: it wakes happy when you tick something off, stays up while sulking, and naps again after a while. A tap gets a reaction and a short line in a speech bubble. It moves only while it's on screen, in short moves with stillness in between (battery) | L |
 
 ### C.2 Google Calendar integration
 
