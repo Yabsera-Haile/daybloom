@@ -26,6 +26,7 @@ import { useAutoBills } from '@/budget/useAutoBills';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
 import { Tour } from '@/features/tour/Tour';
+import { useOrientation } from '@/features/useOrientation';
 import { useReminders } from '@/reminders/useReminders';
 import { useBankTexts } from '@/sms/useBankTexts';
 import { ThemeProvider } from '@/features/ThemeProvider';
@@ -51,6 +52,8 @@ function Screens() {
 }
 
 export default function RootLayout() {
+  // tablets turn with the device; phones stay upright (D20)
+  useOrientation();
   const [fontsLoaded, fontError] = useFonts({
     Literata_400Regular,
     Literata_400Regular_Italic,
