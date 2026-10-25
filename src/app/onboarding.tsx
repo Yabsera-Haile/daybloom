@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -83,9 +83,24 @@ function SeasonsArt() {
  * The middle of a page: centred when it fits, and scrolling when it doesn't (a small phone with large
  * text), so it never runs into the buttons below.
  */
-function Middle({ center = false, children }: { center?: boolean; children: ReactNode }) {
+function Middle({
+  center = false,
+  toEnd = false,
+  children,
+}: {
+  center?: boolean;
+  /** Keep the end (a text box) in view, while the keyboard leaves little room */
+  toEnd?: boolean;
+  children: ReactNode;
+}) {
+  const scroll = useRef<ScrollView>(null);
+  useEffect(() => {
+    if (toEnd) requestAnimationFrame(() => scroll.current?.scrollToEnd({ animated: false }));
+  }, [toEnd]);
   return (
     <ScrollView
+      ref={scroll}
+      onContentSizeChange={() => toEnd && scroll.current?.scrollToEnd({ animated: false })}
       className="flex-1"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
@@ -217,8 +232,9 @@ export default function OnboardingScreen() {
 
       {page === 'name' ? (
         <View className="flex-1">
-          <Middle>
-            <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />
+          <Middle toEnd={keyboard > 0}>
+            {/* the wave makes room for the box while typing */}
+            {keyboard ? null : <Big icon="waving_hand" circle="bg-tertiary-fixed" color="onTertiaryFixed" />}
             <View>
               <Text variant="displayLgMobile" accessibilityRole="header">
                 {t.onboarding.nameTitle}
