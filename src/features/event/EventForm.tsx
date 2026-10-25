@@ -478,7 +478,7 @@ export function EventForm({ initial }: { initial: Initial }) {
                 <Text variant="bodyLg">{t.calendars.addTo(calendarTitle(calendar))}</Text>
                 {calendar ? (
                   <Text variant="bodySm" color="onSurfaceVariant">
-                    {calendar.name || calendar.account}
+                    {calendar.accountType === 'com.google' ? calendar.name || calendar.account : calendar.account}
                   </Text>
                 ) : null}
               </View>
