@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v0.9, 2026-10-17. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 adds expenses from bank texts (Android). Next: Phase 2 (polish and beta).
+**Status:** v1.0, 2026-10-25. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 expenses from bank texts (Android), v4 a first-run tour, permissions, small screens, tablets and foldables, and v5 the companion pet (**Phase 3 done**, ahead of Phase 2). Next: Phase 2 (polish and beta).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -195,6 +195,13 @@ Each milestone ends with an installable build on a real phone.
 - Tables `sms_senders`, `sms_patterns`, `sms_unmatched`; expenses from texts have `source` 'sms', `ref` (the text's id, unique, so a text is added once) and `payee`.
 - Google Play allows SMS reading for money management only with a permissions declaration; the declaration and a short video are needed before a Play release.
 
+**v5 status (2026-10-25): the companion pet (Phase 3; MS-01…13, ON-03; D21–D25).** Built on the `pet` branch as an experiment, kept after the owner's phone test. Notes:
+- Three pets (a cat, a puppy, a little dragon), chosen on a first-run page or in Settings, named, Gentle or Cheeky, off in Calm mode.
+- Drawn in code, not Rive: flat vector layers per pose (sit, sleep, stretch, leap) and a face per mood, drawn in one Skia canvas and moved in short moves only while on screen (`src/features/pet`). A Rive version could replace the drawings later with the same poses and moods.
+- Its mood comes from the planner (`src/pet/mood.ts`): happy when something is done, sad (Gentle) or cross (Cheeky) while a habit slips or to-dos sit overdue, asleep at night.
+- It naps in a spot on each tab and follows you between tabs; it celebrates the day's last habit; it wears a seasonal outfit that never covers its face.
+- Reminders carry its picture and a line in its voice (a small patch to expo-notifications); Cheeky adds at most one nudge a day, at 7 PM, about a slipping habit that already reminds.
+
 **Tip:** M1 is already a usable planner. Starting the Google Play closed test right after M1 gets the mandatory 14-day clock running early.
 
 **Exit:** every **M** requirement passes its tests; a person has approved the side-by-side visual check.
@@ -208,7 +215,7 @@ Each milestone ends with an installable build on a real phone.
 **Exit:** ≥ 99.5% crash-free sessions; usability targets met; production access granted.
 
 ### Phase 3: Pet mascot
-See [section 7](#7-post-mvp-pet-mascot).
+Done in v5 (2026-10-25); see [section 7](#7-post-mvp-pet-mascot) and the v5 status above.
 
 ### Phase 4: Google Calendar integration
 See [section 8](#8-post-mvp-google-calendar-integration).
@@ -217,6 +224,8 @@ See [section 8](#8-post-mvp-google-calendar-integration).
 The code is iOS-ready throughout. This phase covers the Apple Developer account, iOS QA (notifications, EventKit), the store listing and review.
 
 ## 7. Post-MVP: pet mascot
+
+**Built in v5** (see the v5 status); this was the plan. What changed: a cat, a puppy and a dragon (a bird would fly rather than nap, so it waits); drawn in code with Skia instead of Rive files; it lives in a nap spot on each tab rather than the header and empty states; Cheeky may add one nudge a day (MS-07).
 
 **Goal:** whimsical and personal, without hurting usability.
 
@@ -263,7 +272,7 @@ The code is iOS-ready throughout. This phase covers the Apple Developer account,
 | 9 | Minimum Android version is 7.0 (API 24) | Very old phones excluded | Fine for nearly all phones in use |
 | 10 | Play closed test (12 testers × 14 days) | Launch date | Start right after M1 |
 | 11 | Google verification for calendar scopes | Phase 4 date | Start paperwork early |
-| 12 | Pet art production | Phase 3 date | Brief an illustrator once the MVP look is final |
+| 12 | Pet art production | Phase 3 date | Done: drawn in code in the stickers' style (D21–D22); an illustrator's Rive version can replace it later |
 
 ## 10. Next steps
 
