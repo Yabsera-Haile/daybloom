@@ -1233,6 +1233,11 @@ export const en = {
     SGD: 'Singapore dollar',
   } as Record<string, string>,
 
+  // your phone's calendars (GC-01..GC-06)
+  calendars: {
+    noTitle: '(No title)',
+  },
+
   pet: {
     kinds: { cat: 'Cat', dog: 'Dog', bird: 'Bird', dragon: 'Dragon', fairy: 'Fairy' } as Record<string, string>,
     names: { cat: 'Mochi', dog: 'Biscuit', bird: 'Pip', dragon: 'Ember', fairy: 'Willow' } as Record<string, string>,
