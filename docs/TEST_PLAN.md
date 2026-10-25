@@ -243,6 +243,8 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-ON02.2 | ON-02 | Component | From Habits to the end | Habits, Budget, Savings and bills, bank texts (Pick who texts you, Check what it understood, Add this month’s payments, Say what it was for, Fees and texts it doesn’t know), Search, "You’re ready"; Start planning ends it on Today and remembers |
 | T-ON02.3 | ON-02 | Component | Skip tour on the first card | The tour ends and isn't shown again |
 | T-ON02.5 | ON-02 | Component | Bank texts › How it works, through to Got it | Just the bank-texts cards ("1 of 5"…); ends on the same screen; the whole tour still counts as not seen |
+| T-ON03.1 | ON-03 | Component | Pick the cat, name it Biscuit, Cheeky, Continue | Saved: cat, Biscuit, cheeky; reminders page next |
+| T-ON03.2 | ON-03 | Component | No thanks, Continue | No name box; companion off |
 | T-ON02.4 | ON-02 | Manual (installed app) | Fresh install; then Settings › Take the tour again | The part being explained is highlighted on each tab (savings scrolled into view); the tour comes back from Settings |
 | T-ST01.1 | ST-01 | E2E | Change week start to Monday | Week, Month and Habits all start on Monday |
 | T-ST04.1 | ST-04, NFR-04 | Unit | Each seasonal theme | All text colour pairs ≥ 4.5:1; "Follow the seasons" gives spring in October in the south, autumn in the north |
@@ -327,11 +329,17 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS10.1 | MS-10 | Sulking with each personality | Gentle shows sad, Cheeky shows cross |
 | T-MS10.2 | MS-10 | Gentle, "Drink water" not ticked for two days; tap the pet | "a little sad"; "I miss Drink water. Shall we try today?" |
 | T-MS10.3 | MS-10, MS-02 | Cheeky named Biscuit, same habit; tap | "Biscuit the cat, cross with you"; "Ahem. Drink water? Two days now." |
-| T-MS11.1 | MS-11 | Nothing; a slipping habit; overdue to-dos; one thing done today with both | Content; sulky; sulky; happy |
+| T-MS11.1 | MS-11 | Nothing; two things done; a slipping habit; overdue to-dos; three things done with a habit slipping | Content; happy; sulky; sulky; still sulky |
 | T-MS11.2 | MS-11 | Habits added 5 and 1 days ago, one ticked yesterday | Only the untouched older habit slips |
 | T-MS11.3 | MS-11 | A to-do left yesterday; then finished, and a habit ticked today | Overdue 1, done 0; then overdue 0, done 2 |
-| T-MS12.1 | MS-12 | Nothing to show; tap the pet | Asleep; wakes and says hello |
+| T-MS11.4 | MS-11 | A habit slipping for days, ticked today | Not slipping any more |
+| T-MS12.1 | MS-12 | Nothing to show; tap the pet | Asleep; yawns, stretches, sits up and says hello |
 | T-MS12.2 | MS-12 | Emulator: open Today; leave a to-do on yesterday; switch to Cheeky; move the to-do to today and tick it | Napping on the date card beside ‹ Today ›; sad; cross with a cross mark; wakes happy with a line, naps after a while (2026-10-25: passed) |
+| T-MS03.4 | MS-03 | A 3:00 PM Dentist reminder with Mochi | Title unchanged; body "In 10 minutes · Mochi: …"; its picture in data.largeIcon |
+| T-MS03.5 | MS-03 | The same reminder twice; Cheeky; a new name | Same line; a cheeky line; the reminder is sent again |
+| T-MS05.2 | MS-05 | No pet | The reminder unchanged |
+| T-MS03.6 | MS-03 | Installed app: Settings › Reminder sound › Send a test reminder, with the cat on | The cat's picture beside the text, and its line after it |
+| T-MS12.3 | MS-12 | Installed app: watch the napping cat for a few minutes; open Week, Month, Habits, Budget; tick a habit on Habits | It wakes, yawns, stretches and leaps off; it's found napping in that tab's spot, covering no buttons; it leaps in on Habits and cheers |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |
 
 ### Google Calendar, step A (device calendar)

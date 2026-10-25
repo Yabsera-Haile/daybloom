@@ -218,6 +218,7 @@ The "Coming soon" teaser is removed (D13).
 |---|---|---|
 | ON-01 | Onboarding of short steps: welcome → your name (optional) → why reminders matter + notification permission → on Android, reading payment texts (BU-11), popping up over other apps (only once texts are allowed) and running in the background (only when the phone limits Daybloom's battery use) → done. Each page explains why, with an example, and asks for one thing; pages that don't apply are left out. Week start and time format come from the phone. Skippable; everything can be allowed later in Settings (ST-06). | M |
 | ON-02 | Tour (D19): after onboarding (and once after the update that added it), a short tour over the real app dims the screen except the part being explained, with a card saying what it does: Today, + Add, Week, Month, Habits, Budget, savings and bills, More, Search. On Android, expenses from bank texts get a card for where it starts and one each for picking a sender, checking what Daybloom understood, adding this month’s payments, saying what a payment was for, and fees and unknown texts, each with a small picture of that screen. It moves between tabs as it goes. Skip, Back, Next; Android back steps back. Finishing or skipping is remembered; Settings › Take the tour again and More › Take the tour show it again, and the bank texts screen’s How it works shows just the bank-texts part. | S |
+| ON-03 | A first-run page after your name: would you like a companion? Pick a pet (with its picture) or "No thanks", name it, and choose Gentle or Cheeky, each shown with the face it makes when a habit slips. Skippable; Settings › Companion has it all later | L |
 | ST-01 | Settings: first name, week start, 12/24-hour, usual reminder, reminder sound, categories (rename, recolor, reorder), colours, seasons on/off + hemisphere, currency, calm mode, reminder help, privacy & about | M |
 | ST-02 | Export all data to a file (backup) | S |
 | ST-04 | Colours (D16): a spring (cherry blossom, tulips, fresh leaves), summer (turquoise sea, coral, sunflower), autumn (sage, terracotta, butterscotch) or winter (icy blue, cranberry, evergreen) colour theme, or "Follow the seasons" (changes on the first day of each season where you live). The season pictured on Today, Week and Month follows the colours chosen. Every theme keeps text contrast ≥ 4.5:1. | S |
@@ -238,7 +239,7 @@ The "Coming soon" teaser is removed (D13).
 |---|---|---|
 | MS-01 | User picks a companion pet (the cat first; dog, bird, dragon and fairy to follow) in Settings, later also in onboarding, and can change it or turn it off any time | L |
 | MS-02 | User can name the pet; the name appears in its messages | L |
-| MS-03 | Reminders show the pet's image and a message in its voice; time and title always come first | L |
+| MS-03 | Reminders show the pet's picture beside the text and a short line in its voice after the time and title ("In 10 minutes · Mochi: You've got this."); the line suits its personality and stays the same for the same reminder. Off with the pet and in Calm mode. The small status-bar icon stays the app's (Android draws it in one colour) | L |
 | MS-04 | The pet reacts in the app: idle, happy (task or habit done), reminding, sleeping (quiet hours), celebrating (streaks, "In rhythm" weeks) | L |
 | MS-05 | "Calm mode" turns off pet messages and animations; the app stays fully usable | L |
 | MS-06 | Pet animations respect reduce-motion | L |
@@ -246,8 +247,8 @@ The "Coming soon" teaser is removed (D13).
 | MS-08 | A new pet needs only art + a message file, with no code changes | L |
 | MS-09 | The pet can live in the header, on the right next to search | L |
 | MS-10 | Personality, chosen in Settings: Gentle (the default: gets a little sad when a habit slips, never scolds) or Cheeky (gets cross when a habit slips or to-dos pile up, and says so) | L |
-| MS-11 | The pet's mood is worked out from the planner and never stored: happy once a habit is ticked or a to-do finished today; sulking (sad or cross, by personality) while a daily habit goes two days without a tick or to-dos sit on earlier days; content otherwise. One thing done today makes it happy again | L |
-| MS-12 | It lives on Today's date card, napping unless there's something to show: it wakes happy when you tick something off, stays up while sulking, and naps again after a while. A tap gets a reaction and a short line in a speech bubble. It moves only while it's on screen, in short moves with stillness in between (battery) | L |
+| MS-11 | The pet's mood is worked out from the planner and never stored: sulking (sad or cross, by personality) while a daily habit goes two days without a tick or to-dos sit on earlier days, until that's put right (the habit ticked, the to-dos done or moved); otherwise happy once something is done today, content before. Finishing anything gets a happy hop and a line either way | L |
+| MS-12 | It naps in a spot on each tab that covers no buttons: Today's date card, Week's intention card, the empty days of Month's grid, below Habits' buttons, beside Budget's title. It moves only while on screen, in short moves with stillness in between (battery). A tap wakes it (a yawn, a stretch) to say a short line. Now and then, napping while you watch, it wakes and leaps off to nap on another tab you've opened; when you finish something it leaps in on the tab you're on to cheer; while sulking it waits on Today | L |
 
 ### C.2 Google Calendar integration
 
