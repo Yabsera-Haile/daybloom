@@ -1,9 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { events } from '@/db/schema';
 import { withTestDb } from '@/db/testDb';
+import { EventForm } from '@/features/event/EventForm';
+import { EventDetail } from '@/features/sheets/EventDetail';
 import { HabitForm } from '@/features/habits/HabitForm';
 import { ensureDefaultRoutines, listHabits, reminderTimes } from '@/habits/store';
+import { eventsBetween } from '@/planner/events';
+import { saveSetting } from '@/settings';
 import { Sheet, Text } from '@/ui';
 
 const getDb = withTestDb();
@@ -50,5 +55,53 @@ describe('sheet', () => {
     await fireEvent(x, 'pressIn');
     await fireEvent.press(x);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("event form with the phone's calendars", () => {
+  it("T-GC04.1 a new event goes to the phone's calendar too, ticked unless unticked", async () => {
+    saveSetting(getDb(), 'phoneCalendars', ['1']);
+    saveSetting(getDb(), 'saveToCalendar', '1');
+    const first = await render(<EventForm initial={{ mode: 'new', day: '2026-10-26', hour: 9 }} />);
+    const box = screen.getByRole('checkbox', { name: 'Add to your calendar' });
+    expect(box.props.accessibilityState).toMatchObject({ checked: true });
+    await fireEvent.changeText(screen.getByLabelText('Event title'), 'Dentist');
+    await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    await first.unmount();
+
+    await render(<EventForm initial={{ mode: 'new', day: '2026-10-27', hour: 9 }} />);
+    await fireEvent.changeText(screen.getAllByLabelText('Event title').at(-1)!, 'Haircut');
+    await fireEvent.press(screen.getAllByRole('checkbox', { name: 'Add to your calendar' }).at(-1)!);
+    await fireEvent.press(screen.getAllByRole('button', { name: 'Save' }).at(-1)!);
+    const rows = getDb().select().from(events).all();
+    expect(rows.map((r) => [r.title, r.source, r.calendarId])).toEqual([
+      ['Dentist', 'device', '1'],
+      ['Haircut', 'local', null],
+    ]);
+  });
+
+  it('T-GC01.4 an event Daybloom may only read can be copied, not changed or deleted', async () => {
+    getDb()
+      .insert(events)
+      .values({
+        id: 'holiday',
+        title: 'Thanksgiving',
+        allDay: true,
+        startAt: Date.UTC(2026, 10, 26),
+        endAt: Date.UTC(2026, 10, 27),
+        timeZone: 'UTC',
+        source: 'device',
+        calendarId: '2',
+        externalId: '2/9',
+        readOnly: true,
+      })
+      .run();
+    const [o] = eventsBetween(getDb(), '2026-11-26', '2026-11-26');
+    await render(<EventDetail occurrence={o} />);
+    expect(screen.getByText('In your calendar')).toBeTruthy();
+    expect(screen.getByText('To change it, open it in your calendar app.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Edit' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Delete' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeTruthy();
   });
 });

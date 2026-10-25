@@ -72,6 +72,8 @@ export function EventCard({ occurrence: o, compact = false }: { occurrence: Even
         o.location,
         category?.name,
         o.urgent ? t.common.urgent : null,
+        o.calendarId ? t.calendars.marker : null,
+        o.invite ? t.calendars.invite[o.invite] : null,
       ]
         .filter(Boolean)
         .join(', ')}
@@ -83,12 +85,25 @@ export function EventCard({ occurrence: o, compact = false }: { occurrence: Even
         </View>
       )}
       <View className="flex-1">
-        <Text variant="bodyLg" weight="500" style={{ color: look.title }}>
-          {o.title}
-        </Text>
+        <View className="flex-row items-center gap-1.5">
+          <Text
+            variant="bodyLg"
+            weight="500"
+            done={o.invite === 'declined'}
+            style={{ color: look.title, flexShrink: 1 }}>
+            {o.title}
+          </Text>
+          {/* from the phone's calendar, e.g. Google Calendar (GC-01) */}
+          {o.calendarId ? <Icon name="calendar_today" size={14} tint={look.detail} /> : null}
+        </View>
         {detail && !compact ? (
           <Text variant="bodySm" style={{ color: look.detail }}>
             {detail}
+          </Text>
+        ) : null}
+        {o.invite === 'invited' && !compact ? (
+          <Text variant="labelMd" style={{ color: look.detail }}>
+            {t.calendars.invite.invited}
           </Text>
         ) : null}
         {stacked ? tags : null}

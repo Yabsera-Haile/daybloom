@@ -74,6 +74,8 @@ export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
         o.location,
         category?.name,
         o.urgent ? t.common.urgent : null,
+        o.calendarId ? t.calendars.marker : null,
+        o.invite ? t.calendars.invite[o.invite] : null,
       ]
         .filter(Boolean)
         .join(', ')}
@@ -85,9 +87,13 @@ export function PlanRow({ plan, day }: { plan: Plan; day: string }) {
           style={{ backgroundColor: look.dot ?? colors.outline }}
         />
         <View className="flex-1">
-          <Text variant="bodyMd" weight="500">
-            {o.title}
-          </Text>
+          <View className="flex-row items-center gap-1.5">
+            <Text variant="bodyMd" weight="500" done={o.invite === 'declined'} style={{ flexShrink: 1 }}>
+              {o.title}
+            </Text>
+            {/* from the phone's calendar, e.g. Google Calendar (GC-01) */}
+            {o.calendarId ? <Icon name="calendar_today" size={14} color="onSurfaceVariant" /> : null}
+          </View>
           {subtitle ? (
             <Text variant="bodySm" color="onSurfaceVariant">
               {subtitle}
