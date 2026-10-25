@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { BackHandler, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { useSettings } from '@/data/hooks';
+import { useRoam } from '@/features/pet/roam';
 import { t } from '@/i18n';
 import { shadows, useTheme } from '@/theme';
 import { Button, findTarget, revealTarget, Text, type Rect } from '@/ui';
@@ -29,7 +31,10 @@ function TourStepView({ step }: { step: number }) {
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
   const part = useTour((s) => s.part);
-  const steps = useMemo(() => tourSteps(part), [part]);
+  // with a companion out, the tour stops to meet it
+  const settings = useSettings();
+  const companion = settings.pet === 'off' || settings.calm ? null : (settings.petName ?? t.pet.names[settings.pet]);
+  const steps = useMemo(() => tourSteps(part, companion), [part, companion]);
   const go = useTour((s) => s.go);
   const stop = useTour((s) => s.stop);
   const s = steps[Math.min(step, steps.length - 1)];
@@ -41,6 +46,8 @@ function TourStepView({ step }: { step: number }) {
   useEffect(() => {
     let cancelled = false;
     if (s.route) router.navigate(s.route);
+    // the companion may have wandered off: it comes back to Today to be met
+    if (s.target === 'pet') useRoam.getState().moveTo('today', false);
     void (async () => {
       // a part of the screen: let its tab appear, and scroll it into view if it can be off screen
       if (s.target) {

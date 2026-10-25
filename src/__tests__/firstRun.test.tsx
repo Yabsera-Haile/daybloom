@@ -121,24 +121,26 @@ describe('the companion page', () => {
 describe('the tour', () => {
   afterEach(() => act(() => useTour.setState({ step: null })));
 
-  it('T-ON02.1 walks through each part of the app, moving between tabs, and can go back', async () => {
+  it('T-ON02.1 walks through each part of the app, meeting the companion, moving between tabs, and can go back', async () => {
     useTour.getState().start();
     await render(<Tour />);
     expect(await screen.findByText('A quick look around')).toBeTruthy();
     await tap('Show me');
-    expect(await screen.findByText('1 of 14')).toBeTruthy();
+    expect(await screen.findByText('1 of 15')).toBeTruthy();
     expect(screen.getByText('Today')).toBeTruthy();
     await tap('Next');
     expect(await screen.findByText('Add anything')).toBeTruthy();
     await tap('Next');
+    expect(await screen.findByText('Meet Mochi')).toBeTruthy();
+    await tap('Next');
     expect(await screen.findByText('Week')).toBeTruthy();
     expect(router.navigate).toHaveBeenCalledWith('/week');
     await tap('Back');
-    expect(await screen.findByText('Add anything')).toBeTruthy();
+    expect(await screen.findByText('Meet Mochi')).toBeTruthy();
   });
 
   it('T-ON02.2 the tour shows habits, budget, savings and bank texts step by step, and ends on Today', async () => {
-    useTour.setState({ step: 5, part: 'app' });
+    useTour.setState({ step: 6, part: 'app' });
     await render(<Tour />);
     expect(await screen.findByText('Habits')).toBeTruthy();
     await tap('Next');

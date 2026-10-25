@@ -27,8 +27,11 @@ function textsSteps(): TourStep[] {
   ];
 }
 
-/** The tour (ON-02): a welcome, each part of the app where it lives, bank texts in detail, a goodbye. */
-export function tourSteps(part: TourPart = 'app'): TourStep[] {
+/**
+ * The tour (ON-02): a welcome, each part of the app where it lives, bank texts in detail, a goodbye.
+ * With a companion (its name), a stop to meet it.
+ */
+export function tourSteps(part: TourPart = 'app', companion: string | null = null): TourStep[] {
   const s = t.tour;
   if (part === 'texts') return [{ title: s.texts, text: s.textsHereText }, ...textsSteps()];
   // bank texts only where Daybloom can read them (Android, installed app)
@@ -40,6 +43,7 @@ export function tourSteps(part: TourPart = 'app'): TourStep[] {
     { route: '/', title: s.welcome, text: s.welcomeText },
     { route: '/', target: 'tab-index', title: s.today, text: s.todayText },
     { route: '/', target: 'add', title: s.add, text: s.addText },
+    ...(companion ? [{ route: '/' as Href, target: 'pet' as const, title: s.pet(companion), text: s.petText }] : []),
     { route: '/week', target: 'tab-week', title: s.week, text: s.weekText },
     { route: '/month', target: 'tab-month', title: s.month, text: s.monthText },
     { route: '/habits', target: 'tab-habits', title: s.habits, text: s.habitsText },
