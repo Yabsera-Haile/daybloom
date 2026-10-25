@@ -24,6 +24,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAutoBills } from '@/budget/useAutoBills';
+import { useCalendarSync } from '@/calendarSync/useCalendarSync';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { Overlays } from '@/features/sheets/Overlays';
 import { Tour } from '@/features/tour/Tour';
@@ -36,13 +37,14 @@ import { useTheme } from '@/theme';
 SplashScreen.preventAutoHideAsync();
 
 /**
- * Keeps reminders scheduled, bills paid on time and payments from bank texts added (needs the
- * database, so it lives inside DatabaseProvider).
+ * Keeps reminders scheduled, bills paid on time, payments from bank texts added and the phone's
+ * calendars matched (needs the database, so it lives inside DatabaseProvider).
  */
 function Reminders() {
   useReminders();
   useAutoBills();
   useBankTexts();
+  useCalendarSync();
   return null;
 }
 
