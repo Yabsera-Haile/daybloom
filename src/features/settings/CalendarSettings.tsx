@@ -60,7 +60,10 @@ export function CalendarSettings() {
       void Linking.openSettings();
       return;
     }
-    if (answer !== 'granted') return;
+    if (answer !== 'granted') {
+      showToast(t.calendars.denied);
+      return;
+    }
     const all = await store.calendars();
     if (all.length === 0) {
       showToast(t.calendars.none);

@@ -1241,6 +1241,7 @@ export const en = {
     connect: 'Show your phone’s calendars',
     connectText: 'Google Calendar and other calendars on this phone, next to your plans',
     blocked: 'Calendars are turned off for Daybloom. Turn them on in the phone’s settings.',
+    denied: 'No problem: Daybloom works without them. You can show them here any time.',
     none: 'There are no calendars on this phone yet. Add your Google account in the phone’s settings first.',
     shown: 'Calendars shown',
     shownCount: (n: number) => (n === 1 ? '1 calendar' : `${n} calendars`),
