@@ -346,7 +346,7 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS12.4 | MS-12 | The cat on a 412dp phone; on a 1280dp tablet | Bubble on its left, 205dp wide; never wider than 220dp |
 | T-MS12.5 | MS-12 | A 320dp phone: the pet near the left edge, then near the right | The bubble opens on the other side and stays 20dp clear of the edge (2026-10-25: checked at 320dp with 130% text: two lines, a margin to spare) |
 | T-MS12.6 | MS-12 | The pet on Today; stay on Month (fake clock) | Not there at 4.9 s; at 5 s it moves to Month from Today; awake for a look round, asleep a few seconds later |
-| T-MS12.7 | MS-12 | Too sleepy (random 0.1); then bedtime | Still on Today after 6 s, on Week by 41 s; at bedtime it stays on Week however long you wait on Budget |
+| T-MS12.7 | MS-12 | Too sleepy (random 0.1); then bedtime | Still on Today after 6 s, on Week by 21 s; at bedtime it stays on Week however long you wait on Budget |
 | T-MS12.8 | MS-12 | A slipping habit: stay on Habits, then on Week | Comes over sad both times; says what's wrong on Habits, not again on Week |
 | T-MS12.9 | MS-12 | Today to Month; Budget to Week; Habits to Budget | In from the left; the right; the left |
 | T-MS04.5 | MS-04, MS-12 | The faces side by side (`node scripts/show-pets.mjs cat`) | Happy has open, shiny eyes; "beaming" squeezes them shut |
