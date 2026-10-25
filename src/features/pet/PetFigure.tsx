@@ -42,6 +42,8 @@ type Props = {
   face: FaceName;
   /** Width in dp; the height follows the art's box. */
   width: number;
+  /** Turned round, facing right (side views are drawn facing left). */
+  flip?: boolean;
 };
 
 const ease = Easing.inOut(Easing.sin);
@@ -74,7 +76,7 @@ function svgOf(art: PetArt, markup: string | undefined): SkSVG | null {
  * pivot inside the drawing. Whole-body moves (a hop, a squash) move the canvas. Moves are played
  * on request (see Companion); with none playing, nothing redraws.
  */
-export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({ art, pose, face, width }, ref) {
+export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({ art, pose, face, width, flip }, ref) {
   const [bw, bh] = art.box;
   const height = (width * bh) / bw;
   const p = art[pose];
@@ -238,7 +240,9 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
     <View style={{ width, height }} pointerEvents="none">
       <Animated.View style={[{ width, height, transformOrigin: '50% 100%' }, whole]}>
         <Canvas style={{ width, height }}>
-          <Group transform={[{ scale: width / bw }]}>
+          {/* turned round inside the drawing, so it turns in the same frame as the pose changes */}
+          <Group
+            transform={flip ? [{ translateX: width }, { scaleX: -1 }, { scale: width / bw }] : [{ scale: width / bw }]}>
             {/* the ground shadow is drawn by Skia itself (a canvas of only SVG drawings shows nothing) */}
             <Oval
               x={sx - srx}

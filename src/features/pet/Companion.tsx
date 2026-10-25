@@ -43,7 +43,7 @@ const LOOK_ROUND = 5_000;
 const FOLLOW_AFTER = 5_000;
 /** One time in four it's too sleepy to come at once, and comes over later. */
 const SLEEPY = 0.25;
-const SLEEPY_FOLLOW_AFTER = 40_000;
+const SLEEPY_FOLLOW_AFTER = 20_000;
 /** Coming over sulky, it says what's wrong at most this often (not on every tab). */
 const GRUMBLE_EVERY = 10 * 60_000;
 /** How long a speech bubble stays. */
@@ -178,6 +178,8 @@ function Pet({
   const [napAt, setNapAt] = useState<number | null>(() => (mood === 'happy' ? Date.now() + NAP_AFTER : null));
   const [doing, setDoing] = useState<Doing>(null);
   const [beaming, setBeaming] = useState(false);
+  /** Coming over from the left (its leap is drawn facing left, so it turns round). */
+  const [fromLeft, setFromLeft] = useState(false);
   const asleep = bedtime || (!sulky && napAt === null && doing === null);
   const pose: PoseName =
     doing === 'landing'
@@ -234,12 +236,10 @@ function Pet({
   const jumpX = useSharedValue(0);
   const jumpY = useSharedValue(0);
   const shown = useSharedValue(1);
-  /** Its leap is drawn facing left; coming in from the left it faces right. */
-  const facing = useSharedValue(1);
   const height = (width * art.box[1]) / art.box[0];
   const jump = useAnimatedStyle(() => ({
     opacity: shown.value,
-    transform: [{ translateX: jumpX.value }, { translateY: jumpY.value }, { scaleX: facing.value }],
+    transform: [{ translateX: jumpX.value }, { translateY: jumpY.value }],
   }));
 
   /** Wakes with a yawn and a stretch, then sits up. */
@@ -284,13 +284,15 @@ function Pet({
     tourRef.current?.measureInWindow((left) => {
       x = left;
     });
-    const fromLeft = enterSide(from, at) === 'left';
-    const start = fromLeft ? -(x + width + OFF_EDGE) : screen - x + OFF_EDGE;
+    const left = enterSide(from, at) === 'left';
+    const start = left ? -(x + width + OFF_EDGE) : screen - x + OFF_EDGE;
     const flies = Boolean(art.leap.wings);
     const bounds = !flies && Math.abs(start) > width * 3.2 ? 2 : 1;
     const duration = flies ? Math.min(1400, Math.max(900, Math.abs(start) * 2.4)) : bounds * 560;
-    later(0, () => setDoing('landing'));
-    facing.set(fromLeft ? -1 : 1);
+    later(0, () => {
+      setDoing('landing');
+      setFromLeft(left);
+    });
     shown.set(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: 150 })));
     jumpX.set(
       withSequence(
@@ -318,7 +320,6 @@ function Pet({
       jumpY.set(withSequence(withTiming(-height * 0.3, { duration: 0 }), ...bound(), ...(bounds === 2 ? bound() : [])));
     }
     later(duration + 20, () => {
-      facing.set(1);
       arrive();
       figure.current?.play('stretch');
       later(900, () => figure.current?.play('look'));
@@ -427,7 +428,14 @@ function Pet({
           accessibilityHint={t.pet.hint}
           onPress={onPress}
           hitSlop={8}>
-          <PetFigure ref={figure} art={art} pose={pose} face={face} width={width} />
+          <PetFigure
+            ref={figure}
+            art={art}
+            pose={pose}
+            face={face}
+            width={width}
+            flip={doing === 'landing' && fromLeft}
+          />
         </Pressable>
       </Animated.View>
       {line ? (

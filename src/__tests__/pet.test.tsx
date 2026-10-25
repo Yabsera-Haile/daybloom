@@ -150,7 +150,7 @@ describe('companion pet', () => {
       const view = await render(<Companion at="week" />);
       await wait(6000);
       expect(useRoam.getState().spot).toBe('today');
-      await wait(35_000);
+      await wait(15_000);
       expect(useRoam.getState().spot).toBe('week');
       await view.unmount();
       mockBedtime.mockReturnValue(true);
