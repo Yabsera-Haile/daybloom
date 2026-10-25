@@ -61,13 +61,17 @@ const batWing = (x: number, y: number, dir: 1 | -1, size = 1, lift = 0): Part =>
 
 // --- sitting, facing you -----------------------------------------------------------------------
 
-const eyes = (dy = 0, wet = false) =>
+/** Big round eyes with two sparkles; `dy` looks down, `wet` adds a watery shine, `bright` (happy) makes them bigger and shinier. */
+const eyes = (dy = 0, wet = false, bright = false) =>
   [66, 94]
     .map(
       (x) =>
-        circle(x, 47 + dy, 6.2, ink) +
-        circle(x + 2.1, 44.6 + dy, 2.5, white) +
-        circle(x - 2, 49.6 + dy, 1.2, white) +
+        circle(x, 47 + dy, bright ? 6.9 : 6.2, ink) +
+        (bright
+          ? circle(x + 2.3, 44.3 + dy, 3, white) +
+            circle(x - 2.3, 49.8 + dy, 1.5, white) +
+            circle(x + 3.4, 49 + dy, 0.9, white)
+          : circle(x + 2.1, 44.6 + dy, 2.5, white) + circle(x - 2, 49.6 + dy, 1.2, white)) +
         (wet ? ellipse(x, 51.5 + dy, 4.6, 1.6, '#BFE0F2', 0.85) : ''),
     )
     .join('');
@@ -86,6 +90,14 @@ const sitHead =
   path('M80 14 C104 14 117 28 117 44 C117 61 103 74 80 74 C57 74 43 61 43 44 C43 28 56 14 80 14 Z', fur) +
   ellipse(80, 59, 15, 10, snout) +
   nostrils(80, 55);
+
+/** A wide smile, rosy cheeks and two little hearts: happy, eyes open or squeezed shut. */
+const happyRest =
+  path('M73.5 61.6 Q80 71.6 86.5 61.6 Q80 64 73.5 61.6 Z', mouth) +
+  path('M76.8 65.4 Q80 69.6 83.2 65.4 Q80 66.6 76.8 65.4 Z', tongue) +
+  cheeks(1, 6.5) +
+  heartAt(118, 26, 0, 0.6) +
+  heartAt(40, 30, 0, 0.45);
 
 const sitEar = (side: 1 | -1) => {
   const x = (v: number) => (side === 1 ? v : 160 - v);
@@ -247,15 +259,11 @@ export const dragon: PetArt = {
         eyesAt: [80, 47],
         rest: line('M75 62.6 Q80 66.4 85 62.6') + cheeks(),
       },
-      happy: {
+      happy: { eyes: eyes(0, false, true), eyesAt: [80, 47], rest: happyRest },
+      beam: {
         eyes: line('M60 48.5 Q66 41 72 48.5 M88 48.5 Q94 41 100 48.5', ink, 3.2),
         eyesAt: [80, 46],
-        rest:
-          path('M73.5 61.6 Q80 71.6 86.5 61.6 Q80 64 73.5 61.6 Z', mouth) +
-          path('M76.8 65.4 Q80 69.6 83.2 65.4 Q80 66.6 76.8 65.4 Z', tongue) +
-          cheeks(1, 6.5) +
-          heartAt(118, 26, 0, 0.6) +
-          heartAt(40, 30, 0, 0.45),
+        rest: happyRest,
       },
       sad: {
         eyes: eyes(2, true),

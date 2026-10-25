@@ -9,7 +9,7 @@ import { arts } from './art';
 import type { FaceName, PetArt } from './art/types';
 
 /** Bump when the art changes, so phones draw the picture again. */
-const VERSION = 3;
+const VERSION = 4;
 const SIZE = 256;
 
 /** The pet sitting up with a face, in a square around it (the art's box is wider than it is tall). */

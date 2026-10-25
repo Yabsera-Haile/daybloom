@@ -44,13 +44,17 @@ const buttonNose = (x: number, y: number, s = 1) =>
 
 // --- sitting, facing you -----------------------------------------------------------------------
 
-const eyes = (dy = 0, wet = false) =>
+/** Big round eyes with two sparkles; `dy` looks down, `wet` adds a watery shine, `bright` (happy) makes them bigger and shinier. */
+const eyes = (dy = 0, wet = false, bright = false) =>
   [66, 94]
     .map(
       (x) =>
-        circle(x, 46 + dy, 6.2, ink) +
-        circle(x + 2.1, 43.6 + dy, 2.5, white) +
-        circle(x - 2, 48.6 + dy, 1.2, white) +
+        circle(x, 46 + dy, bright ? 6.9 : 6.2, ink) +
+        (bright
+          ? circle(x + 2.3, 43.3 + dy, 3, white) +
+            circle(x - 2.3, 48.8 + dy, 1.5, white) +
+            circle(x + 3.4, 48 + dy, 0.9, white)
+          : circle(x + 2.1, 43.6 + dy, 2.5, white) + circle(x - 2, 48.6 + dy, 1.2, white)) +
         (wet ? ellipse(x, 50.5 + dy, 4.6, 1.6, '#BFE0F2', 0.85) : ''),
     )
     .join('');
@@ -67,6 +71,14 @@ const sitHead =
   ellipse(80, 59.5, 15.5, 11.5, cream) +
   buttonNose(80, 53.5) +
   line('M80 58.5 L80 61');
+
+/** A big open smile with its tongue out, rosy cheeks and two sparkles: happy, eyes open or squeezed shut. */
+const happyRest =
+  path('M72.5 61 Q80 72 87.5 61 Q80 63.6 72.5 61 Z', mouth) +
+  path('M76.4 64 C76.4 72.6 83.6 72.6 83.6 64 Q80 65.4 76.4 64 Z', tongue) +
+  line('M80 65.6 L80 69.6', '#D9706A', 1.2) +
+  cheeks(1, 6.5) +
+  line('M36 30 L36 36 M33 33 L39 33 M124 26 L124 31 M121.5 28.5 L126.5 28.5', tag, 1.8);
 
 const sitEar = (side: 1 | -1) => {
   const x = (v: number) => (side === 1 ? v : 160 - v);
@@ -258,15 +270,11 @@ export const dog: PetArt = {
         eyesAt: [80, 46],
         rest: line('M73.5 61.5 Q77 65 80 61 Q83 65 86.5 61.5') + cheeks(),
       },
-      happy: {
+      happy: { eyes: eyes(0, false, true), eyesAt: [80, 46], rest: happyRest },
+      beam: {
         eyes: line('M60 47.5 Q66 40 72 47.5 M88 47.5 Q94 40 100 47.5', ink, 3.2),
         eyesAt: [80, 45],
-        rest:
-          path('M72.5 61 Q80 72 87.5 61 Q80 63.6 72.5 61 Z', mouth) +
-          path('M76.4 64 C76.4 72.6 83.6 72.6 83.6 64 Q80 65.4 76.4 64 Z', tongue) +
-          line('M80 65.6 L80 69.6', '#D9706A', 1.2) +
-          cheeks(1, 6.5) +
-          line('M36 30 L36 36 M33 33 L39 33 M124 26 L124 31 M121.5 28.5 L126.5 28.5', tag, 1.8),
+        rest: happyRest,
       },
       sad: {
         eyes: eyes(2, true),

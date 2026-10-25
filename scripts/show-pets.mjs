@@ -30,6 +30,7 @@ const frames = [
   ['asleep', frame(art.sleep, art.sleep.face)],
   ['content', sit('content')],
   ['happy', sit('happy', { tilt: -6 })],
+  ['beaming', sit('beam', { tilt: -6 })],
   ['sad (gentle)', sit('sad', { ears: art.earMood.sad, tilt: 4 })],
   ['cross (cheeky)', sit('cross', { ears: art.earMood.cross })],
   ['yawn', sit('yawn', { tilt: -4 })],

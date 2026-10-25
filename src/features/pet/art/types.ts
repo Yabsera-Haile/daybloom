@@ -20,7 +20,7 @@ export interface PetArt {
   earMood: { sad: number; cross: number };
   /** Happy tail: a slow sway, or a quick wag (puppies). */
   tail: 'sway' | 'wag';
-  /** Sitting up, facing you: its face shows how it feels, or a yawn. */
+  /** Sitting up, facing you: its face shows how it feels, a yawn, or a beam (eyes squeezed shut with joy, for a moment). */
   sit: Pose & { faces: Record<FaceName, Face> };
   /** Curled up asleep. */
   sleep: Pose & { face: string };
@@ -30,7 +30,7 @@ export interface PetArt {
   leap: Pose & { face: string };
 }
 
-export type FaceName = Expression | 'yawn';
+export type FaceName = Expression | 'yawn' | 'beam';
 export type PoseName = 'sit' | 'sleep' | 'stretch' | 'leap';
 
 export interface Part {
