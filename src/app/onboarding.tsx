@@ -5,10 +5,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
+import { PetChoices } from '@/features/pet/PetChoices';
 import { usePermissions, type PhonePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
 import { askForNotifications } from '@/reminders/scheduler';
+import type { Personality, PetKind } from '@/pet/mood';
 import { saveSetting } from '@/settings';
 import { sms } from '@/sms/native';
 import { shadows, useTheme } from '@/theme';
@@ -26,8 +28,8 @@ import {
   type StickerName,
 } from '@/ui';
 
-type PageId = 'welcome' | 'name' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
-const ORDER: PageId[] = ['welcome', 'name', 'reminders', 'texts', 'popUp', 'background', 'done'];
+type PageId = 'welcome' | 'name' | 'companion' | 'reminders' | 'texts' | 'popUp' | 'background' | 'done';
+const ORDER: PageId[] = ['welcome', 'name', 'companion', 'reminders', 'texts', 'popUp', 'background', 'done'];
 
 /** Whether a page has anything to ask on this phone. */
 function applies(page: PageId, p: PhonePermissions): boolean {
@@ -187,6 +189,10 @@ export default function OnboardingScreen() {
   const { permissions, allowTexts, allowPopUp, allowBackground } = usePermissions();
   const [page, setPage] = useState<PageId>('welcome');
   const [name, setName] = useState(settings.name ?? '');
+  // the companion page (ON-03)
+  const [pet, setPet] = useState<PetKind | 'off'>(settings.pet);
+  const [petName, setPetName] = useState(settings.petName ?? '');
+  const [personality, setPersonality] = useState<Personality>(settings.petPersonality);
   // the page ends above the keyboard while it's open, so what you type stays in view
   const keyboard = useKeyboardHeight();
 
@@ -204,6 +210,13 @@ export default function OnboardingScreen() {
   };
   const saveName = () => {
     saveSetting(db, 'name', name);
+    next();
+  };
+  const savePet = () => {
+    saveSetting(db, 'pet', pet);
+    // no name typed: it keeps its own (Mochi)
+    saveSetting(db, 'petName', petName.trim() || null);
+    saveSetting(db, 'petPersonality', personality);
     next();
   };
 
@@ -272,6 +285,33 @@ export default function OnboardingScreen() {
             </Middle>
             <View className="mt-space-lg gap-space-sm">
               <Button label={t.onboarding.continue} size="xl" fullWidth onPress={saveName} />
+              <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
+            </View>
+          </View>
+        ) : null}
+
+        {page === 'companion' ? (
+          <View className="flex-1">
+            <Middle toEnd={keyboard > 0}>
+              <View>
+                <Text variant="displayLgMobile" accessibilityRole="header">
+                  {t.onboarding.petTitle}
+                </Text>
+                <Text variant="bodyLg" color="onSurfaceVariant" style={{ marginTop: 8 }}>
+                  {t.onboarding.petText}
+                </Text>
+              </View>
+              <PetChoices
+                kind={pet}
+                onKind={setPet}
+                name={petName}
+                onName={setPetName}
+                personality={personality}
+                onPersonality={setPersonality}
+              />
+            </Middle>
+            <View className="mt-space-lg gap-space-sm">
+              <Button label={t.onboarding.continue} size="xl" fullWidth onPress={savePet} />
               <Button label={t.onboarding.skipThis} variant="text" fullWidth onPress={next} />
             </View>
           </View>

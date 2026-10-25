@@ -50,6 +50,8 @@ describe('first run', () => {
     await render(<OnboardingScreen />);
     await tap('Get started');
     await tap('Skip this');
+    expect(screen.getByText('Would you like a companion?')).toBeTruthy();
+    await tap('Skip this');
     expect(screen.getByText('Never miss what matters')).toBeTruthy();
     await tap('Not now');
     expect(await screen.findByText('Spending from your payment texts')).toBeTruthy();
@@ -71,6 +73,7 @@ describe('first run', () => {
     await render(<OnboardingScreen />);
     await tap('Get started');
     await tap('Skip this');
+    await tap('Skip this');
     await tap('Not now');
     expect(await screen.findByText('Open my planner')).toBeTruthy();
     expect(screen.queryByText('Spending from your payment texts')).toBeNull();
@@ -82,11 +85,36 @@ describe('first run', () => {
     await render(<OnboardingScreen />);
     await tap('Get started');
     await tap('Skip this');
+    await tap('Skip this');
     await tap('Not now');
     await screen.findByText('Spending from your payment texts');
     await tap('Not now');
     expect(screen.queryByText('Ask right away, over any app')).toBeNull();
     expect(screen.getByText('Open my planner')).toBeTruthy();
+  });
+});
+
+describe('the companion page', () => {
+  it('T-ON03.1 pick the cat, name it Biscuit and make it cheeky', async () => {
+    await render(<OnboardingScreen />);
+    await tap('Get started');
+    await tap('Skip this');
+    await fireEvent.press(screen.getByRole('radio', { name: 'Cat' }));
+    await fireEvent.changeText(screen.getByLabelText('Its name'), 'Biscuit');
+    await fireEvent.press(screen.getByRole('radio', { name: /^Cheeky/ }));
+    await tap('Continue');
+    expect(readSettings(getDb())).toMatchObject({ pet: 'cat', petName: 'Biscuit', petPersonality: 'cheeky' });
+    expect(screen.getByText('Never miss what matters')).toBeTruthy();
+  });
+
+  it('T-ON03.2 "No thanks" turns the companion off', async () => {
+    await render(<OnboardingScreen />);
+    await tap('Get started');
+    await tap('Skip this');
+    await fireEvent.press(screen.getByRole('radio', { name: 'No thanks' }));
+    expect(screen.queryByLabelText('Its name')).toBeNull();
+    await tap('Continue');
+    expect(readSettings(getDb()).pet).toBe('off');
   });
 });
 
