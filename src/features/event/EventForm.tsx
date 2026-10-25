@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { toDayKey } from '@/calendar/dates';
 import { addDaysToKey, dayKeyInZone, fromWallTime, localTimeZone, parseDayKey } from '@/calendar/timezone';
+import { calendarTitle, usePhoneCalendars } from '@/calendarSync/usePhoneCalendars';
 import { db } from '@/db/client';
 import { useDraft } from '@/data/drafts';
 import { useCategories, useSettings } from '@/data/hooks';
@@ -37,6 +38,7 @@ import { fontFamilyFor, shadows, useTheme } from '@/theme';
 import {
   Button,
   centred,
+  Checkbox,
   ChoiceChip,
   Icon,
   KeyboardScrollView,
@@ -154,6 +156,14 @@ export function EventForm({ initial }: { initial: Initial }) {
         : [],
   );
   const [urgent, setUrgent] = useState(editing?.urgent ?? false);
+  // in the phone's calendar too (GC-04): ticked for new events when there's a calendar to add to
+  const phoneCalendars = usePhoneCalendars();
+  const calendarId = editing?.calendarId ?? settings.saveToCalendar;
+  const calendar = phoneCalendars.find((c) => c.id === calendarId);
+  const offerCalendar = settings.phoneCalendars.length > 0 && calendarId !== null;
+  const [inCalendar, setInCalendar] = useState(
+    editing ? editing.calendarId !== null : settings.saveToCalendar !== null,
+  );
 
   // only used to read an existing rule back (a new event has none)
   const timing = { startAt: editing?.startAt ?? 0, timeZone: editing?.timeZone ?? localTimeZone(), allDay };
@@ -235,6 +245,7 @@ export function EventForm({ initial }: { initial: Initial }) {
       location,
       notes,
       rrule: r ? toRRule(r, { startAt, timeZone, allDay }) : null,
+      calendarId: offerCalendar && inCalendar ? calendarId : null,
     };
   }
 
@@ -455,6 +466,30 @@ export function EventForm({ initial }: { initial: Initial }) {
           </View>
           <Switch value={urgent} onChange={setUrgent} label={t.event.urgent} tone="secondary" />
         </Section>
+
+        {/* In the phone's calendar too, e.g. Google Calendar (GC-04) */}
+        {offerCalendar ? (
+          <Section className="min-h-[72px] flex-row items-center justify-between gap-3 pl-space-md pr-1">
+            <View className="flex-1 flex-row items-center gap-3">
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-fixed">
+                <Icon name="calendar_month" color="onPrimaryFixed" />
+              </View>
+              <View className="flex-1">
+                <Text variant="bodyLg">{t.calendars.addTo(calendarTitle(calendar))}</Text>
+                {calendar ? (
+                  <Text variant="bodySm" color="onSurfaceVariant">
+                    {calendar.name || calendar.account}
+                  </Text>
+                ) : null}
+              </View>
+            </View>
+            <Checkbox
+              checked={inCalendar}
+              onChange={setInCalendar}
+              label={t.calendars.addTo(calendarTitle(calendar))}
+            />
+          </Section>
+        ) : null}
 
         {/* More options: repeat, place, notes (EV-03, EV-05) */}
         <Section>
