@@ -78,9 +78,19 @@ function TourStepView({ step }: { step: number }) {
     height: hole.height + PAD * 2,
   };
   const dim = { position: 'absolute' as const, backgroundColor: colors.scrim, opacity: 0.62 };
-  // the card goes on the far side of the highlighted part
-  const below = h ? h.y + h.height / 2 < height / 2 : false;
-  const cardPlace = h ? (below ? { top: h.y + h.height + GAP } : { bottom: height - h.y + GAP }) : null;
+  // the card goes on the far side of the highlighted part, lined up with it on a wide screen; beside
+  // a tab in the rail (D20)
+  const cardWidth = Math.min(width - 32, 480);
+  const upper = h ? h.y + h.height / 2 < height / 2 : false;
+  const beside = h ? h.x + h.width < width / 4 && h.x + h.width + GAP + cardWidth + 16 <= width : false;
+  const cardPlace = h
+    ? beside
+      ? { left: h.x + h.width + GAP, ...(upper ? { top: h.y } : { bottom: height - h.y - h.height }) }
+      : {
+          left: Math.min(Math.max(16, h.x + h.width / 2 - cardWidth / 2), width - cardWidth - 16),
+          ...(upper ? { top: h.y + h.height + GAP } : { bottom: height - h.y + GAP }),
+        }
+    : null;
   // "3 of 14": the steps between the welcome and the goodbye (the bank-texts part has no goodbye)
   const counted = part === 'app' ? steps.length - 2 : steps.length - 1;
   const showCount = step > 0 && (part === 'texts' || !last);
@@ -117,16 +127,15 @@ function TourStepView({ step }: { step: number }) {
         // with nothing to point at, the card sits in the middle of the screen
         <View
           pointerEvents="box-none"
-          style={[StyleSheet.absoluteFill, cardPlace ? null : { justifyContent: 'center', paddingHorizontal: 16 }]}>
+          style={[
+            StyleSheet.absoluteFill,
+            cardPlace ? null : { justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 },
+          ]}>
           <View
             accessibilityViewIsModal
             accessibilityLiveRegion="polite"
             className="gap-space-sm rounded-3xl bg-surface-container-lowest p-space-md"
-            style={[
-              shadows.float,
-              { width: Math.min(width - 32, 480) },
-              cardPlace ? { position: 'absolute', left: 16, ...cardPlace } : null,
-            ]}>
+            style={[shadows.float, { width: cardWidth }, cardPlace ? { position: 'absolute', ...cardPlace } : null]}>
             {showCount ? (
               <Text variant="labelMd" color="primary">
                 {t.tour.count(step, counted)}

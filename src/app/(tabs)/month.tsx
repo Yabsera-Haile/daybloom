@@ -18,7 +18,7 @@ import { monthOf } from '@/planner/monthGoal';
 import { tasksBetween } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
 import { shadows, useTheme, type CategoryKey } from '@/theme';
-import { DateNavigator, Icon, IconButton, Text, UrgentBadge, Button, useNarrow } from '@/ui';
+import { DateNavigator, Icon, IconButton, Text, UrgentBadge, Button, useNarrow, useWide } from '@/ui';
 
 const firstOfMonth = (day: string) => `${day.slice(0, 8)}01`;
 const lastOfMonth = (day: string) => {
@@ -101,6 +101,7 @@ export default function MonthScreen() {
   const labelColors = useLabelColors();
   const [view, setView] = useState<'grid' | 'agenda'>('grid');
   const [showEarlier, setShowEarlier] = useState(false);
+  const { panes } = useWide();
 
   const selected = selectedDay ?? today;
   const first = firstOfMonth(selected);
@@ -140,8 +141,302 @@ export default function MonthScreen() {
     .sort((a, b) => a.date.localeCompare(b.date) || (a.dueTime ?? '99').localeCompare(b.dueTime ?? '99'));
   const agendaFrom = isThisMonth && !showEarlier ? today : first;
 
+  // Month grid (MO-04, MO-05): one label per day plus "+n"; labels 11px
+  const grid = (
+    <View
+      accessibilityLabel={monthYear(first)}
+      className="-mx-3 rounded-2xl bg-surface-container-lowest px-1 py-space-sm"
+      style={shadows.card}>
+      <View className="mb-1 flex-row">
+        {weeks[0].map((d) => (
+          <Text
+            key={d}
+            variant="labelSm"
+            color="onSurfaceVariant"
+            style={{ flex: 1, textAlign: 'center', paddingVertical: 4, textTransform: 'uppercase' }}>
+            {weekdayShort(d)}
+          </Text>
+        ))}
+      </View>
+      <View className="gap-0.5">
+        {weeks.map((week) => (
+          <View key={week[0]} className="flex-row gap-0.5">
+            {week.map((d) => {
+              const inMonth = d >= first && d <= last;
+              const n = parseDayKey(d).day;
+              if (!inMonth) {
+                return (
+                  <View
+                    key={d}
+                    className="min-h-[64px] flex-1 items-center rounded-lg bg-surface-container-low/50 p-1"
+                    importantForAccessibility="no">
+                    <Text variant="labelMd" color="outline" style={{ opacity: 0.7 }}>
+                      {n}
+                    </Text>
+                  </View>
+                );
+              }
+              const plans = byDay.get(d)!;
+              const top = plans[0];
+              const c = top ? labelColors(top) : null;
+              const isSel = d === selected;
+              const isToday = d === today;
+              return (
+                <Pressable
+                  key={d}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSel }}
+                  accessibilityLabel={t.month.cell(
+                    fullDay(d),
+                    isToday,
+                    isSel,
+                    plans.length,
+                    plans.filter((p) => p.urgent && !p.done).length,
+                    top ? titleOf(top) : null,
+                  )}
+                  onPress={() => showMonthDay(d === today ? null : d)}
+                  className={`min-h-[64px] flex-1 items-center gap-0.5 rounded-lg px-0.5 py-1 ${isSel ? 'border-2 border-primary bg-primary-fixed/40' : ''}`}>
+                  {isToday ? (
+                    <View className="h-7 w-7 items-center justify-center rounded-full bg-primary">
+                      <Text variant="labelMd" color="onPrimary">
+                        {n}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text variant="labelMd" color={d < today ? 'onSurfaceVariant' : 'onSurface'}>
+                      {n}
+                    </Text>
+                  )}
+                  {top && c ? (
+                    <View className="w-full rounded px-1 py-px" style={{ backgroundColor: c.bg }}>
+                      <Text variant="labelXs" numberOfLines={1} style={{ color: c.fg, textAlign: 'center' }}>
+                        {titleOf(top)}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {plans.length > 1 ? (
+                    <Text variant="labelXs" color="onSurfaceVariant">
+                      +{plans.length - 1}
+                    </Text>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+  // the chosen day, the goal and deadlines (grid), or the days ahead (agenda): on a wide screen a
+  // second pane beside the grid (D20)
+  const details =
+    view === 'grid' ? (
+      <>
+        {/* Selected day (MO-05, MO-06) */}
+        <View className="rounded-2xl bg-surface-container-lowest p-space-md" style={shadows.card}>
+          <View className="flex-row items-center justify-between gap-2">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityHint={t.month.openDay}
+              onPress={() => openDay(selected)}
+              className="flex-1 flex-row items-center gap-space-sm">
+              <View
+                className={`h-11 w-11 items-center justify-center rounded-full ${selected === today ? 'bg-primary' : 'bg-surface-container'}`}>
+                <Text variant="headlineSm" color={selected === today ? 'onPrimary' : 'onSurface'}>
+                  {parseDayKey(selected).day}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text variant="headlineMd" accessibilityRole="header">
+                  {longDay(selected)}
+                </Text>
+                {selectedPlans.length || selected === today ? (
+                  <Text variant="labelMd" color="onSurfaceVariant">
+                    {t.month.daySummary(
+                      selected === today,
+                      selectedPlans.filter((p) => p.kind === 'event').length,
+                      selectedPlans.filter((p) => p.kind === 'task').length,
+                    )}
+                  </Text>
+                ) : (
+                  <Text variant="labelMd" color="onSurfaceVariant">
+                    {t.month.freeDay}
+                  </Text>
+                )}
+              </View>
+            </Pressable>
+            <IconButton
+              icon="add"
+              tone="tonal"
+              iconColor="primary"
+              accessibilityLabel={t.month.addTo(longDay(selected))}
+              onPress={() => openSheet({ kind: 'add', day: selected })}
+            />
+          </View>
+          {timedPlans.length ? (
+            <View className="mt-space-md gap-1.5">
+              {timedPlans.map((p) => (
+                <TimedRow key={p.key} plan={p} day={selected} tinted />
+              ))}
+            </View>
+          ) : selectedPlans.length === 0 ? (
+            <View className="mt-space-md items-center">
+              <Button
+                label={t.month.planSomething}
+                align="center"
+                icon="add"
+                variant="tonal"
+                onPress={() => openSheet({ kind: 'add', day: selected })}
+              />
+            </View>
+          ) : null}
+          {untimed > 0 || timedPlans.length ? (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => openDay(selected)}
+              className="mt-1 min-h-touch flex-row items-center gap-1">
+              <Text variant="labelLg" color="primary">
+                {untimed > 0 ? t.month.untimed(untimed) : t.month.openDay}
+              </Text>
+              <Icon name="arrow_forward" size={18} color="primary" />
+            </Pressable>
+          ) : null}
+        </View>
+
+        {/* This month's goal (MO-06: goals belong to the month, not a day) */}
+        <MonthGoalCard month={monthOf(first)} monthStart={first} />
+
+        {/* Coming up this month (MO-07) */}
+        <View className="gap-space-sm">
+          <View className="flex-row flex-wrap items-end justify-between gap-x-3">
+            <Text variant="headlineSm" accessibilityRole="header">
+              {t.month.comingUp}
+            </Text>
+            <Text variant="labelMd" color="onSurfaceVariant">
+              {t.month.deadlines}
+            </Text>
+          </View>
+          {deadlines.length ? (
+            deadlines.map((x) => (
+              <Pressable
+                key={x.id}
+                accessibilityRole="button"
+                accessibilityLabel={[
+                  x.title,
+                  longDay(x.date),
+                  x.dueTime ? clockText(x.dueTime, settings.timeFormat) : t.month.endOfDay,
+                  x.urgent ? t.common.urgent : null,
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
+                onPress={() => openSheet({ kind: 'taskMenu', taskId: x.id })}
+                className="flex-row items-center gap-space-sm rounded-2xl bg-surface-container-lowest p-3 active:opacity-80"
+                style={shadows.card}>
+                <View
+                  className={`h-12 w-12 items-center justify-center rounded-xl ${x.urgent ? 'bg-secondary-fixed' : 'bg-tertiary-fixed'}`}>
+                  <Text
+                    variant="labelXs"
+                    weight="700"
+                    color={x.urgent ? 'onSecondaryFixed' : 'onTertiaryFixed'}
+                    style={{ textTransform: 'uppercase' }}>
+                    {monthDay(x.date).replace(/[\d\s,]/g, '')}
+                  </Text>
+                  <Text
+                    variant="headlineSm"
+                    weight="700"
+                    color={x.urgent ? 'onSecondaryFixed' : 'onTertiaryFixed'}
+                    style={{ lineHeight: 22 }}>
+                    {parseDayKey(x.date).day}
+                  </Text>
+                </View>
+                <View className="flex-1">
+                  <View className="flex-row flex-wrap items-center gap-1.5">
+                    {x.urgent ? <UrgentBadge /> : null}
+                    <Text variant="labelMd" color="onSurfaceVariant">
+                      {t.month.deadlineWhen(
+                        weekdayShort(x.date),
+                        x.dueTime ? clockText(x.dueTime, settings.timeFormat) : t.month.endOfDay,
+                      )}
+                    </Text>
+                  </View>
+                  <Text variant="bodyLg" numberOfLines={1}>
+                    {x.title}
+                  </Text>
+                </View>
+                <Icon name="chevron_right" />
+              </Pressable>
+            ))
+          ) : (
+            <View className="flex-row items-center gap-space-sm rounded-2xl border-[1.5px] border-dashed border-outline-variant p-space-md">
+              <Icon name="task_alt" color="primary" />
+              <Text variant="bodyMd" color="onSurfaceVariant" style={{ flex: 1 }}>
+                {t.month.noDeadlines}
+              </Text>
+            </View>
+          )}
+        </View>
+      </>
+    ) : (
+      /* Agenda (MO-03): from today to the end of the month, earlier days on request */
+      <View className="gap-space-md">
+        {isThisMonth && today > first && !showEarlier ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setShowEarlier(true)}
+            className="min-h-touch flex-row items-center justify-center gap-1 rounded-full bg-surface-container-low active:opacity-80">
+            <Icon name="expand_less" size={18} />
+            <Text variant="labelLg" color="onSurfaceVariant">
+              {t.month.showEarlier(monthDay(first), monthDay(addDaysToKey(today, -1)))}
+            </Text>
+          </Pressable>
+        ) : null}
+        {days
+          .filter((d) => d >= agendaFrom && byDay.get(d)!.length > 0)
+          .map((d) => {
+            const plans = byDay.get(d)!;
+            const shown = d === today ? plans.slice(0, 3) : plans;
+            return (
+              <View key={d}>
+                <Text
+                  variant="labelMd"
+                  color={d === today ? 'primary' : 'onSurfaceVariant'}
+                  style={{ textTransform: 'uppercase', marginBottom: 6 }}>
+                  {d === today ? t.month.todayHeading(shortDay(d)) : shortDay(d)}
+                </Text>
+                <View className="rounded-2xl bg-surface-container-lowest" style={shadows.card}>
+                  {shown.map((p, i) => (
+                    <View key={p.key} className={i > 0 ? 'border-t border-surface-variant' : ''}>
+                      <TimedRow plan={p} day={d} />
+                    </View>
+                  ))}
+                  {plans.length > shown.length ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => openDay(d)}
+                      className="min-h-touch justify-center border-t border-surface-variant px-3">
+                      <Text variant="labelLg" color="primary">
+                        {t.month.moreToday(plans.length - shown.length)}
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            );
+          })}
+        {days.every((d) => d < agendaFrom || byDay.get(d)!.length === 0) ? (
+          <Text variant="bodyMd" color="onSurfaceVariant">
+            {t.month.agendaEmpty}
+          </Text>
+        ) : null}
+      </View>
+    );
+
   return (
-    <TabScreen section={t.tabs.month} onAdd={() => openSheet({ kind: 'add', day: selected })} onSwipe={goMonth}>
+    <TabScreen
+      section={t.tabs.month}
+      onAdd={() => openSheet({ kind: 'add', day: selected })}
+      onSwipe={goMonth}
+      side={panes ? details : undefined}>
       {/* Title, navigation, view switch (MO-01..03) */}
       <View className="gap-space-sm pt-space-sm">
         <View className="flex-row flex-wrap items-center gap-2">
@@ -210,292 +505,8 @@ export default function MonthScreen() {
         ) : null}
       </View>
 
-      {view === 'grid' ? (
-        <>
-          {/* Month grid (MO-04, MO-05): one label per day plus "+n"; labels 11px */}
-          <View
-            accessibilityLabel={monthYear(first)}
-            className="-mx-3 rounded-2xl bg-surface-container-lowest px-1 py-space-sm"
-            style={shadows.card}>
-            <View className="mb-1 flex-row">
-              {weeks[0].map((d) => (
-                <Text
-                  key={d}
-                  variant="labelSm"
-                  color="onSurfaceVariant"
-                  style={{ flex: 1, textAlign: 'center', paddingVertical: 4, textTransform: 'uppercase' }}>
-                  {weekdayShort(d)}
-                </Text>
-              ))}
-            </View>
-            <View className="gap-0.5">
-              {weeks.map((week) => (
-                <View key={week[0]} className="flex-row gap-0.5">
-                  {week.map((d) => {
-                    const inMonth = d >= first && d <= last;
-                    const n = parseDayKey(d).day;
-                    if (!inMonth) {
-                      return (
-                        <View
-                          key={d}
-                          className="min-h-[64px] flex-1 items-center rounded-lg bg-surface-container-low/50 p-1"
-                          importantForAccessibility="no">
-                          <Text variant="labelMd" color="outline" style={{ opacity: 0.7 }}>
-                            {n}
-                          </Text>
-                        </View>
-                      );
-                    }
-                    const plans = byDay.get(d)!;
-                    const top = plans[0];
-                    const c = top ? labelColors(top) : null;
-                    const isSel = d === selected;
-                    const isToday = d === today;
-                    return (
-                      <Pressable
-                        key={d}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: isSel }}
-                        accessibilityLabel={t.month.cell(
-                          fullDay(d),
-                          isToday,
-                          isSel,
-                          plans.length,
-                          plans.filter((p) => p.urgent && !p.done).length,
-                          top ? titleOf(top) : null,
-                        )}
-                        onPress={() => showMonthDay(d === today ? null : d)}
-                        className={`min-h-[64px] flex-1 items-center gap-0.5 rounded-lg px-0.5 py-1 ${isSel ? 'border-2 border-primary bg-primary-fixed/40' : ''}`}>
-                        {isToday ? (
-                          <View className="h-7 w-7 items-center justify-center rounded-full bg-primary">
-                            <Text variant="labelMd" color="onPrimary">
-                              {n}
-                            </Text>
-                          </View>
-                        ) : (
-                          <Text variant="labelMd" color={d < today ? 'onSurfaceVariant' : 'onSurface'}>
-                            {n}
-                          </Text>
-                        )}
-                        {top && c ? (
-                          <View className="w-full rounded px-1 py-px" style={{ backgroundColor: c.bg }}>
-                            <Text variant="labelXs" numberOfLines={1} style={{ color: c.fg, textAlign: 'center' }}>
-                              {titleOf(top)}
-                            </Text>
-                          </View>
-                        ) : null}
-                        {plans.length > 1 ? (
-                          <Text variant="labelXs" color="onSurfaceVariant">
-                            +{plans.length - 1}
-                          </Text>
-                        ) : null}
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* Selected day (MO-05, MO-06) */}
-          <View className="rounded-2xl bg-surface-container-lowest p-space-md" style={shadows.card}>
-            <View className="flex-row items-center justify-between gap-2">
-              <Pressable
-                accessibilityRole="button"
-                accessibilityHint={t.month.openDay}
-                onPress={() => openDay(selected)}
-                className="flex-1 flex-row items-center gap-space-sm">
-                <View
-                  className={`h-11 w-11 items-center justify-center rounded-full ${selected === today ? 'bg-primary' : 'bg-surface-container'}`}>
-                  <Text variant="headlineSm" color={selected === today ? 'onPrimary' : 'onSurface'}>
-                    {parseDayKey(selected).day}
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text variant="headlineMd" accessibilityRole="header">
-                    {longDay(selected)}
-                  </Text>
-                  {selectedPlans.length || selected === today ? (
-                    <Text variant="labelMd" color="onSurfaceVariant">
-                      {t.month.daySummary(
-                        selected === today,
-                        selectedPlans.filter((p) => p.kind === 'event').length,
-                        selectedPlans.filter((p) => p.kind === 'task').length,
-                      )}
-                    </Text>
-                  ) : (
-                    <Text variant="labelMd" color="onSurfaceVariant">
-                      {t.month.freeDay}
-                    </Text>
-                  )}
-                </View>
-              </Pressable>
-              <IconButton
-                icon="add"
-                tone="tonal"
-                iconColor="primary"
-                accessibilityLabel={t.month.addTo(longDay(selected))}
-                onPress={() => openSheet({ kind: 'add', day: selected })}
-              />
-            </View>
-            {timedPlans.length ? (
-              <View className="mt-space-md gap-1.5">
-                {timedPlans.map((p) => (
-                  <TimedRow key={p.key} plan={p} day={selected} tinted />
-                ))}
-              </View>
-            ) : selectedPlans.length === 0 ? (
-              <View className="mt-space-md items-center">
-                <Button
-                  label={t.month.planSomething}
-                  align="center"
-                  icon="add"
-                  variant="tonal"
-                  onPress={() => openSheet({ kind: 'add', day: selected })}
-                />
-              </View>
-            ) : null}
-            {untimed > 0 || timedPlans.length ? (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => openDay(selected)}
-                className="mt-1 min-h-touch flex-row items-center gap-1">
-                <Text variant="labelLg" color="primary">
-                  {untimed > 0 ? t.month.untimed(untimed) : t.month.openDay}
-                </Text>
-                <Icon name="arrow_forward" size={18} color="primary" />
-              </Pressable>
-            ) : null}
-          </View>
-
-          {/* This month's goal (MO-06: goals belong to the month, not a day) */}
-          <MonthGoalCard month={monthOf(first)} monthStart={first} />
-
-          {/* Coming up this month (MO-07) */}
-          <View className="gap-space-sm">
-            <View className="flex-row flex-wrap items-end justify-between gap-x-3">
-              <Text variant="headlineSm" accessibilityRole="header">
-                {t.month.comingUp}
-              </Text>
-              <Text variant="labelMd" color="onSurfaceVariant">
-                {t.month.deadlines}
-              </Text>
-            </View>
-            {deadlines.length ? (
-              deadlines.map((x) => (
-                <Pressable
-                  key={x.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={[
-                    x.title,
-                    longDay(x.date),
-                    x.dueTime ? clockText(x.dueTime, settings.timeFormat) : t.month.endOfDay,
-                    x.urgent ? t.common.urgent : null,
-                  ]
-                    .filter(Boolean)
-                    .join(', ')}
-                  onPress={() => openSheet({ kind: 'taskMenu', taskId: x.id })}
-                  className="flex-row items-center gap-space-sm rounded-2xl bg-surface-container-lowest p-3 active:opacity-80"
-                  style={shadows.card}>
-                  <View
-                    className={`h-12 w-12 items-center justify-center rounded-xl ${x.urgent ? 'bg-secondary-fixed' : 'bg-tertiary-fixed'}`}>
-                    <Text
-                      variant="labelXs"
-                      weight="700"
-                      color={x.urgent ? 'onSecondaryFixed' : 'onTertiaryFixed'}
-                      style={{ textTransform: 'uppercase' }}>
-                      {monthDay(x.date).replace(/[\d\s,]/g, '')}
-                    </Text>
-                    <Text
-                      variant="headlineSm"
-                      weight="700"
-                      color={x.urgent ? 'onSecondaryFixed' : 'onTertiaryFixed'}
-                      style={{ lineHeight: 22 }}>
-                      {parseDayKey(x.date).day}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row flex-wrap items-center gap-1.5">
-                      {x.urgent ? <UrgentBadge /> : null}
-                      <Text variant="labelMd" color="onSurfaceVariant">
-                        {t.month.deadlineWhen(
-                          weekdayShort(x.date),
-                          x.dueTime ? clockText(x.dueTime, settings.timeFormat) : t.month.endOfDay,
-                        )}
-                      </Text>
-                    </View>
-                    <Text variant="bodyLg" numberOfLines={1}>
-                      {x.title}
-                    </Text>
-                  </View>
-                  <Icon name="chevron_right" />
-                </Pressable>
-              ))
-            ) : (
-              <View className="flex-row items-center gap-space-sm rounded-2xl border-[1.5px] border-dashed border-outline-variant p-space-md">
-                <Icon name="task_alt" color="primary" />
-                <Text variant="bodyMd" color="onSurfaceVariant" style={{ flex: 1 }}>
-                  {t.month.noDeadlines}
-                </Text>
-              </View>
-            )}
-          </View>
-        </>
-      ) : (
-        /* Agenda (MO-03): from today to the end of the month, earlier days on request */
-        <View className="gap-space-md">
-          <MonthGoalCard month={monthOf(first)} monthStart={first} />
-          {isThisMonth && today > first && !showEarlier ? (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setShowEarlier(true)}
-              className="min-h-touch flex-row items-center justify-center gap-1 rounded-full bg-surface-container-low active:opacity-80">
-              <Icon name="expand_less" size={18} />
-              <Text variant="labelLg" color="onSurfaceVariant">
-                {t.month.showEarlier(monthDay(first), monthDay(addDaysToKey(today, -1)))}
-              </Text>
-            </Pressable>
-          ) : null}
-          {days
-            .filter((d) => d >= agendaFrom && byDay.get(d)!.length > 0)
-            .map((d) => {
-              const plans = byDay.get(d)!;
-              const shown = d === today ? plans.slice(0, 3) : plans;
-              return (
-                <View key={d}>
-                  <Text
-                    variant="labelMd"
-                    color={d === today ? 'primary' : 'onSurfaceVariant'}
-                    style={{ textTransform: 'uppercase', marginBottom: 6 }}>
-                    {d === today ? t.month.todayHeading(shortDay(d)) : shortDay(d)}
-                  </Text>
-                  <View className="rounded-2xl bg-surface-container-lowest" style={shadows.card}>
-                    {shown.map((p, i) => (
-                      <View key={p.key} className={i > 0 ? 'border-t border-surface-variant' : ''}>
-                        <TimedRow plan={p} day={d} />
-                      </View>
-                    ))}
-                    {plans.length > shown.length ? (
-                      <Pressable
-                        accessibilityRole="button"
-                        onPress={() => openDay(d)}
-                        className="min-h-touch justify-center border-t border-surface-variant px-3">
-                        <Text variant="labelLg" color="primary">
-                          {t.month.moreToday(plans.length - shown.length)}
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                </View>
-              );
-            })}
-          {days.every((d) => d < agendaFrom || byDay.get(d)!.length === 0) ? (
-            <Text variant="bodyMd" color="onSurfaceVariant">
-              {t.month.agendaEmpty}
-            </Text>
-          ) : null}
-        </View>
-      )}
+      {view === 'grid' ? grid : <MonthGoalCard month={monthOf(first)} monthStart={first} />}
+      {panes ? null : details}
     </TabScreen>
   );
 }

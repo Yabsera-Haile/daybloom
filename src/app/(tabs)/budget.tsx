@@ -18,7 +18,18 @@ import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { money, monthDay, monthName, monthYear, timeOf } from '@/i18n/format';
 import { useUi } from '@/state/ui';
-import { Button, Card, DateNavigator, EmptyState, IconButton, SectionHeader, Sticker, Text, useTourTarget } from '@/ui';
+import {
+  Button,
+  Card,
+  DateNavigator,
+  EmptyState,
+  IconButton,
+  SectionHeader,
+  Sticker,
+  Text,
+  useTourTarget,
+  useWide,
+} from '@/ui';
 
 /**
  * Budget (BU-01…10; design/daybloom/budget, with ideas from Cashew): how much is left this month or
@@ -64,84 +75,23 @@ export default function BudgetScreen() {
       : `${monthDay(range.start)} – ${monthDay(range.end)}`;
   const left = summary.budgetCents ? Math.max(0, Math.round((1 - summary.usedShare) * 100)) : 0;
 
-  // the tour scrolls down to savings goals to show them (ON-02)
+  // the tour scrolls down to savings goals to show them (ON-02); on a wide screen they're in the
+  // second pane
+  const { panes } = useWide();
   const scroll = useRef<ScrollView>(null);
+  const sideScroll = useRef<ScrollView>(null);
   const savingsY = useRef(0);
   const headerOffset = useHeaderOffset();
   const savingsRef = useTourTarget<View>('savings', () =>
-    scroll.current?.scrollTo({ y: Math.max(0, savingsY.current - headerOffset), animated: false }),
+    (panes ? sideScroll : scroll).current?.scrollTo({
+      y: Math.max(0, savingsY.current - headerOffset),
+      animated: false,
+    }),
   );
 
-  return (
-    <TabScreen
-      ref={scroll}
-      section={t.tabs.budget}
-      onAdd={() => openSheet({ kind: 'expense', day: addDay })}
-      addLabel={t.budget.addExpense}
-      onSwipe={shift}>
-      <View className="gap-space-sm">
-        <Text variant="headlineLg" accessibilityRole="header">
-          {title}
-        </Text>
-        <DateNavigator
-          label={navLabel}
-          current={isCurrent}
-          onLabelPress={isCurrent ? undefined : () => setAnchor(null)}
-          onPrevious={() => shift(-1)}
-          onNext={() => shift(1)}
-          previousLabel={period === 'month' ? t.budget.previousMonth : t.budget.previousWeek}
-          nextLabel={period === 'month' ? t.budget.nextMonth : t.budget.nextWeek}
-        />
-      </View>
-
-      {/* BU-02: a gentle line while there's budget left (hidden in calm mode) */}
-      {isCurrent && summary.budgetCents && summary.status !== 'over' && !settings.calm ? (
-        <View className="flex-row items-center gap-space-md rounded-2xl bg-surface-container p-space-md">
-          <Sticker name="savings" size={56} rotate={-6} />
-          <View className="flex-1 gap-1">
-            <Text variant="headlineSm" italic>
-              {t.budget.quote}
-            </Text>
-            <Text variant="bodySm" color="onSurfaceVariant">
-              {t.budget.quoteLine(left, summary.daysLeft)}
-            </Text>
-          </View>
-        </View>
-      ) : null}
-
-      <BudgetCard
-        summary={summary}
-        currency={currency}
-        isCurrent={isCurrent}
-        nextStart={next.start}
-        onEdit={() => setEditingBudget(true)}
-      />
-
-      {totals.length > 0 ? (
-        <View className="gap-space-sm">
-          <SectionHeader
-            title={t.budget.whereItWent}
-            icon="sell"
-            right={
-              <Button
-                label={t.budget.editCategories}
-                variant="text"
-                size="md"
-                onPress={() => router.push('/spending-categories')}
-              />
-            }
-          />
-          <CategoryBars
-            totals={totals}
-            categories={categories}
-            currency={currency}
-            onPress={(id) =>
-              router.push({ pathname: '/spending', params: { start: range.start, category: id ?? 'none' } })
-            }
-          />
-        </View>
-      ) : null}
-
+  // recent spending, bills and savings goals: on a wide screen a second pane beside the budget (D20)
+  const lists = (
+    <>
       <View className="gap-space-sm">
         <SectionHeader
           title={t.budget.recent}
@@ -254,6 +204,82 @@ export default function BudgetScreen() {
           </Card>
         )}
       </View>
+    </>
+  );
+
+  return (
+    <TabScreen
+      ref={scroll}
+      section={t.tabs.budget}
+      onAdd={() => openSheet({ kind: 'expense', day: addDay })}
+      addLabel={t.budget.addExpense}
+      onSwipe={shift}
+      side={panes ? lists : undefined}
+      sideRef={sideScroll}>
+      <View className="gap-space-sm">
+        <Text variant="headlineLg" accessibilityRole="header">
+          {title}
+        </Text>
+        <DateNavigator
+          label={navLabel}
+          current={isCurrent}
+          onLabelPress={isCurrent ? undefined : () => setAnchor(null)}
+          onPrevious={() => shift(-1)}
+          onNext={() => shift(1)}
+          previousLabel={period === 'month' ? t.budget.previousMonth : t.budget.previousWeek}
+          nextLabel={period === 'month' ? t.budget.nextMonth : t.budget.nextWeek}
+        />
+      </View>
+
+      {/* BU-02: a gentle line while there's budget left (hidden in calm mode) */}
+      {isCurrent && summary.budgetCents && summary.status !== 'over' && !settings.calm ? (
+        <View className="flex-row items-center gap-space-md rounded-2xl bg-surface-container p-space-md">
+          <Sticker name="savings" size={56} rotate={-6} />
+          <View className="flex-1 gap-1">
+            <Text variant="headlineSm" italic>
+              {t.budget.quote}
+            </Text>
+            <Text variant="bodySm" color="onSurfaceVariant">
+              {t.budget.quoteLine(left, summary.daysLeft)}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      <BudgetCard
+        summary={summary}
+        currency={currency}
+        isCurrent={isCurrent}
+        nextStart={next.start}
+        onEdit={() => setEditingBudget(true)}
+      />
+
+      {totals.length > 0 ? (
+        <View className="gap-space-sm">
+          <SectionHeader
+            title={t.budget.whereItWent}
+            icon="sell"
+            right={
+              <Button
+                label={t.budget.editCategories}
+                variant="text"
+                size="md"
+                onPress={() => router.push('/spending-categories')}
+              />
+            }
+          />
+          <CategoryBars
+            totals={totals}
+            categories={categories}
+            currency={currency}
+            onPress={(id) =>
+              router.push({ pathname: '/spending', params: { start: range.start, category: id ?? 'none' } })
+            }
+          />
+        </View>
+      ) : null}
+
+      {panes ? null : lists}
 
       {editingBudget ? <BudgetSheet today={today} onClose={() => setEditingBudget(false)} /> : null}
     </TabScreen>

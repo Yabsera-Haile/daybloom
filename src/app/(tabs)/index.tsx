@@ -21,7 +21,7 @@ import { eventsBetween } from '@/planner/events';
 import { hourNotesOn } from '@/planner/notes';
 import { tasksOn } from '@/planner/tasks';
 import { useUi } from '@/state/ui';
-import { Icon, Text } from '@/ui';
+import { Icon, Text, useWide } from '@/ui';
 
 /** True until the first event or to-do is added (shows the welcome card, design/daybloom/today-empty). */
 function isFreshStart(): boolean {
@@ -39,6 +39,7 @@ export default function TodayScreen() {
   const scroll = useRef<ScrollView>(null);
   const intentionsY = useRef(0);
   const headerOffset = useHeaderOffset();
+  const { panes } = useWide();
   const day = todayDay ?? today;
   const isToday = day === today;
 
@@ -60,12 +61,18 @@ export default function TodayScreen() {
     showDay(next === today ? null : next);
   };
 
+  const timeline = (
+    <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} markers={markers} />
+  );
+
   return (
     <TabScreen
       ref={scroll}
       section={isToday ? t.tabs.today : longDay(day)}
       onAdd={() => openSheet({ kind: 'add', day, inline: true })}
-      onSwipe={move}>
+      onSwipe={move}
+      // wide screens: the day's timeline beside the to-dos (D20)
+      side={panes ? timeline : undefined}>
       <DateCard day={day} isToday={isToday} onMove={move} onToday={() => showDay(null)} />
       <DailyQuote day={day} />
       {fresh && isToday ? (
@@ -85,7 +92,7 @@ export default function TodayScreen() {
       <View onLayout={(e) => (intentionsY.current = e.nativeEvent.layout.y)}>
         <Intentions day={day} isToday={isToday} tasks={tasks} />
       </View>
-      <Timeline day={day} isToday={isToday} now={now} events={events} tasks={tasks} notes={notes} markers={markers} />
+      {panes ? null : timeline}
     </TabScreen>
   );
 }

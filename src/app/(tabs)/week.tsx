@@ -32,6 +32,7 @@ import {
   Text,
   TextField,
   UrgentBadge,
+  useWide,
 } from '@/ui';
 
 const dateOf = (day: string) => {
@@ -233,6 +234,9 @@ export default function WeekScreen() {
   const settings = useSettings();
   const { weekDay, showWeek, showDay, openSheet } = useUi();
   const scroll = useRef<ScrollView>(null);
+  // wide screens: the day-by-day spread in its own pane beside the rest (D20)
+  const { panes } = useWide();
+  const sideScroll = useRef<ScrollView>(null);
   const spreadY = useRef(0);
   const cardY = useRef<Record<string, number>>({});
   const [selected, setSelected] = useState<string | null>(null);
@@ -281,16 +285,46 @@ export default function WeekScreen() {
   };
   const jumpTo = (day: string) => {
     setSelected(day);
-    scroll.current?.scrollTo({ y: spreadY.current + (cardY.current[day] ?? 0) - headerOffset, animated: true });
+    (panes ? sideScroll : scroll).current?.scrollTo({
+      y: spreadY.current + (cardY.current[day] ?? 0) - headerOffset,
+      animated: true,
+    });
   };
   const addDay = isThisWeek ? today : start;
+
+  // Weekly spread (WK-06..09)
+  const spread = (
+    <View className="gap-space-sm" onLayout={(e) => (spreadY.current = e.nativeEvent.layout.y)}>
+      <View className="flex-row flex-wrap items-end justify-between gap-x-3">
+        <Text variant="headlineMd" accessibilityRole="header">
+          {t.week.spread}
+        </Text>
+        <Text variant="labelMd" color="onSurfaceVariant">
+          {t.week.tapDay}
+        </Text>
+      </View>
+      {days.map((d) => (
+        <View key={d} onLayout={(e) => (cardY.current[d] = e.nativeEvent.layout.y)}>
+          <DayCard
+            day={d}
+            plans={byDay.get(d)!}
+            when={d < today ? 'past' : d === today ? 'today' : 'future'}
+            onOpen={() => openDay(d)}
+            onAdd={() => openSheet({ kind: 'add', day: d })}
+          />
+        </View>
+      ))}
+    </View>
+  );
 
   return (
     <TabScreen
       ref={scroll}
       section={t.tabs.week}
       onAdd={() => openSheet({ kind: 'add', day: selected ?? addDay, week: { start, end } })}
-      onSwipe={move}>
+      onSwipe={move}
+      side={panes ? spread : undefined}
+      sideRef={sideScroll}>
       {/* Header (WK-01..03) */}
       <View className="gap-1 pt-space-sm">
         <View className="flex-row items-center justify-between">
@@ -406,28 +440,7 @@ export default function WeekScreen() {
         {season ? <Sticker name={season} size={80} rotate={-6} /> : null}
       </View>
 
-      {/* Weekly spread (WK-06..09) */}
-      <View className="gap-space-sm" onLayout={(e) => (spreadY.current = e.nativeEvent.layout.y)}>
-        <View className="flex-row flex-wrap items-end justify-between gap-x-3">
-          <Text variant="headlineMd" accessibilityRole="header">
-            {t.week.spread}
-          </Text>
-          <Text variant="labelMd" color="onSurfaceVariant">
-            {t.week.tapDay}
-          </Text>
-        </View>
-        {days.map((d) => (
-          <View key={d} onLayout={(e) => (cardY.current[d] = e.nativeEvent.layout.y)}>
-            <DayCard
-              day={d}
-              plans={byDay.get(d)!}
-              when={d < today ? 'past' : d === today ? 'today' : 'future'}
-              onOpen={() => openDay(d)}
-              onAdd={() => openSheet({ kind: 'add', day: d })}
-            />
-          </View>
-        ))}
-      </View>
+      {panes ? null : spread}
 
       {/* Weekly priorities (WK-10) */}
       <View

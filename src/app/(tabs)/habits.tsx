@@ -17,7 +17,7 @@ import { t } from '@/i18n';
 import { monthDay, monthName, monthYear } from '@/i18n/format';
 import { readFlag, saveFlag } from '@/settings';
 import { shadows, useTheme } from '@/theme';
-import { Button, ChoiceChip, Icon, IconButton, Text } from '@/ui';
+import { Button, ChoiceChip, Icon, IconButton, Text, useWide } from '@/ui';
 
 const HINT = 'habitsHint.hidden';
 
@@ -104,6 +104,7 @@ export default function HabitsScreen() {
   const [routineSheet, setRoutineSheet] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const ws = settings.weekStart;
+  const { panes } = useWide();
 
   // month header (HB-01)
   const p = parseDayKey(today);
@@ -122,8 +123,34 @@ export default function HabitsScreen() {
 
   const newHabit = (params: Record<string, string> = {}) => router.push({ pathname: '/habit/new', params });
 
+  // Weekly habits (HB-05); on a wide screen in a second pane beside the daily ones (D20)
+  const weeklySection = weekly.length ? (
+    <View className="gap-space-sm">
+      <View className="flex-row items-end justify-between">
+        <View className="flex-row items-center gap-2">
+          <Icon name="calendar_view_week" color="secondary" />
+          <Text variant="headlineMd" accessibilityRole="header">
+            {t.habits.weekly}
+          </Text>
+        </View>
+        <Text variant="labelMd" color="onSurfaceVariant">
+          {t.habits.monthWeeks(monthName(today), weeks.length)}
+        </Text>
+      </View>
+      {editing ? (
+        <View className="rounded-2xl bg-surface-container-lowest px-3 py-1" style={shadows.card}>
+          {weekly.map((h, i) => (
+            <EditRow key={h.id} habit={h} first={i === 0} last={i === weekly.length - 1} />
+          ))}
+        </View>
+      ) : (
+        <WeeklyGrid habits={weekly} checks={checks} weeks={weeks} today={today} weekStart={ws} />
+      )}
+    </View>
+  ) : null;
+
   return (
-    <TabScreen section={t.tabs.habits}>
+    <TabScreen section={t.tabs.habits} side={panes && habits.length ? weeklySection : undefined}>
       <View className="gap-space-lg">
         {/* Overview (HB-01) */}
         <View className="gap-space-sm pt-space-sm">
@@ -272,31 +299,7 @@ export default function HabitsScreen() {
               </View>
             ) : null}
 
-            {/* Weekly habits (HB-05) */}
-            {weekly.length ? (
-              <View className="gap-space-sm">
-                <View className="flex-row items-end justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <Icon name="calendar_view_week" color="secondary" />
-                    <Text variant="headlineMd" accessibilityRole="header">
-                      {t.habits.weekly}
-                    </Text>
-                  </View>
-                  <Text variant="labelMd" color="onSurfaceVariant">
-                    {t.habits.monthWeeks(monthName(today), weeks.length)}
-                  </Text>
-                </View>
-                {editing ? (
-                  <View className="rounded-2xl bg-surface-container-lowest px-3 py-1" style={shadows.card}>
-                    {weekly.map((h, i) => (
-                      <EditRow key={h.id} habit={h} first={i === 0} last={i === weekly.length - 1} />
-                    ))}
-                  </View>
-                ) : (
-                  <WeeklyGrid habits={weekly} checks={checks} weeks={weeks} today={today} weekStart={ws} />
-                )}
-              </View>
-            ) : null}
+            {panes ? null : weeklySection}
 
             {editing && archivedCount > 0 ? (
               <Pressable

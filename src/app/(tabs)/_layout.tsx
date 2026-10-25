@@ -8,11 +8,13 @@ import { TOUR_FLAG, useTour } from '@/features/tour/store';
 import { t } from '@/i18n';
 import { readFlag } from '@/settings';
 import { useTheme } from '@/theme';
-import { TabBar } from '@/ui';
+import { TabBar, useWide } from '@/ui';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
   const settings = useSettings();
+  // on a wide screen the tabs stand in a rail on the left (D20)
+  const { rail } = useWide();
   // the tour, once (ON-02): after the first-run pages, or the first time after the update that added it
   useEffect(() => {
     if (settings.onboarded && !readFlag(db, TOUR_FLAG) && useTour.getState().step === null) useTour.getState().start();
@@ -24,7 +26,12 @@ export default function TabsLayout() {
       backBehavior="firstRoute"
       tabBar={(props) => <TabBar {...props} />}
       // tabs out of view stop re-rendering on every data change and clock tick until you come back
-      screenOptions={{ headerShown: false, freezeOnBlur: true, sceneStyle: { backgroundColor: colors.surface } }}>
+      screenOptions={{
+        headerShown: false,
+        freezeOnBlur: true,
+        sceneStyle: { backgroundColor: colors.surface },
+        tabBarPosition: rail ? 'left' : 'bottom',
+      }}>
       <Tabs.Screen name="index" options={{ title: t.tabs.today }} />
       <Tabs.Screen name="week" options={{ title: t.tabs.week }} />
       <Tabs.Screen name="month" options={{ title: t.tabs.month }} />
