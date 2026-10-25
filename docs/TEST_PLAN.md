@@ -342,9 +342,14 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS01.3 | MS-01 | The puppy, then the dragon | "Biscuit the dog", "Ember the dragon" |
 | T-UX04.2 | UX-04 | Installed app: tick a to-do; delete an event | "Done: …" in a sage pill for about a second; "Event deleted · Undo" for 5 seconds |
 | T-MS03.6 | MS-03 | Installed app: Settings › Reminder sound › Send a test reminder, with the cat on | The cat's picture beside the text, and its line after it |
-| T-MS12.3 | MS-12 | Installed app: watch the napping cat for a few minutes; open Week, Month, Habits, Budget; tick a habit on Habits | It wakes, yawns, stretches and leaps off; it's found napping in that tab's spot, covering no buttons; it leaps in on Habits and cheers |
+| T-MS12.3 | MS-12 | Installed app: open Today, then Budget, Habits, Week, Month, waiting on each; tick a habit on Habits | On each tab it comes over after about 5 seconds, from the left going right along the tabs and from the right going back, facing the way it moves (the dragon flying), lands in that tab's spot covering no buttons, looks round, yawns and curls up; on Habits it comes straight over and cheers (2026-10-25: Today to Budget checked on the emulator, two bounds from the left) |
 | T-MS12.4 | MS-12 | The cat on a 412dp phone; on a 1280dp tablet | Bubble on its left, 205dp wide; never wider than 220dp |
 | T-MS12.5 | MS-12 | A 320dp phone: the pet near the left edge, then near the right | The bubble opens on the other side and stays 20dp clear of the edge (2026-10-25: checked at 320dp with 130% text: two lines, a margin to spare) |
+| T-MS12.6 | MS-12 | The pet on Today; stay on Month (fake clock) | Not there at 4.9 s; at 5 s it moves to Month from Today; awake for a look round, asleep a few seconds later |
+| T-MS12.7 | MS-12 | Too sleepy (random 0.1); then bedtime | Still on Today after 6 s, on Week by 41 s; at bedtime it stays on Week however long you wait on Budget |
+| T-MS12.8 | MS-12 | A slipping habit: stay on Habits, then on Week | Comes over sad both times; says what's wrong on Habits, not again on Week |
+| T-MS12.9 | MS-12 | Today to Month; Budget to Week; Habits to Budget | In from the left; the right; the left |
+| T-MS04.5 | MS-04, MS-12 | The faces side by side (`node scripts/show-pets.mjs cat`) | Happy has open, shiny eyes; "beaming" squeezes them shut |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |
 
 ### Google Calendar, step A (device calendar)
