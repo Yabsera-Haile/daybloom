@@ -168,6 +168,12 @@ export default function HabitsScreen() {
                 </Text>
               </View>
             </View>
+            {/* the companion can nap here, just above the month bar, where you see it come over (MS-12) */}
+            {companionOn ? (
+              <View className="self-end" style={{ width: 76, height: companionHeight(76) }}>
+                <Companion at="habits" width={76} />
+              </View>
+            ) : null}
             {habits.length ? (
               <IconButton
                 icon="calendar_month"
@@ -329,13 +335,6 @@ export default function HabitsScreen() {
             </View>
           </>
         )}
-
-        {/* the companion can nap down here, out of the way; the room is kept so nothing jumps (MS-12) */}
-        {companionOn ? (
-          <View className="items-end" style={{ height: companionHeight(88) }}>
-            <Companion at="habits" width={88} />
-          </View>
-        ) : null}
       </View>
 
       {routineSheet ? <RoutineSheet routineId={routineSheet} onClose={() => setRoutineSheet(null)} /> : null}
