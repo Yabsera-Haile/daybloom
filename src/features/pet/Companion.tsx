@@ -28,14 +28,12 @@ import {
   type PetSignals,
 } from '@/pet/mood';
 import { shadows } from '@/theme';
-import { Text } from '@/ui';
+import { Text, useTourTarget } from '@/ui';
 
-import { cat } from './art/cat';
+import { arts } from './art';
 import type { PetArt, PoseName } from './art/types';
 import { PetFigure, type Move, type PetFigureHandle } from './PetFigure';
 import { elsewhere, useRoam, type Spot } from './roam';
-
-const arts: Partial<Record<PetKind, PetArt>> = { cat };
 
 /** How long a pet stays up after waking, unless it's sulking (it waits up for you then). */
 const NAP_AFTER = 12_000;
@@ -98,11 +96,13 @@ function linesFor(expression: Expression, s: PetSignals): string[] {
 }
 
 /** Small moves while nobody touches it; one every few seconds, nothing in between. */
-function idleMoves(asleep: boolean, expression: Expression): Move[] {
+function idleMoves(art: PetArt, asleep: boolean, expression: Expression): Move[] {
+  // winged pets stretch their wings now and then, awake
+  const wings: Move[] = art.sit.wings ? ['flap'] : [];
   if (asleep) return ['breathe', 'breathe', 'snore', 'twitch'];
-  if (expression === 'happy') return ['sway', 'hop', 'twitch', 'tilt'];
-  if (expression === 'cross') return ['flick', 'blink', 'blink', 'twitch'];
-  return ['blink', 'blink', 'sway', 'twitch', 'tilt'];
+  if (expression === 'happy') return [art.tail, art.tail, 'hop', 'twitch', 'tilt', ...wings];
+  if (expression === 'cross') return ['flick', 'blink', 'blink', 'twitch', ...wings];
+  return ['blink', 'blink', art.tail === 'wag' ? 'wag' : 'sway', 'twitch', 'tilt', ...wings];
 }
 
 /** Timers that are cleared when the pet goes. */
@@ -142,6 +142,8 @@ function Pet({
   const bedtime = isBedtime(new Date(now));
   const figure = useRef<PetFigureHandle>(null);
   const later = useLater();
+  // the tour stops to meet it (ON-02)
+  const tourRef = useTourTarget<View>('pet');
   const spot = useRoam((s) => s.spot);
   const landing = useRoam((s) => s.landing);
   const here = spot === at;
@@ -227,6 +229,7 @@ function Pet({
       wake(() =>
         later(500, () => {
           setDoing('leaving');
+          figure.current?.play('flap');
           jumpX.value = withTiming(-width * 1.9, { duration: 700, easing: Easing.in(Easing.quad) });
           jumpY.value = withSequence(
             withTiming(-height * 0.7, { duration: 320, easing: Easing.out(Easing.quad) }),
@@ -252,7 +255,10 @@ function Pet({
     if (!here || !landing) return;
     useRoam.getState().landed();
     if (still) return;
-    later(0, () => setDoing('landing'));
+    later(0, () => {
+      setDoing('landing');
+      figure.current?.play('flap');
+    });
     // from off to the side and above, in an arc down onto the spot
     jumpX.set(
       withSequence(
@@ -282,17 +288,26 @@ function Pet({
     const more = cheered !== null && signals.doneToday > cheered;
     if (cheered !== signals.doneToday) cheer(signals.doneToday);
     if (!more || bedtime) return;
+    // the last habit of the day ticked: a celebration, once a day (MS-04)
+    const { done, total } = signals.habitsToday;
+    const allDone = total > 0 && done === total && useRoam.getState().celebrated !== today;
+    if (allDone) useRoam.getState().celebrate(today);
+    const hooray = (allDone ? t.pet.lines.allDone : t.pet.lines.happy).map((line) => `${t.pet.sound[kind]} ${line}`);
+    const party = () => figure.current?.play(allDone ? 'cheer' : 'hop');
     if (!here) {
       useRoam.getState().moveTo(at, true);
-      later(800, () => say(t.pet.lines.happy));
+      later(800, () => {
+        say(hooray);
+        party();
+      });
       return;
     }
     later(0, () => {
       setWokeAt(Date.now());
-      say(t.pet.lines.happy);
-      figure.current?.play('hop');
+      say(hooray);
+      party();
     });
-  }, [signals.doneToday, bedtime, focused, here, at, later, say]);
+  }, [signals.doneToday, signals.habitsToday, bedtime, focused, here, at, later, say, kind, today]);
 
   // when something slips it comes back to Today and waits there
   useEffect(() => {
@@ -331,7 +346,7 @@ function Pet({
   // the small moves while it's on screen
   useEffect(() => {
     if (!moving || doing) return;
-    const moves = idleMoves(asleep, expression);
+    const moves = idleMoves(art, asleep, expression);
     let timer: ReturnType<typeof setTimeout>;
     const next = () => {
       timer = setTimeout(
@@ -344,7 +359,7 @@ function Pet({
     };
     next();
     return () => clearTimeout(timer);
-  }, [moving, asleep, expression, doing]);
+  }, [moving, asleep, expression, doing, art]);
 
   if (!here) return null;
 
@@ -365,7 +380,7 @@ function Pet({
   };
 
   return (
-    <View style={{ width, height }}>
+    <View ref={tourRef} collapsable={false} style={{ width, height }}>
       <Animated.View style={jump}>
         <Pressable
           accessibilityRole="button"

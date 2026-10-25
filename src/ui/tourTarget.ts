@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import type { View } from 'react-native';
 
 export type TargetId =
-  'tab-index' | 'tab-week' | 'tab-month' | 'tab-habits' | 'tab-budget' | 'add' | 'menu' | 'search' | 'savings';
+  'tab-index' | 'tab-week' | 'tab-month' | 'tab-habits' | 'tab-budget' | 'add' | 'menu' | 'search' | 'savings' | 'pet';
 
 export type Rect = { x: number; y: number; width: number; height: number };
 

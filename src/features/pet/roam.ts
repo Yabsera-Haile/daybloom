@@ -14,6 +14,9 @@ interface Roam {
   /** How many things done today the pet has already cheered for (one cheer, whichever tab saw it). */
   cheered: number | null;
   cheer: (done: number) => void;
+  /** The day it last celebrated every habit done (once a day, MS-04). */
+  celebrated: string | null;
+  celebrate: (day: string) => void;
   /** The spots on screens that have been opened (and have room just now): where it can go. */
   open: Spot[];
   offer: (spot: Spot) => void;
@@ -27,6 +30,8 @@ export const useRoam = create<Roam>((set) => ({
   landed: () => set({ landing: false }),
   cheered: null,
   cheer: (done) => set({ cheered: done }),
+  celebrated: null,
+  celebrate: (day) => set({ celebrated: day }),
   open: [],
   offer: (spot) => set((s) => (s.open.includes(spot) ? s : { open: [...s.open, spot] })),
   withdraw: (spot) => set((s) => ({ open: s.open.filter((x) => x !== spot) })),

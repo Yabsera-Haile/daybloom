@@ -16,7 +16,8 @@ import { Text } from '@/ui';
 import type { FaceName, Part, PetArt, PoseName } from './art/types';
 
 /** Short moves the figure can make; each one ends, so nothing redraws between them (battery). */
-export type Move = 'breathe' | 'blink' | 'twitch' | 'sway' | 'flick' | 'tilt' | 'hop' | 'snore' | 'stretch';
+export type Move =
+  'breathe' | 'blink' | 'twitch' | 'sway' | 'wag' | 'flick' | 'flap' | 'tilt' | 'hop' | 'snore' | 'stretch' | 'cheer';
 
 export interface PetFigureHandle {
   play: (move: Move) => void;
@@ -39,8 +40,9 @@ const rad = (deg: number) => {
   return (deg * Math.PI) / 180;
 };
 
-/** Ears droop when sad and flatten a little when cross (degrees, the right ear's way). */
-const earAngle = (face: FaceName) => (face === 'sad' ? 24 : face === 'cross' ? -6 : 0);
+/** How the ears sit for a face (degrees, the right ear's way); each pet says how far (art.earMood). */
+const earAngle = (art: PetArt, face: FaceName) =>
+  face === 'sad' ? art.earMood.sad : face === 'cross' ? art.earMood.cross : 0;
 
 // each drawing is parsed once and kept
 const parsed = new Map<string, SkSVG | null>();
@@ -70,18 +72,20 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
   const body = useSharedValue(1);
   const head = useSharedValue(0);
   const nod = useSharedValue(0);
-  const ear = useSharedValue(sitting ? earAngle(face) : 0);
+  const ear = useSharedValue(sitting ? earAngle(art, face) : 0);
+  const flap = useSharedValue(0);
   const twitch = useSharedValue(0);
   const tail = useSharedValue(0);
   const eyes = useSharedValue(1);
   const lift = useSharedValue(0);
   const squash = useSharedValue(1);
   const zzz = useSharedValue(0);
+  const sparkle = useSharedValue(0);
 
   // ears settle into the mood's position
   useEffect(() => {
-    ear.value = t(sitting ? earAngle(face) : 0, 260);
-  }, [ear, sitting, face]);
+    ear.value = t(sitting ? earAngle(art, face) : 0, 260);
+  }, [ear, sitting, face, art]);
 
   useImperativeHandle(
     ref,
@@ -100,6 +104,25 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
             break;
           case 'sway':
             tail.value = withSequence(t(10, 600), t(-7, 700), t(0, 600));
+            break;
+          case 'wag':
+            tail.value = withSequence(
+              withTiming(16, { duration: 80 }),
+              withTiming(-12, { duration: 80 }),
+              withTiming(16, { duration: 80 }),
+              withTiming(-12, { duration: 80 }),
+              withTiming(16, { duration: 80 }),
+              t(0, 140),
+            );
+            break;
+          case 'flap':
+            flap.value = withSequence(
+              withTiming(-22, { duration: 120 }),
+              withTiming(8, { duration: 140 }),
+              withTiming(-18, { duration: 120 }),
+              withTiming(6, { duration: 140 }),
+              t(0, 200),
+            );
             break;
           case 'flick':
             tail.value = withSequence(
@@ -135,10 +158,21 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
               t(1, 240),
             );
             break;
+          case 'cheer':
+            // a burst of sparkles and two hops
+            sparkle.value = 0;
+            sparkle.value = withTiming(1, { duration: 1400, easing: Easing.out(Easing.quad) });
+            lift.value = withSequence(
+              withTiming(-0.12, { duration: 170, easing: Easing.out(Easing.quad) }),
+              withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }),
+              withTiming(-0.1, { duration: 160, easing: Easing.out(Easing.quad) }),
+              withTiming(0, { duration: 190, easing: Easing.in(Easing.quad) }),
+            );
+            break;
         }
       },
     }),
-    [body, nod, eyes, twitch, tail, head, squash, lift, zzz],
+    [body, nod, eyes, twitch, tail, flap, head, squash, lift, zzz, sparkle],
   );
 
   // the parts move inside the drawing
@@ -148,10 +182,16 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
   const leftEarMove = useDerivedValue(() => [{ rotate: rad(-ear.value) }]);
   const rightEarMove = useDerivedValue(() => [{ rotate: rad(ear.value + twitch.value) }]);
   const eyesMove = useDerivedValue(() => [{ scaleY: eyes.value }]);
+  const leftWingMove = useDerivedValue(() => [{ rotate: rad(flap.value) }]);
+  const rightWingMove = useDerivedValue(() => [{ rotate: rad(-flap.value) }]);
 
   // the whole pet hops and squashes as one view
   const whole = useAnimatedStyle(() => ({
     transform: [{ translateY: lift.value * height }, { scaleY: squash.value }, { scaleX: 2 - squash.value }],
+  }));
+  const sparkleStyle = useAnimatedStyle(() => ({
+    opacity: sparkle.value === 0 ? 0 : Math.sin(sparkle.value * Math.PI),
+    transform: [{ scale: 0.6 + sparkle.value * 0.7 }],
   }));
   const zzzStyle = useAnimatedStyle(() => ({
     opacity: zzz.value === 0 ? 0 : Math.sin(zzz.value * Math.PI),
@@ -161,6 +201,8 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
   const drawings = useMemo(
     () => ({
       tail: svgOf(art, p.tail?.svg),
+      leftWing: svgOf(art, p.wings?.[0].svg),
+      rightWing: svgOf(art, p.wings?.[1].svg),
       body: svgOf(art, p.body.svg),
       leftEar: svgOf(art, p.ears?.[0].svg),
       rightEar: svgOf(art, p.ears?.[1].svg),
@@ -195,6 +237,16 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
                 <ImageSVG svg={drawings.tail} {...full} />
               </Group>
             ) : null}
+            {drawings.leftWing ? (
+              <Group origin={at(p.wings?.[0])} transform={leftWingMove}>
+                <ImageSVG svg={drawings.leftWing} {...full} />
+              </Group>
+            ) : null}
+            {drawings.rightWing ? (
+              <Group origin={at(p.wings?.[1])} transform={rightWingMove}>
+                <ImageSVG svg={drawings.rightWing} {...full} />
+              </Group>
+            ) : null}
             <Group origin={at(p.body)} transform={bodyMove}>
               <ImageSVG svg={drawings.body} {...full} />
             </Group>
@@ -221,6 +273,18 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
           </Group>
         </Canvas>
       </Animated.View>
+      {/* sparkles round its head when it celebrates */}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, sparkleStyle]}>
+        {SPARKLES.map(([x, y, size], i) => (
+          <Text
+            key={i}
+            variant="labelLg"
+            color="tertiary"
+            style={{ position: 'absolute', left: x * width, top: y * height, fontSize: size, lineHeight: size + 2 }}>
+            ✦
+          </Text>
+        ))}
+      </Animated.View>
       {pose === 'sleep' ? (
         <Animated.View style={[styles.zzz, { left: width * 0.42, top: height * 0.12 }, zzzStyle]}>
           <Text variant="labelSm" color="onSurfaceVariant">
@@ -237,6 +301,15 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
     </View>
   );
 });
+
+/** Where the celebration sparkles sit, as parts of the box: x, y, size. */
+const SPARKLES: [number, number, number][] = [
+  [0.18, 0.02, 14],
+  [0.74, 0.0, 18],
+  [0.08, 0.36, 12],
+  [0.86, 0.3, 13],
+  [0.46, -0.12, 12],
+];
 
 const styles = StyleSheet.create({
   zzz: { position: 'absolute', flexDirection: 'row', alignItems: 'flex-start' },

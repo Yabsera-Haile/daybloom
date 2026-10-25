@@ -7,11 +7,9 @@ import { PET_KINDS } from '@/settings';
 import { shadows } from '@/theme';
 import { Icon, Text, TextField } from '@/ui';
 
-import { cat } from './art/cat';
-import type { FaceName, PetArt } from './art/types';
+import { arts } from './art';
+import type { FaceName } from './art/types';
 import { PetFigure } from './PetFigure';
-
-const arts: Partial<Record<PetKind, PetArt>> = { cat };
 
 /** A still picture of a pet. */
 function Portrait({ kind, face, width }: { kind: PetKind; face: FaceName; width: number }) {
@@ -51,6 +49,30 @@ function Choice({
  * with each pet's picture, a name box, and Gentle or Cheeky shown with the face each one makes when
  * a habit slips.
  */
+/** A card for each pet, with its picture, and "No thanks". */
+export function PetCards({ kind, onKind }: { kind: PetKind | 'off'; onKind: (kind: PetKind | 'off') => void }) {
+  return (
+    <View accessibilityRole="radiogroup" className="flex-row flex-wrap gap-space-sm">
+      {PET_KINDS.map((k) => (
+        <Choice key={k} selected={kind === k} onPress={() => onKind(k)} label={t.pet.kinds[k]} className="w-[112px]">
+          <Portrait kind={k} face="happy" width={88} />
+          <Text variant="labelLg">{t.pet.kinds[k]}</Text>
+        </Choice>
+      ))}
+      <Choice
+        selected={kind === 'off'}
+        onPress={() => onKind('off')}
+        label={t.onboarding.noPet}
+        className="w-[112px] justify-center">
+        <View className="h-[66px] items-center justify-center">
+          <Icon name="do_not_disturb_on" size={32} />
+        </View>
+        <Text variant="labelLg">{t.onboarding.noPet}</Text>
+      </Choice>
+    </View>
+  );
+}
+
 export function PetChoices({
   kind,
   onKind,
@@ -68,24 +90,7 @@ export function PetChoices({
 }) {
   return (
     <View className="gap-space-lg">
-      <View accessibilityRole="radiogroup" className="flex-row flex-wrap gap-space-sm">
-        {PET_KINDS.map((k) => (
-          <Choice key={k} selected={kind === k} onPress={() => onKind(k)} label={t.pet.kinds[k]} className="w-[120px]">
-            <Portrait kind={k} face="happy" width={96} />
-            <Text variant="labelLg">{t.pet.kinds[k]}</Text>
-          </Choice>
-        ))}
-        <Choice
-          selected={kind === 'off'}
-          onPress={() => onKind('off')}
-          label={t.onboarding.noPet}
-          className="w-[120px] justify-center">
-          <View className="h-[72px] items-center justify-center">
-            <Icon name="do_not_disturb_on" size={32} />
-          </View>
-          <Text variant="labelLg">{t.onboarding.noPet}</Text>
-        </Choice>
-      </View>
+      <PetCards kind={kind} onKind={onKind} />
 
       {kind === 'off' ? null : (
         <>

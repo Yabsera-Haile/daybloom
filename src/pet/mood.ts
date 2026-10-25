@@ -7,7 +7,7 @@ import { toDayKey } from '@/calendar/dates';
 import { addDaysToKey, localDayStart } from '@/calendar/timezone';
 import { habitChecks, tasks } from '@/db/schema';
 import type { Db } from '@/db/types';
-import { checksBetween, listHabits } from '@/habits/store';
+import { checksBetween, listHabits, type Habit } from '@/habits/store';
 import { leftBehind } from '@/planner/tasks';
 
 export type PetKind = 'cat' | 'dog' | 'bird' | 'dragon' | 'fairy';
@@ -24,9 +24,11 @@ export interface PetSignals {
   slipping: string[];
   /** Day to-dos left unfinished on earlier days (FR-15). */
   overdue: number;
+  /** Daily habits ticked for today, of all of them (all done: it celebrates, MS-04). */
+  habitsToday: { done: number; total: number };
 }
 
-export function moodOf(s: PetSignals): Mood {
+export function moodOf(s: Pick<PetSignals, 'doneToday' | 'slipping' | 'overdue'>): Mood {
   if (s.slipping.length > 0 || s.overdue > 0) return 'sulky';
   return s.doneToday > 0 ? 'happy' : 'content';
 }
@@ -41,6 +43,21 @@ export function expressionOf(mood: Mood, personality: Personality): Expression {
 export function isBedtime(now: Date): boolean {
   const hour = now.getHours();
   return hour >= 22 || hour < 7;
+}
+
+/**
+ * Daily habits that are slipping: two whole days without a tick (not counting days before they
+ * were added), until they're ticked again.
+ */
+export function slippingHabits(db: Db, today: string): Habit[] {
+  const dayBefore = addDaysToKey(today, -2);
+  const checks = checksBetween(db, dayBefore, today);
+  return listHabits(db).filter(
+    (h) =>
+      h.frequency === 'daily' &&
+      toDayKey(new Date(h.createdAt)) <= dayBefore &&
+      !checks.some((c) => c.habitId === h.id),
+  );
 }
 
 /** What the mood is worked out from, read from the planner for `today`. */
@@ -58,15 +75,14 @@ export function petSignals(db: Db, today: string): PetSignals {
     .from(tasks)
     .where(and(eq(tasks.done, true), isNull(tasks.deletedAt), gte(tasks.doneAt, start)))
     .all();
-  // a daily habit slips when two whole days pass without a tick (not counting days before it was
-  // added), until it's ticked again
-  const slipping = listHabits(db)
-    .filter((h) => h.frequency === 'daily' && toDayKey(new Date(h.createdAt)) <= dayBefore)
-    .filter((h) => !checks.some((c) => c.habitId === h.id))
-    .map((h) => h.name);
+  const daily = listHabits(db).filter((h) => h.frequency === 'daily');
   return {
     doneToday: ticked.length + finished.length,
-    slipping,
+    slipping: slippingHabits(db, today).map((h) => h.name),
     overdue: leftBehind(db, today).length,
+    habitsToday: {
+      done: daily.filter((h) => checks.some((c) => c.habitId === h.id && c.period === today)).length,
+      total: daily.length,
+    },
   };
 }

@@ -14,8 +14,9 @@ import { useTour } from '@/features/tour/store';
 import { usePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
-import type { Personality, PetKind } from '@/pet/mood';
-import { PET_KINDS, saveSetting, type Settings } from '@/settings';
+import { PetCards } from '@/features/pet/PetChoices';
+import type { Personality } from '@/pet/mood';
+import { saveSetting, type Settings } from '@/settings';
 import { useUi } from '@/state/ui';
 import { shadows, useTheme } from '@/theme';
 import { Button, ChoiceSheet, Columns, Icon, Page, Row, RowGroup, Sheet, Sticker, Switch, Text, TextField } from '@/ui';
@@ -371,16 +372,18 @@ export default function SettingsScreen() {
       {picker === 'sound' ? <SoundSheet onClose={() => setPicker(null)} /> : null}
       {picker === 'theme' ? <ThemeSheet onClose={() => setPicker(null)} /> : null}
       {picker === 'pet' ? (
-        <ChoiceSheet<PetKind | 'off'>
-          title={t.settings.pet}
-          value={settings.pet}
-          options={[
-            ...PET_KINDS.map((k) => ({ value: k, label: t.pet.kinds[k] })),
-            { value: 'off' as const, label: t.settings.petOff },
-          ]}
-          onChoose={(v) => save('pet', v)}
-          onClose={() => setPicker(null)}
-        />
+        // each pet with its picture (MS-01)
+        <Sheet visible onClose={() => setPicker(null)} title={t.settings.pet} closeButton>
+          <View className="pb-space-md">
+            <PetCards
+              kind={settings.pet}
+              onKind={(kind) => {
+                save('pet', kind);
+                setPicker(null);
+              }}
+            />
+          </View>
+        </Sheet>
       ) : null}
       {picker === 'petPersonality' ? (
         <ChoiceSheet<Personality>

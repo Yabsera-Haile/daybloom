@@ -5,36 +5,45 @@ import { Directory, File, Paths } from 'expo-file-system';
 
 import type { PetKind } from '@/pet/mood';
 
-import { cat } from './art/cat';
-import type { PetArt } from './art/types';
-
-const arts: Partial<Record<PetKind, PetArt>> = { cat };
+import { arts } from './art';
+import type { FaceName, PetArt } from './art/types';
 
 /** Bump when the art changes, so phones draw the picture again. */
-const VERSION = 2;
+const VERSION = 3;
 const SIZE = 256;
 
-/** The pet sitting up, smiling, in a square around it (the art's box is wider than it is tall). */
-function portrait(art: PetArt): string {
+/** The pet sitting up with a face, in a square around it (the art's box is wider than it is tall). */
+function portrait(art: PetArt, faceName: FaceName): string {
   const s = art.sit;
-  const face = s.faces.happy;
+  const face = s.faces[faceName];
   const [bw, bh] = art.box;
   const side = bh - 4;
   const view = `${(bw - side) / 2 + 8} 2 ${side} ${side}`;
-  const layers = [s.tail?.svg, s.body.svg, s.ears?.[0].svg, s.ears?.[1].svg, s.head.svg, face.eyes, face.rest, s.front];
+  const layers = [
+    s.tail?.svg,
+    s.wings?.[0].svg,
+    s.wings?.[1].svg,
+    s.body.svg,
+    s.ears?.[0].svg,
+    s.ears?.[1].svg,
+    s.head.svg,
+    face.eyes,
+    face.rest,
+    s.front,
+  ];
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}">${art.defs}${layers.filter(Boolean).join('')}</svg>`;
 }
 
-/** A file:// picture of the pet, made the first time it's needed; null if it can't be made. */
-export function petPicture(kind: PetKind): string | null {
+/** A file:// picture of the pet (smiling, or cross), made the first time it's needed; null if it can't be. */
+export function petPicture(kind: PetKind, face: FaceName = 'happy'): string | null {
   const art = arts[kind];
   if (!art) return null;
   try {
     const dir = new Directory(Paths.document, 'pet');
     if (!dir.exists) dir.create();
-    const file = new File(dir, `${kind}-${VERSION}.png`);
+    const file = new File(dir, `${kind}-${face}-${VERSION}.png`);
     if (!file.exists) {
-      const svg = Skia.SVG.MakeFromString(portrait(art));
+      const svg = Skia.SVG.MakeFromString(portrait(art, face));
       const surface = Skia.Surface.Make(SIZE, SIZE);
       if (!svg || !surface) {
         console.warn('Could not draw the pet picture', !svg ? 'drawing' : 'surface');

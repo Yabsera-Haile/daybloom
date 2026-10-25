@@ -1082,6 +1082,9 @@ export const en = {
     todayText: 'Your day in one place: to-dos, events by the hour, notes, and your morning and evening routines.',
     add: 'Add anything',
     addText: 'Add an event or a to-do for the day you’re looking at. Swipe left or right to change the day.',
+    pet: (name: string) => `Meet ${name}`,
+    petText:
+      'Your companion naps on your pages and wanders between them. It cheers when you get things done and grumbles a little when things slip. Tap it to say hello.',
     week: 'Week',
     weekText: 'Your week at a glance: busy days, up to three priorities for the week, and how your habits are going.',
     month: 'Month',
@@ -1233,6 +1236,8 @@ export const en = {
   pet: {
     kinds: { cat: 'Cat', dog: 'Dog', bird: 'Bird', dragon: 'Dragon', fairy: 'Fairy' } as Record<string, string>,
     names: { cat: 'Mochi', dog: 'Biscuit', bird: 'Pip', dragon: 'Ember', fairy: 'Willow' } as Record<string, string>,
+    /** What each one says first when it cheers. */
+    sound: { cat: 'Purr!', dog: 'Woof!', dragon: 'Rawr!' } as Record<string, string>,
     /** What a screen reader says for the pet. */
     label: (name: string, kind: string, how: string) => `${name} the ${kind.toLowerCase()}, ${how}`,
     how: {
@@ -1253,6 +1258,7 @@ export const en = {
       bedtime: ['It’s late. Sleep well!', 'Zzz… see you in the morning.'],
       content: ['Hello! I’ll keep you company.', 'Small steps make big days.', 'One thing at a time.'],
       happy: ['You did a thing! I’m so proud.', 'Look at you go!', 'That’s the spirit!'],
+      allDone: ['Every habit done today! What a day.', 'All of them, done. I’m so proud of you!'],
       sadHabit: (habit: string) => [
         `I miss ${habit}. Shall we try today?`,
         `${habit} has been quiet. Just one small go?`,

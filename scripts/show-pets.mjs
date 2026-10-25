@@ -20,7 +20,8 @@ const turn = (part, deg) =>
 function frame(pose, face, { ears = 0, tilt = 0, shadow = true } = {}) {
   const [left, right] = pose.ears ?? [];
   const head = `<g transform="rotate(${tilt} ${pose.head.pivot[0]} ${pose.head.pivot[1]})">${turn(left, -ears)}${turn(right, ears)}${pose.head.svg}${face}</g>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${art.defs}${shadow ? `<ellipse cx="${art.shadow[0]}" cy="${art.shadow[1]}" rx="${art.shadow[2]}" ry="${art.shadow[3]}" fill="#5A4632" opacity="0.12"/>` : ''}${pose.tail?.svg ?? ''}${pose.body.svg}${head}${pose.front ?? ''}</svg>`;
+  const wings = (pose.wings ?? []).map((wing) => wing.svg).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${art.defs}${shadow ? `<ellipse cx="${art.shadow[0]}" cy="${art.shadow[1]}" rx="${art.shadow[2]}" ry="${art.shadow[3]}" fill="#5A4632" opacity="0.12"/>` : ''}${pose.tail?.svg ?? ''}${wings}${pose.body.svg}${head}${pose.front ?? ''}</svg>`;
 }
 
 const faces = art.sit.faces;
@@ -29,8 +30,8 @@ const frames = [
   ['asleep', frame(art.sleep, art.sleep.face)],
   ['content', sit('content')],
   ['happy', sit('happy', { tilt: -6 })],
-  ['sad (gentle)', sit('sad', { ears: 24, tilt: 4 })],
-  ['cross (cheeky)', sit('cross', { ears: -6 })],
+  ['sad (gentle)', sit('sad', { ears: art.earMood.sad, tilt: 4 })],
+  ['cross (cheeky)', sit('cross', { ears: art.earMood.cross })],
   ['yawn', sit('yawn', { tilt: -4 })],
   ['stretch', frame(art.stretch, art.stretch.face)],
   ['leap', frame(art.leap, art.leap.face, { shadow: false })],

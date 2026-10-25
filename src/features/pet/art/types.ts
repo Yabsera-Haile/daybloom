@@ -13,6 +13,13 @@ export interface PetArt {
   defs: string;
   /** A soft shadow on the ground under every pose: an oval's centre and radii, [cx, cy, rx, ry]. */
   shadow: [number, number, number, number];
+  /**
+   * How far the ears turn (degrees, the right ear's way) when sad and when cross: a cat's droop
+   * outwards, a puppy's floppy ears hang closer.
+   */
+  earMood: { sad: number; cross: number };
+  /** Happy tail: a slow sway, or a quick wag (puppies). */
+  tail: 'sway' | 'wag';
   /** Sitting up, facing you: its face shows how it feels, or a yawn. */
   sit: Pose & { faces: Record<FaceName, Face> };
   /** Curled up asleep. */

@@ -39,7 +39,7 @@ export interface Settings {
   petPersonality: Personality;
 }
 
-export const PET_KINDS: PetKind[] = ['cat'];
+export const PET_KINDS: PetKind[] = ['cat', 'dog', 'dragon'];
 
 export type ThemeChoice = 'auto' | 'spring' | 'summer' | 'autumn' | 'winter';
 export const THEME_CHOICES: ThemeChoice[] = ['auto', 'spring', 'summer', 'autumn', 'winter'];

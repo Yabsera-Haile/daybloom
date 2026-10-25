@@ -248,6 +248,8 @@ export const cat: PetArt = {
     '<defs><linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">' +
     '<stop offset="0" stop-color="#F0B866"/><stop offset="1" stop-color="#DE9C4C"/></linearGradient></defs>',
   shadow: [80, 114.5, 46, 4.5],
+  earMood: { sad: 24, cross: -6 },
+  tail: 'sway',
 
   sit: {
     tail: { svg: sitTail, pivot: [100, 106] },

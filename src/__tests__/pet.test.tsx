@@ -5,7 +5,9 @@ import { habits } from '@/db/schema';
 import { withTestDb } from '@/db/testDb';
 import { Companion } from '@/features/pet/Companion';
 import { useRoam } from '@/features/pet/roam';
-import { createHabit } from '@/habits/store';
+import { toDayKey } from '@/calendar/dates';
+import { createHabit, getHabit, setHabitDone } from '@/habits/store';
+import { refresh } from '@/test/screen';
 import { saveSetting } from '@/settings';
 
 // the clock decides bedtime; the tests decide the clock
@@ -26,7 +28,7 @@ const slipping = (name: string) => {
 
 beforeEach(() => {
   mockBedtime.mockReturnValue(false);
-  useRoam.setState({ spot: 'today', landing: false, cheered: null });
+  useRoam.setState({ spot: 'today', landing: false, cheered: null, celebrated: null });
 });
 
 describe('companion pet', () => {
@@ -77,5 +79,37 @@ describe('companion pet', () => {
     saveSetting(getDb(), 'pet', 'off');
     await render(<Companion at="today" />);
     expect(screen.queryByLabelText(/Mochi/)).toBeNull();
+  });
+
+  it('T-MS01.3 the puppy and the dragon come with their own names', async () => {
+    saveSetting(getDb(), 'pet', 'dog');
+    const view = await render(<Companion at="today" />);
+    expect(screen.getByLabelText('Biscuit the dog, asleep')).toBeTruthy();
+    await view.unmount();
+    saveSetting(getDb(), 'pet', 'dragon');
+    await render(<Companion at="today" />);
+    expect(screen.getByLabelText('Ember the dragon, asleep')).toBeTruthy();
+  });
+
+  it('T-MS04.4 the last habit of the day ticked: it celebrates, once a day', async () => {
+    const id = createHabit(getDb(), { name: 'Drink water', routineId: null, frequency: 'daily' });
+    const read = getHabit(getDb(), createHabit(getDb(), { name: 'Read', routineId: null, frequency: 'daily' }))!;
+    await render(<Companion at="today" />);
+    const today = toDayKey(new Date());
+    const tick = async (habit: Parameters<typeof setHabitDone>[1], done = true) => {
+      setHabitDone(getDb(), habit, today, done, 0);
+      await refresh();
+      await act(async () => new Promise((resolve) => setTimeout(resolve, 10)));
+    };
+    await tick(getHabit(getDb(), id)!);
+    expect(screen.getByText('Purr! You did a thing! I’m so proud.')).toBeTruthy();
+    await tick(read);
+    // its lines take turns, so either celebration line
+    expect(screen.getByText(/^Purr! (Every habit done today|All of them, done)/)).toBeTruthy();
+    // unticked and ticked again: a cheer, not another celebration
+    await tick(read, false);
+    await tick(read);
+    expect(screen.queryByText(/Every habit done|All of them, done/)).toBeNull();
+    expect(screen.getByText(/^Purr! /)).toBeTruthy();
   });
 });
