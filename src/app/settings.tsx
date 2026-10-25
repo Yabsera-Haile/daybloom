@@ -8,6 +8,7 @@ import { hemisphereForTimeZone, type WeekStart } from '@/calendar/dates';
 import { localTimeZone } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
+import { CalendarSettings } from '@/features/settings/CalendarSettings';
 import { SoundSheet, ThemeSheet, themeLabel } from '@/features/settings/LookSheets';
 import { themeFor } from '@/features/ThemeProvider';
 import { useTour } from '@/features/tour/store';
@@ -158,6 +159,9 @@ export default function SettingsScreen() {
                 }
               />
             </RowGroup>
+
+            {/* Google Calendar and the phone's other calendars (GC-01) */}
+            <CalendarSettings />
 
             <RowGroup heading={t.settings.seasons}>
               <Row

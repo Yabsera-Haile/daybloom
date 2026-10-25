@@ -962,7 +962,8 @@ export const en = {
     backupWorking: 'Getting your copy ready…',
     backupShare: 'Save your Daybloom backup',
     backupFailed: 'Couldn’t make the backup. Please try again.',
-    privacyNote: "Everything stays on this phone. Daybloom has no account and doesn't send your plans anywhere.",
+    privacyNote:
+      "Everything stays on this phone. Daybloom has no account and doesn't send your plans anywhere; events you put in your phone's calendars travel with that calendar, as the phone syncs it (to Google, for example).",
     privacy: 'Privacy',
     permissions: 'Phone permissions',
     permReminders: 'Reminders',
@@ -988,7 +989,7 @@ export const en = {
     cheeky: 'Cheeky',
     cheekyText: 'Gets cross when a habit slips or to-dos pile up, and tells you so',
     privacyText:
-      'Daybloom keeps your plans only on this phone. There is no account, nothing is sent to us or anyone else, and there are no ads. Reminders are set on the phone itself. If you delete the app, your plans are deleted with it.',
+      'Daybloom keeps your plans only on this phone. There is no account, nothing is sent to us or anyone else, and there are no ads. Reminders are set on the phone itself. If you show your phone’s calendars, Daybloom reads them on the phone, and events you add to them are carried by the phone’s own calendar sync (to Google, for example), as if you’d added them in your calendar app. If you delete the app, your plans are deleted with it; events in your calendars stay there.',
     version: (v: string) => `Daybloom ${v}`,
     weekdays: { 0: 'Sunday', 1: 'Monday', 6: 'Saturday' } as Record<number, string>,
   },
@@ -1236,6 +1237,49 @@ export const en = {
   // your phone's calendars (GC-01..GC-06)
   calendars: {
     noTitle: '(No title)',
+    section: 'Your calendars',
+    connect: 'Show your phone’s calendars',
+    connectText: 'Google Calendar and other calendars on this phone, next to your plans',
+    blocked: 'Calendars are turned off for Daybloom. Turn them on in the phone’s settings.',
+    none: 'There are no calendars on this phone yet. Add your Google account in the phone’s settings first.',
+    shown: 'Calendars shown',
+    shownCount: (n: number) => (n === 1 ? '1 calendar' : `${n} calendars`),
+    shownText: 'Tick the calendars to see in Daybloom.',
+    seeOnly: 'You can see it here, not change it',
+    saveTo: 'New events go to',
+    saveToText:
+      'New events are added to this calendar as well, so they’re in Google Calendar on your other devices. You can untick it for any event.',
+    daybloomOnly: 'Daybloom only',
+    daybloomOnlyText: 'New events stay on this phone',
+    copy: (calendar: string) => `Copy your events to ${calendar}`,
+    copyCount: (n: number) => (n === 1 ? '1 event made in Daybloom' : `${n} events made in Daybloom`),
+    copyTitle: 'Copy your events?',
+    copyText: (calendar: string) =>
+      `Every event you made in Daybloom goes into ${calendar}, repeats and all, so it’s in Google Calendar on your other devices too. Here you’ll still see each one once.`,
+    copyGo: 'Copy them',
+    copying: (n: number) => (n === 1 ? 'Copying 1 event…' : `Copying ${n} events…`),
+    stop: 'Stop showing them',
+    stopText: 'Their events leave Daybloom and stay in your calendars',
+    stopTitle: 'Stop showing your calendars?',
+    stopBody:
+      'Their events leave Daybloom, including ones you added from here. Nothing is deleted from your calendars.',
+    stopGo: 'Stop showing',
+    google: 'Google Calendar',
+    yourCalendar: 'your calendar',
+    addTo: (calendar: string) => `Add to ${calendar}`,
+    from: (calendar: string) => `In ${calendar}`,
+    open: 'Open in your calendar app',
+    changeThere: 'To change it, open it in your calendar app.',
+    invite: {
+      invited: 'You’re invited',
+      accepted: 'You’re going',
+      tentative: 'You might go',
+      declined: 'You’re not going',
+    } as Record<string, string>,
+    organizer: (who: string) => `Invited by ${who}`,
+    going: 'Going?',
+    answers: { accepted: 'Yes', tentative: 'Maybe', declined: 'No' } as Record<string, string>,
+    marker: 'From your calendar',
   },
 
   pet: {
