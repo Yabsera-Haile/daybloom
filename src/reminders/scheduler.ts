@@ -7,7 +7,7 @@ import { Platform } from 'react-native';
 import { db } from '@/db/client';
 import { petPicture } from '@/features/pet/picture';
 import { t } from '@/i18n';
-import { petLine, withPet, type PetVoice } from '@/pet/remind';
+import { cheekyNudge, petLine, withPet, type PetVoice } from '@/pet/remind';
 import { readSettings, type ReminderSound, type Settings } from '@/settings';
 import { defaultColors as colors } from '@/theme';
 
@@ -20,7 +20,9 @@ import { CHANNEL_PREFIX, channelFor, soundFor, VIBRATION } from './sounds';
  * SDK 53), so there Daybloom skips them quietly; the installed app (a development or store build) has them.
  */
 export const remindersAvailable = !(Platform.OS === 'android' && isRunningInExpoGo());
-const PLANNED = /^[ethrb]\./; // ids made by plan.ts (events, to-dos, habits, routines, bills); snoozes and tests are left alone
+// ids made by plan.ts (events, to-dos, habits, routines, bills) and Cheeky's nudge; snoozes and
+// tests are left alone
+const PLANNED = /^[ethrbn]\./;
 
 export async function setUpNotifications(): Promise<void> {
   if (!remindersAvailable) return;
@@ -111,6 +113,7 @@ function petVoice(settings: Settings): PetVoice | null {
     name: settings.petName ?? t.pet.names[settings.pet],
     personality: settings.petPersonality,
     picture: Platform.OS === 'android' ? petPicture(settings.pet) : null,
+    crossPicture: Platform.OS === 'android' ? petPicture(settings.pet, 'cross') : null,
   };
 }
 
@@ -159,9 +162,12 @@ export function syncReminders(): Promise<void> {
         // the sound is part of each reminder's signature: choosing another sound moves them all; the
         // pet says its line after the time and title (MS-03)
         const pet = petVoice(settings);
-        const planned = plannedReminders(db, Date.now(), settings.timeFormat, undefined, settings.weekStart).map((r) =>
-          withPet({ ...r, data: { ...r.data, sig: r.data.sig + '|' + sound } }, pet),
-        );
+        const now = Date.now();
+        const nudge = cheekyNudge(db, now, pet);
+        const planned = [
+          ...plannedReminders(db, now, settings.timeFormat, undefined, settings.weekStart).map((r) => withPet(r, pet)),
+          ...(nudge ? [nudge] : []),
+        ].map((r) => ({ ...r, data: { ...r.data, sig: r.data.sig + '|' + sound } }));
         const scheduled = (await Notifications.getAllScheduledNotificationsAsync())
           .filter((n) => PLANNED.test(n.identifier))
           .map((n) => ({ id: n.identifier, sig: (n.content.data as Partial<ReminderData> | undefined)?.sig }));
