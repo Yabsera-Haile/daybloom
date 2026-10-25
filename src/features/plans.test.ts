@@ -22,6 +22,9 @@ const event = (title: string, over: Partial<EventOccurrence> = {}): EventOccurre
   timeZone: 'America/New_York',
   rrule: null,
   days: [day],
+  calendarId: null,
+  invite: null,
+  readOnly: false,
   ...over,
 });
 

@@ -43,15 +43,26 @@ export const events = sqliteTable(
     /** For an exception to a repeating event: the series it belongs to and the original start it replaces */
     seriesId: text('series_id'),
     originalStartAt: integer('original_start_at'),
-    /** local | device | google (post-MVP sync, decided up front so no migration is needed) */
+    /** local | device (a phone calendar, GC-01) | google (a later direct sync) */
     source: text('source').notNull().default('local'),
+    /** For a phone-calendar event: its id there, and a fingerprint of what was last read or written (sync/fingerprint.ts) */
     externalId: text('external_id'),
     externalEtag: text('external_etag'),
+    /** The phone calendar it lives in (Android's calendar id) */
+    calendarId: text('calendar_id'),
+    /** An invitation's answer: invited | accepted | tentative | declined (GC-05) */
+    invite: text('invite'),
+    /** Can't be changed from Daybloom: someone else's invitation, or a calendar it may only read */
+    readOnly: bool('read_only'),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     deletedAt: deletedAt(),
   },
-  (t) => [index('events_start_idx').on(t.startAt), index('events_series_idx').on(t.seriesId)],
+  (t) => [
+    index('events_start_idx').on(t.startAt),
+    index('events_series_idx').on(t.seriesId),
+    index('events_external_idx').on(t.externalId),
+  ],
 );
 
 export const tasks = sqliteTable(
@@ -304,4 +315,13 @@ export const drafts = sqliteTable('drafts', {
   /** JSON of the form's text fields */
   value: text('value').notNull(),
   updatedAt: updatedAt(),
+});
+
+/**
+ * Phone-calendar events Daybloom dropped by itself (a changed occurrence of a series whose times
+ * changed), so the sync removes them from the phone's calendar too (GC-03).
+ */
+export const calendarRemovals = sqliteTable('calendar_removals', {
+  externalId: text('external_id').primaryKey(),
+  removedAt: integer('removed_at').notNull().default(sql`(unixepoch() * 1000)`),
 });

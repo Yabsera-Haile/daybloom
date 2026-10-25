@@ -37,6 +37,10 @@ export interface Settings {
   petName: string | null;
   /** Gentle gets sad when things slip; cheeky gets cross (D21). */
   petPersonality: Personality;
+  /** The phone's calendars shown in Daybloom (GC-01), by their id there; none = not connected. */
+  phoneCalendars: string[];
+  /** Where new events go unless unticked in the form (GC-04): a phone calendar, or null for Daybloom only. */
+  saveToCalendar: string | null;
 }
 
 export const PET_KINDS: PetKind[] = ['cat', 'dog', 'dragon'];
@@ -66,6 +70,8 @@ const checks: { [K in keyof Settings]: Check<Settings[K]> } = {
   pet: (v): v is PetKind | 'off' => v === 'off' || PET_KINDS.includes(v as PetKind),
   petName: (v): v is string | null => v === null || (typeof v === 'string' && v.trim() !== ''),
   petPersonality: (v): v is Personality => v === 'gentle' || v === 'cheeky',
+  phoneCalendars: (v): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string'),
+  saveToCalendar: (v): v is string | null => v === null || typeof v === 'string',
 };
 
 export function phoneDefaults(): Settings {
@@ -88,6 +94,8 @@ export function phoneDefaults(): Settings {
     pet: 'cat',
     petName: null,
     petPersonality: 'gentle',
+    phoneCalendars: [],
+    saveToCalendar: null,
   };
 }
 

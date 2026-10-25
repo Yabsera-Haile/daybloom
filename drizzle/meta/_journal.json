@@ -50,6 +50,13 @@
       "when": 1792190448824,
       "tag": "0006_sms_senders",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792968292565,
+      "tag": "0007_phone_calendars",
+      "breakpoints": true
     }
   ]
 }

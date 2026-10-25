@@ -28,6 +28,8 @@ describe('settings', () => {
       pet: 'cat',
       petName: null,
       petPersonality: 'gentle',
+      phoneCalendars: [],
+      saveToCalendar: null,
     });
     expect(readSettings(db)).toEqual(phoneDefaults());
   });

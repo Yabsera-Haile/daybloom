@@ -34,6 +34,8 @@ export interface EventInput {
   timeZone: string;
   /** Repeat rule (see recurrence/rule.ts), or null for a one-off event. */
   rrule?: string | null;
+  /** The phone calendar it's in too (GC-04), or null/absent for Daybloom only. */
+  calendarId?: string | null;
 }
 
 /** One appearance of an event on the calendar. */
@@ -58,6 +60,12 @@ export interface EventOccurrence {
   rrule: string | null;
   /** The days it appears on in the phone's calendar, within the range asked for. */
   days: string[];
+  /** The phone calendar it's in (GC-01), or null for Daybloom only. */
+  calendarId: string | null;
+  /** An invitation's answer: invited | accepted | tentative | declined (GC-05). */
+  invite: string | null;
+  /** Someone else's invitation, or a calendar Daybloom may only read: change it there. */
+  readOnly: boolean;
 }
 
 /** "Just this one" / "This one and the ones after" / "All of them" (FR-05). */
@@ -82,6 +90,8 @@ function clean(input: EventInput) {
     endAt: input.endAt,
     timeZone: input.timeZone,
     rrule: blankToNull(input.rrule),
+    source: input.calendarId ? 'device' : 'local',
+    calendarId: input.calendarId ?? null,
   };
 }
 
@@ -150,6 +160,9 @@ function occurrence(
     timeZone: row.timeZone,
     rrule: series?.rrule ?? null,
     days: daysOf(row, startAt, endAt, ...range),
+    calendarId: row.calendarId,
+    invite: row.invite,
+    readOnly: row.readOnly,
   };
 }
 
@@ -262,6 +275,14 @@ function removeRows(db: Db, rows: EventRow[]): void {
   db.delete(events).where(inArray(events.id, ids)).run();
 }
 
+/** A series' changed occurrences live in the same calendar as it. */
+function inCalendarOf(db: Db, seriesId: string, where: Pick<Clean, 'source' | 'calendarId'>): void {
+  db.update(events)
+    .set({ source: where.source, calendarId: where.calendarId })
+    .where(eq(events.seriesId, seriesId))
+    .run();
+}
+
 const wall = (ms: number, timeZone: string) => floating(toWallTime(ms, timeZone));
 const instant = (f: number, timeZone: string) => fromWallTime(fromFloating(f), timeZone);
 
@@ -342,7 +363,16 @@ export function updateOccurrence(
     const minutes = reminderMinutes ?? reminderOffsets(tx, 'event', occ.eventId);
 
     if (scope === 'this') {
-      const values = { ...next, rrule: null, seriesId: series.id, originalStartAt: slot, updatedAt: Date.now() };
+      // a changed occurrence stays in its series' calendar
+      const values = {
+        ...next,
+        rrule: null,
+        source: series.source,
+        calendarId: series.calendarId,
+        seriesId: series.id,
+        originalStartAt: slot,
+        updatedAt: Date.now(),
+      };
       const id = own?.id ?? newId();
       if (own) tx.update(events).set(values).where(eq(events.id, id)).run();
       else
@@ -360,6 +390,7 @@ export function updateOccurrence(
         .run();
       setReminderOffsets(tx, 'event', series.id, minutes);
       settleChanged(tx, own, others, series, next, series.id, timingChanged);
+      inCalendarOf(tx, series.id, next);
       return series.id;
     }
 
@@ -390,6 +421,7 @@ export function updateOccurrence(
       id,
       timingChanged,
     );
+    inCalendarOf(tx, id, next);
     return id;
   });
 }
@@ -433,6 +465,8 @@ export function deleteOccurrence(db: Db, occ: EventOccurrence, scope: EditScope)
         endAt: occ.endAt,
         seriesId: series.id,
         originalStartAt: slot,
+        source: series.source,
+        calendarId: series.calendarId,
         deletedAt: Date.now(),
       })
       .run();
