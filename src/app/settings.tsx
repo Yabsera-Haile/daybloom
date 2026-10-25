@@ -14,7 +14,8 @@ import { useTour } from '@/features/tour/store';
 import { usePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
-import { saveSetting, type Settings } from '@/settings';
+import type { Personality, PetKind } from '@/pet/mood';
+import { PET_KINDS, saveSetting, type Settings } from '@/settings';
 import { useUi } from '@/state/ui';
 import { shadows, useTheme } from '@/theme';
 import { Button, ChoiceSheet, Columns, Icon, Page, Row, RowGroup, Sheet, Sticker, Switch, Text, TextField } from '@/ui';
@@ -22,7 +23,18 @@ import { Button, ChoiceSheet, Columns, Icon, Page, Row, RowGroup, Sheet, Sticker
 const REMINDER_OPTIONS: (number | null)[] = [null, 0, 10, 30, 60, 1440];
 
 type Picker =
-  'weekStart' | 'timeFormat' | 'defaultReminder' | 'sound' | 'theme' | 'hemisphere' | 'currency' | 'privacy' | null;
+  | 'weekStart'
+  | 'timeFormat'
+  | 'defaultReminder'
+  | 'sound'
+  | 'theme'
+  | 'hemisphere'
+  | 'currency'
+  | 'privacy'
+  | 'pet'
+  | 'petName'
+  | 'petPersonality'
+  | null;
 
 const reminderLabel = (m: number | null) => (m === null ? t.settings.noReminder : t.reminders.detail(m));
 const allowedLabel = (on: boolean | null) =>
@@ -38,6 +50,8 @@ export default function SettingsScreen() {
   const { permissions, allowReminders, allowTexts, allowPopUp, allowBackground } = usePermissions();
   const [name, setName] = useState(settings.name ?? '');
   const [picker, setPicker] = useState<Picker>(null);
+  const petName = settings.pet === 'off' ? '' : (settings.petName ?? t.pet.names[settings.pet]);
+  const [newPetName, setNewPetName] = useState(petName);
   const save = <K extends keyof Settings>(key: K, value: Settings[K]) => saveSetting(db, key, value);
   const fromPhone = hemisphereForTimeZone(localTimeZone()) === settings.hemisphere;
   const currencies = [...new Set([settings.currency, ...Object.keys(t.currencies)])];
@@ -171,6 +185,36 @@ export default function SettingsScreen() {
                 value={settings.hemisphere === 'north' ? t.settings.northShort : t.settings.southShort}
                 onPress={() => setPicker('hemisphere')}
               />
+            </RowGroup>
+
+            {/* The companion pet (MS-01, MS-02, MS-10) */}
+            <RowGroup heading={t.settings.companion}>
+              <Row
+                first
+                icon="pets"
+                title={t.settings.pet}
+                value={settings.pet === 'off' ? t.settings.petOff : t.pet.kinds[settings.pet]}
+                onPress={() => setPicker('pet')}
+              />
+              {settings.pet === 'off' ? null : (
+                <>
+                  <Row
+                    icon="edit"
+                    title={t.settings.petName}
+                    value={petName}
+                    onPress={() => {
+                      setNewPetName(petName);
+                      setPicker('petName');
+                    }}
+                  />
+                  <Row
+                    icon="favorite"
+                    title={t.settings.personality}
+                    value={settings.petPersonality === 'cheeky' ? t.settings.cheeky : t.settings.gentle}
+                    onPress={() => setPicker('petPersonality')}
+                  />
+                </>
+              )}
             </RowGroup>
 
             <RowGroup heading={t.settings.money}>
@@ -326,6 +370,57 @@ export default function SettingsScreen() {
       ) : null}
       {picker === 'sound' ? <SoundSheet onClose={() => setPicker(null)} /> : null}
       {picker === 'theme' ? <ThemeSheet onClose={() => setPicker(null)} /> : null}
+      {picker === 'pet' ? (
+        <ChoiceSheet<PetKind | 'off'>
+          title={t.settings.pet}
+          value={settings.pet}
+          options={[
+            ...PET_KINDS.map((k) => ({ value: k, label: t.pet.kinds[k] })),
+            { value: 'off' as const, label: t.settings.petOff },
+          ]}
+          onChoose={(v) => save('pet', v)}
+          onClose={() => setPicker(null)}
+        />
+      ) : null}
+      {picker === 'petPersonality' ? (
+        <ChoiceSheet<Personality>
+          title={t.settings.personality}
+          value={settings.petPersonality}
+          options={[
+            { value: 'gentle', label: t.settings.gentle, detail: t.settings.gentleText },
+            { value: 'cheeky', label: t.settings.cheeky, detail: t.settings.cheekyText },
+          ]}
+          onChoose={(v) => save('petPersonality', v)}
+          onClose={() => setPicker(null)}
+        />
+      ) : null}
+      {picker === 'petName' ? (
+        <Sheet visible onClose={() => setPicker(null)} title={t.settings.petName} closeButton>
+          <View className="gap-space-md pb-space-sm">
+            <TextField
+              autoFocus
+              accessibilityLabel={t.settings.petName}
+              value={newPetName}
+              onChangeText={setNewPetName}
+              autoCapitalize="words"
+              maxLength={24}
+              variant="headlineSm"
+              className="border-b-[1.5px] border-primary pb-2"
+            />
+            <View className="flex-row gap-space-sm">
+              <Button label={t.common.cancel} variant="outline" className="flex-1" onPress={() => setPicker(null)} />
+              <Button
+                label={t.common.save}
+                className="flex-1"
+                onPress={() => {
+                  save('petName', newPetName.trim() || null);
+                  setPicker(null);
+                }}
+              />
+            </View>
+          </View>
+        </Sheet>
+      ) : null}
       {picker === 'privacy' ? (
         <Sheet visible onClose={() => setPicker(null)} title={t.settings.privacy} closeButton>
           <Text variant="bodyLg" color="onSurfaceVariant" style={{ paddingBottom: 16 }}>

@@ -184,7 +184,7 @@ export function ChoiceSheet<T extends string | number | null>({
   onClose,
 }: {
   title: string;
-  options: { value: T; label: string }[];
+  options: { value: T; label: string; detail?: string }[];
   value: T;
   onChoose: (value: T) => void;
   onClose: () => void;
@@ -209,7 +209,14 @@ export function ChoiceSheet<T extends string | number | null>({
                 className={`h-6 w-6 items-center justify-center rounded-full border-2 ${on ? 'border-primary' : 'border-outline'}`}>
                 {on ? <View className="h-3 w-3 rounded-full bg-primary" /> : null}
               </View>
-              <Text variant="bodyLg">{o.label}</Text>
+              <View className="flex-1 py-2">
+                <Text variant="bodyLg">{o.label}</Text>
+                {o.detail ? (
+                  <Text variant="bodySm" color="onSurfaceVariant">
+                    {o.detail}
+                  </Text>
+                ) : null}
+              </View>
             </Pressable>
           );
         })}

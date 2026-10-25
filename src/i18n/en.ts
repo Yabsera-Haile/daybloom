@@ -950,7 +950,7 @@ export const en = {
     currency: 'Currency',
     comfort: 'Comfort',
     calm: 'Calm mode',
-    calmText: 'Fewer animations, no celebrations',
+    calmText: 'Fewer animations, no celebrations, no companion',
     reminderHelp: 'Reminders not arriving?',
     reminderHelpText: 'Phone battery settings, step by step',
     remindersOff: 'Reminders are off',
@@ -978,6 +978,15 @@ export const en = {
     limitedValue: 'Limited',
     tour: 'Take the tour again',
     tourText: 'A quick look at what Daybloom can do',
+    companion: 'Companion',
+    pet: 'Your companion',
+    petOff: 'Off',
+    petName: 'Its name',
+    personality: 'Personality',
+    gentle: 'Gentle',
+    gentleText: 'Gets a little sad when a habit slips, and never scolds',
+    cheeky: 'Cheeky',
+    cheekyText: 'Gets cross when a habit slips or to-dos pile up, and tells you so',
     privacyText:
       'Daybloom keeps your plans only on this phone. There is no account, nothing is sent to us or anyone else, and there are no ads. Reminders are set on the phone itself. If you delete the app, your plans are deleted with it.',
     version: (v: string) => `Daybloom ${v}`,
@@ -1216,6 +1225,43 @@ export const en = {
     AED: 'UAE dirham',
     SGD: 'Singapore dollar',
   } as Record<string, string>,
+
+  pet: {
+    kinds: { cat: 'Cat', dog: 'Dog', bird: 'Bird', dragon: 'Dragon', fairy: 'Fairy' } as Record<string, string>,
+    names: { cat: 'Mochi', dog: 'Biscuit', bird: 'Pip', dragon: 'Ember', fairy: 'Willow' } as Record<string, string>,
+    /** What a screen reader says for the pet. */
+    label: (name: string, kind: string, how: string) => `${name} the ${kind.toLowerCase()}, ${how}`,
+    how: {
+      asleep: 'asleep',
+      happy: 'happy',
+      content: 'awake',
+      sad: 'a little sad',
+      cross: 'cross with you',
+    } as Record<string, string>,
+    hint: 'Says hello',
+    lines: {
+      asleep: ['Zzz… five more minutes…', 'Mm… dreaming of ticked boxes…', 'Shh… napping.'],
+      bedtime: ['It’s late. Sleep well!', 'Zzz… see you in the morning.'],
+      content: ['Hello! I’ll keep you company.', 'Small steps make big days.', 'One thing at a time.'],
+      happy: ['You did a thing! I’m so proud.', 'Look at you go!', 'That’s the spirit!'],
+      sadHabit: (habit: string) => [
+        `I miss ${habit}. Shall we try today?`,
+        `${habit} has been quiet. Just one small go?`,
+      ],
+      sadTodos: (n: number) => [
+        n === 1 ? 'One to-do is still waiting from before.' : `${n} to-dos are still waiting from before.`,
+        'No rush. Pick just one?',
+      ],
+      crossHabit: (habit: string) => [
+        `Ahem. ${habit}? Two days now.`,
+        `I’m not mad about ${habit}. I’m just… waiting.`,
+      ],
+      crossTodos: (n: number) => [
+        n === 1 ? 'That old to-do won’t do itself, you know.' : `${n} old to-dos. I’m watching you.`,
+        'Hmph. Those to-dos are still there.',
+      ],
+    },
+  },
 
   categories: {
     wellness: 'Wellness',

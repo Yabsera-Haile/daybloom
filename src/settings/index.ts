@@ -7,6 +7,7 @@ import { hemisphereForTimeZone, type Hemisphere, type WeekStart } from '@/calend
 import { localTimeZone } from '@/calendar/timezone';
 import { settings } from '@/db/schema';
 import type { Db } from '@/db/types';
+import type { Personality, PetKind } from '@/pet/mood';
 
 export interface Settings {
   /** Optional first name, used only for greetings (D8). */
@@ -30,7 +31,15 @@ export interface Settings {
   reminderSound: ReminderSound;
   /** Bank texts (BU-11): ask what each payment was for, or just add it. */
   smsAsk: boolean;
+  /** The companion pet (MS-01), or 'off'. */
+  pet: PetKind | 'off';
+  /** Its name (MS-02); null = the kind's own name, e.g. Mochi. */
+  petName: string | null;
+  /** Gentle gets sad when things slip; cheeky gets cross (D21). */
+  petPersonality: Personality;
 }
+
+export const PET_KINDS: PetKind[] = ['cat'];
 
 export type ThemeChoice = 'auto' | 'spring' | 'summer' | 'autumn' | 'winter';
 export const THEME_CHOICES: ThemeChoice[] = ['auto', 'spring', 'summer', 'autumn', 'winter'];
@@ -54,6 +63,9 @@ const checks: { [K in keyof Settings]: Check<Settings[K]> } = {
   theme: (v): v is ThemeChoice => THEME_CHOICES.includes(v as ThemeChoice),
   reminderSound: (v): v is ReminderSound => REMINDER_SOUNDS.includes(v as ReminderSound),
   smsAsk: isBool,
+  pet: (v): v is PetKind | 'off' => v === 'off' || PET_KINDS.includes(v as PetKind),
+  petName: (v): v is string | null => v === null || (typeof v === 'string' && v.trim() !== ''),
+  petPersonality: (v): v is Personality => v === 'gentle' || v === 'cheeky',
 };
 
 export function phoneDefaults(): Settings {
@@ -73,6 +85,9 @@ export function phoneDefaults(): Settings {
     theme: 'autumn',
     reminderSound: 'chime',
     smsAsk: true,
+    pet: 'cat',
+    petName: null,
+    petPersonality: 'gentle',
   };
 }
 
@@ -143,7 +158,7 @@ export function saveMemo(db: Db, name: string, value: string | null): void {
 }
 
 export function saveSetting<K extends keyof Settings>(db: Db, key: K, value: Settings[K]): void {
-  const v = typeof value === 'string' && key === 'name' ? value.trim() || null : value;
+  const v = typeof value === 'string' && (key === 'name' || key === 'petName') ? value.trim() || null : value;
   if (!checks[key](v)) throw new Error(`Not a valid ${key}: ${String(value)}`);
   const json = JSON.stringify(v);
   db.insert(settings)

@@ -25,8 +25,21 @@ describe('settings', () => {
       theme: 'autumn',
       reminderSound: 'chime',
       smsAsk: true,
+      pet: 'cat',
+      petName: null,
+      petPersonality: 'gentle',
     });
     expect(readSettings(db)).toEqual(phoneDefaults());
+  });
+
+  it('T-MS01.2 the companion, its name and personality are kept; a pet that isn’t there is refused', () => {
+    saveSetting(db, 'petName', '  Biscuit ');
+    saveSetting(db, 'petPersonality', 'cheeky');
+    expect(readSettings(db)).toMatchObject({ pet: 'cat', petName: 'Biscuit', petPersonality: 'cheeky' });
+    expect(() => saveSetting(db, 'pet', 'unicorn' as never)).toThrow();
+    expect(readSettings(db).pet).toBe('cat');
+    saveSetting(db, 'pet', 'off');
+    expect(readSettings(db).pet).toBe('off');
   });
 
   it('T-ST01.1 saved choices win over the phone and survive reading back', () => {
