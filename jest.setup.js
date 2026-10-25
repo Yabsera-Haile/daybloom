@@ -43,10 +43,11 @@ jest.mock('expo-router', () => {
     useLocalSearchParams: () => globalThis.__routeParams ?? {},
     Redirect: () => null,
     Link: ({ children }) => children,
+    useIsFocused: () => true,
   };
 });
 
 // Animations and the safe area, as their libraries suggest for tests.
 jest.mock('react-native-worklets', () => require('react-native-worklets/src/mock'));
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+jest.mock('react-native-reanimated', () => ({ ...require('react-native-reanimated/mock'), useReducedMotion: () => false }));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
