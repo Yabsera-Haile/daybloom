@@ -22,7 +22,8 @@ export function TaskRowView({ task }: { task: TaskRow }) {
     .join(' · ');
   const tick = (done: boolean) => {
     setTaskDone(db, task.id, done);
-    if (done) showToast(t.today.ticked(task.title), () => setTaskDone(db, task.id, false));
+    // a quick note it's done; unticking the box undoes it
+    if (done) showToast(t.today.ticked(task.title));
   };
   return (
     <View className="flex-row items-start gap-1 rounded-xl bg-surface-container-low py-1 pl-1">
