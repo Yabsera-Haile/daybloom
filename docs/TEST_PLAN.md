@@ -239,7 +239,7 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-ON01.2 | ON-01 | Component | Android with texts and a battery limit: skip name and reminders, allow texts, not now to the rest | Pages for reminders, payment texts, popping up and the battery in turn, then done ("Change any of these in Settings › Phone permissions"); the planner opens |
 | T-ON01.3 | ON-01 | Component | No bank texts on this phone, battery not limited | Reminders go straight to done |
 | T-ON01.4 | ON-01 | Component | Texts not allowed | No pop-up page |
-| T-ON02.1 | ON-02 | Component | Start the tour: Show me, Next, Next, Back | "1 of 14" Today, then + Add, then Week (Week tab opened), back to + Add |
+| T-ON02.1 | ON-02 | Component | Start the tour: Show me, Next, Next, Next, Back | "1 of 15" Today, then + Add, then Meet Mochi (the companion), then Week (Week tab opened), back to Meet Mochi |
 | T-ON02.2 | ON-02 | Component | From Habits to the end | Habits, Budget, Savings and bills, bank texts (Pick who texts you, Check what it understood, Add this month’s payments, Say what it was for, Fees and texts it doesn’t know), Search, "You’re ready"; Start planning ends it on Today and remembers |
 | T-ON02.3 | ON-02 | Component | Skip tour on the first card | The tour ends and isn't shown again |
 | T-ON02.5 | ON-02 | Component | Bank texts › How it works, through to Got it | Just the bank-texts cards ("1 of 5"…); ends on the same screen; the whole tour still counts as not seen |
@@ -317,10 +317,11 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS01 | MS-01 | Choose puppy, restart, switch to cat | Choice persists; switch immediate |
 | T-MS03.1 | MS-03 | Reminder "Dentist 3:00 PM" with cat | Cat image; "3:00 PM Dentist" before the pet message |
 | T-MS03.2 | MS-03 | Very long title | Time + title still visible; pet message shortened first |
-| T-MS04 | MS-04 | Finish all habits for today | Pet celebrates once (not every tick) |
+| T-MS04.4 | MS-04 | Two daily habits; tick one, then the other; untick and tick it again | A cheer; a celebration ("Every habit done today!"); a cheer, not a second celebration |
 | T-MS05 | MS-05 | Calm mode on | No pet messages/animations; plain reminders still fire |
 | T-MS06 | MS-06 | Reduce motion on | Pet shows a still pose |
-| T-MS07 | MS-07 | A week of test data | Notification count = user reminder count |
+| T-MS07.2 | MS-07 | Cheeky; "Drink water" slipping with an 8 AM reminder; 10 AM | One nudge "n.<day>" at 7 PM: "Drink water", "Mochi: Ahem. Drink water? Two days now.", its cross picture; Done ticks the habit |
+| T-MS07.3 | MS-07 | Gentle; no pet; after 7 PM; the habit ticked; a habit without a reminder | No nudge |
 | T-MS08 | MS-08 | Add a test pet with art + message file only | Works without code changes |
 | T-MS01.2 | MS-01, MS-02, MS-10 | Save a name with spaces, Cheeky, then an unknown pet | Name trimmed and kept, personality kept, the unknown pet refused |
 | T-MS04.2 | MS-04 | 10:30 PM, 6:59 AM, 7:00 AM, 9:59 PM | Asleep, asleep, awake, awake |
@@ -338,6 +339,8 @@ For every screen there's also one component test per state (filled, empty, permi
 | T-MS03.4 | MS-03 | A 3:00 PM Dentist reminder with Mochi | Title unchanged; body "In 10 minutes · Mochi: …"; its picture in data.largeIcon |
 | T-MS03.5 | MS-03 | The same reminder twice; Cheeky; a new name | Same line; a cheeky line; the reminder is sent again |
 | T-MS05.2 | MS-05 | No pet | The reminder unchanged |
+| T-MS01.3 | MS-01 | The puppy, then the dragon | "Biscuit the dog", "Ember the dragon" |
+| T-UX04.2 | UX-04 | Installed app: tick a to-do; delete an event | "Done: …" in a sage pill for about a second; "Event deleted · Undo" for 5 seconds |
 | T-MS03.6 | MS-03 | Installed app: Settings › Reminder sound › Send a test reminder, with the cat on | The cat's picture beside the text, and its line after it |
 | T-MS12.3 | MS-12 | Installed app: watch the napping cat for a few minutes; open Week, Month, Habits, Budget; tick a habit on Habits | It wakes, yawns, stretches and leaps off; it's found napping in that tab's spot, covering no buttons; it leaps in on Habits and cheers |
 | T-MS-UX | All MS | Usability round with the pet | Charming, and adding events is not slower than in T-UX01 |

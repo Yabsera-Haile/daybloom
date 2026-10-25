@@ -42,7 +42,7 @@ Priority: **M** = must have for MVP, **S** = should have, **L** = later.
 | UX-01 | A first-time user adds an event with a time and a reminder in under 60 seconds, unaided (≥ 4 of 5 test users) | M |
 | UX-02 | Adding a basic event or task takes no more than 3 taps plus typing, from Today, Week or Month | M |
 | UX-03 | No technical or finance jargon (banned list + copy changes in DESIGN_REVIEW section 7) | M |
-| UX-04 | Every destructive action can be undone or asks first | M |
+| UX-04 | Every destructive action can be undone or asks first. Its note ("Event deleted · Undo", a soft sage pill above the tabs, not a dark bar) stays 5 seconds; a note that something was simply done ("Done: Call the bank") stays about a second, a little longer for more words; a tap puts either away | M |
 | UX-05 | Typed text is never lost; an unsaved draft comes back if the app closes | M |
 | UX-06 | Every screen and section has a friendly empty state with a next step (`today-empty/`, `empty-states/`) | M |
 | UX-07 | Error messages: one short sentence saying what happened and what to do | M |
@@ -217,7 +217,7 @@ The "Coming soon" teaser is removed (D13).
 | ID | Requirement | Priority |
 |---|---|---|
 | ON-01 | Onboarding of short steps: welcome → your name (optional) → why reminders matter + notification permission → on Android, reading payment texts (BU-11), popping up over other apps (only once texts are allowed) and running in the background (only when the phone limits Daybloom's battery use) → done. Each page explains why, with an example, and asks for one thing; pages that don't apply are left out. Week start and time format come from the phone. Skippable; everything can be allowed later in Settings (ST-06). | M |
-| ON-02 | Tour (D19): after onboarding (and once after the update that added it), a short tour over the real app dims the screen except the part being explained, with a card saying what it does: Today, + Add, Week, Month, Habits, Budget, savings and bills, More, Search. On Android, expenses from bank texts get a card for where it starts and one each for picking a sender, checking what Daybloom understood, adding this month’s payments, saying what a payment was for, and fees and unknown texts, each with a small picture of that screen. It moves between tabs as it goes. Skip, Back, Next; Android back steps back. Finishing or skipping is remembered; Settings › Take the tour again and More › Take the tour show it again, and the bank texts screen’s How it works shows just the bank-texts part. | S |
+| ON-02 | Tour (D19): after onboarding (and once after the update that added it), a short tour over the real app dims the screen except the part being explained, with a card saying what it does: Today, + Add, the companion (when there is one), Week, Month, Habits, Budget, savings and bills, More, Search. On Android, expenses from bank texts get a card for where it starts and one each for picking a sender, checking what Daybloom understood, adding this month’s payments, saying what a payment was for, and fees and unknown texts, each with a small picture of that screen. It moves between tabs as it goes. Skip, Back, Next; Android back steps back. Finishing or skipping is remembered; Settings › Take the tour again and More › Take the tour show it again, and the bank texts screen’s How it works shows just the bank-texts part. | S |
 | ON-03 | A first-run page after your name: would you like a companion? Pick a pet (with its picture) or "No thanks", name it, and choose Gentle or Cheeky, each shown with the face it makes when a habit slips. Skippable; Settings › Companion has it all later | L |
 | ST-01 | Settings: first name, week start, 12/24-hour, usual reminder, reminder sound, categories (rename, recolor, reorder), colours, seasons on/off + hemisphere, currency, calm mode, reminder help, privacy & about | M |
 | ST-02 | Export all data to a file (backup) | S |
@@ -237,13 +237,13 @@ The "Coming soon" teaser is removed (D13).
 
 | ID | Requirement | Priority |
 |---|---|---|
-| MS-01 | User picks a companion pet (the cat first; dog, bird, dragon and fairy to follow) in Settings, later also in onboarding, and can change it or turn it off any time | L |
+| MS-01 | User picks a companion (a cat, a puppy or a little dragon, each with its picture), or none, during first run (ON-03) or in Settings, and can change it or turn it off any time. Each has its own name to start (Mochi, Biscuit, Ember) and its own sound when it cheers (Purr!, Woof!, Rawr!) | L |
 | MS-02 | User can name the pet; the name appears in its messages | L |
 | MS-03 | Reminders show the pet's picture beside the text and a short line in its voice after the time and title ("In 10 minutes · Mochi: You've got this."); the line suits its personality and stays the same for the same reminder. Off with the pet and in Calm mode. The small status-bar icon stays the app's (Android draws it in one colour) | L |
-| MS-04 | The pet reacts in the app: idle, happy (task or habit done), reminding, sleeping (quiet hours), celebrating (streaks, "In rhythm" weeks) | L |
+| MS-04 | The pet reacts in the app: idle, happy (task or habit done), sleeping (10 PM to 7 AM), and celebrating once a day when the last daily habit is ticked (sparkles, two hops, its own line) | L |
 | MS-05 | "Calm mode" turns off pet messages and animations; the app stays fully usable | L |
 | MS-06 | Pet animations respect reduce-motion | L |
-| MS-07 | The pet never sends notifications other than the user's own reminders | L |
+| MS-07 | The pet sends no notifications of its own, except Cheeky's nudge (D21): at most one a day, at 7 PM, about a daily habit that's slipping and already reminds; gone once the habit is ticked; never from a Gentle pet or in Calm mode | L |
 | MS-08 | A new pet needs only art + a message file, with no code changes | L |
 | MS-09 | The pet can live in the header, on the right next to search | L |
 | MS-10 | Personality, chosen in Settings: Gentle (the default: gets a little sad when a habit slips, never scolds) or Cheeky (gets cross when a habit slips or to-dos pile up, and says so) | L |
