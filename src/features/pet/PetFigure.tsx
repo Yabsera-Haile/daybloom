@@ -17,7 +17,19 @@ import type { FaceName, Part, PetArt, PoseName } from './art/types';
 
 /** Short moves the figure can make; each one ends, so nothing redraws between them (battery). */
 export type Move =
-  'breathe' | 'blink' | 'twitch' | 'sway' | 'wag' | 'flick' | 'flap' | 'tilt' | 'hop' | 'snore' | 'stretch' | 'cheer';
+  | 'breathe'
+  | 'blink'
+  | 'twitch'
+  | 'sway'
+  | 'wag'
+  | 'flick'
+  | 'flap'
+  | 'tilt'
+  | 'look'
+  | 'hop'
+  | 'snore'
+  | 'stretch'
+  | 'cheer';
 
 export interface PetFigureHandle {
   play: (move: Move) => void;
@@ -135,6 +147,10 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({
             break;
           case 'tilt':
             head.value = withSequence(t(-8, 320), withDelay(900, t(0, 420)));
+            break;
+          case 'look':
+            // a look round: one way, the other, and back
+            head.value = withSequence(t(-9, 360), withDelay(450, t(9, 560)), withDelay(450, t(0, 380)));
             break;
           case 'hop':
             squash.value = withSequence(

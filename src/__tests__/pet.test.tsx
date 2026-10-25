@@ -1,10 +1,11 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { eq } from 'drizzle-orm';
+import { AppState } from 'react-native';
 
 import { habits } from '@/db/schema';
 import { withTestDb } from '@/db/testDb';
 import { Companion } from '@/features/pet/Companion';
-import { useRoam } from '@/features/pet/roam';
+import { enterSide, useRoam } from '@/features/pet/roam';
 import { toDayKey } from '@/calendar/dates';
 import { createHabit, getHabit, setHabitDone } from '@/habits/store';
 import { refresh } from '@/test/screen';
@@ -28,8 +29,23 @@ const slipping = (name: string) => {
 
 beforeEach(() => {
   mockBedtime.mockReturnValue(false);
-  useRoam.setState({ spot: 'today', landing: false, cheered: null, celebrated: null });
+  // the app is open (the pet only follows you while it is)
+  Object.assign(AppState, { currentState: 'active' });
+  useRoam.setState({ spot: 'today', from: 'today', landing: false, cheered: null, celebrated: null, grumbled: null });
 });
+
+/** Runs a test on a fake clock, with what Math.random says fixed (0.9: never too sleepy). */
+async function onFakeClock(test: () => Promise<void>, random = 0.9) {
+  jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+  const spy = jest.spyOn(Math, 'random').mockReturnValue(random);
+  try {
+    await test();
+  } finally {
+    spy.mockRestore();
+    jest.useRealTimers();
+  }
+}
+const wait = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 describe('companion pet', () => {
   it('T-MS12.1 with nothing to show it naps on the card; a tap wakes it (a yawn, a stretch) to say hello', async () => {
@@ -111,5 +127,59 @@ describe('companion pet', () => {
     await tick(read);
     expect(screen.queryByText(/Every habit done|All of them, done/)).toBeNull();
     expect(screen.getByText(/^Purr! /)).toBeTruthy();
+  });
+
+  it('T-MS12.6 stay on a tab a few seconds and it comes over from that side, looks round, and curls up again', async () => {
+    await onFakeClock(async () => {
+      await render(<Companion at="month" />);
+      expect(screen.queryByLabelText(/Mochi/)).toBeNull();
+      await wait(4900);
+      expect(screen.queryByLabelText(/Mochi/)).toBeNull();
+      await wait(200);
+      expect(useRoam.getState()).toMatchObject({ spot: 'month', from: 'today' });
+      // in from the left (Today is left of Month), then up for a look round
+      await wait(1200);
+      expect(screen.getByLabelText('Mochi the cat, awake')).toBeTruthy();
+      await wait(7000);
+      expect(screen.getByLabelText('Mochi the cat, asleep')).toBeTruthy();
+    });
+  });
+
+  it('T-MS12.7 now and then it is too sleepy to come at once, and comes later; at bedtime it stays put', async () => {
+    await onFakeClock(async () => {
+      const view = await render(<Companion at="week" />);
+      await wait(6000);
+      expect(useRoam.getState().spot).toBe('today');
+      await wait(35_000);
+      expect(useRoam.getState().spot).toBe('week');
+      await view.unmount();
+      mockBedtime.mockReturnValue(true);
+      await render(<Companion at="budget" />);
+      await wait(60_000);
+      expect(useRoam.getState().spot).toBe('week');
+    }, 0.1);
+  });
+
+  it('T-MS12.8 sulking it always comes over, and says what is wrong only now and then', async () => {
+    slipping('Drink water');
+    await onFakeClock(async () => {
+      const view = await render(<Companion at="habits" />);
+      await wait(5000);
+      await wait(1500);
+      expect(screen.getByLabelText('Mochi the cat, a little sad')).toBeTruthy();
+      expect(screen.getByText('I miss Drink water. Shall we try today?')).toBeTruthy();
+      await view.unmount();
+      // over to Week a minute later: it comes, quietly this time
+      await render(<Companion at="week" />);
+      await wait(6500);
+      expect(screen.getByLabelText('Mochi the cat, a little sad')).toBeTruthy();
+      expect(screen.queryByText(/Drink water/)).toBeNull();
+    }, 0.1);
+  });
+
+  it('T-MS12.9 it comes in from the side its last tab is on in the tab bar', () => {
+    expect(enterSide('today', 'month')).toBe('left');
+    expect(enterSide('budget', 'week')).toBe('right');
+    expect(enterSide('habits', 'budget')).toBe('left');
   });
 });

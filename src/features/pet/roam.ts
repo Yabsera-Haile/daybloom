@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 
-/** The naps spots, one on each tab (MS-12): somewhere with room, covering no buttons. */
+/** The nap spots, one on each tab (MS-12): somewhere with room, covering no buttons. */
 export type Spot = 'today' | 'week' | 'month' | 'habits' | 'budget';
+/** In the tab bar's order, left to right. */
 export const SPOTS: Spot[] = ['today', 'week', 'month', 'habits', 'budget'];
 
 interface Roam {
   /** Where the pet is now; every app start it's on Today. */
   spot: Spot;
+  /** Where it was before (it comes in from that side). */
+  from: Spot;
   /** It's jumping in to `spot` right now (landing), rather than already napping there. */
   landing: boolean;
   moveTo: (spot: Spot, landing: boolean) => void;
@@ -17,28 +20,26 @@ interface Roam {
   /** The day it last celebrated every habit done (once a day, MS-04). */
   celebrated: string | null;
   celebrate: (day: string) => void;
-  /** The spots on screens that have been opened (and have room just now): where it can go. */
-  open: Spot[];
-  offer: (spot: Spot) => void;
-  withdraw: (spot: Spot) => void;
+  /** When it last told you, coming over, what's slipping (so it doesn't on every tab). */
+  grumbled: number | null;
+  grumble: (at: number) => void;
 }
 
 export const useRoam = create<Roam>((set) => ({
   spot: 'today',
+  from: 'today',
   landing: false,
-  moveTo: (spot, landing) => set({ spot, landing }),
+  moveTo: (spot, landing) => set((s) => ({ spot, from: s.spot, landing })),
   landed: () => set({ landing: false }),
   cheered: null,
   cheer: (done) => set({ cheered: done }),
   celebrated: null,
   celebrate: (day) => set({ celebrated: day }),
-  open: [],
-  offer: (spot) => set((s) => (s.open.includes(spot) ? s : { open: [...s.open, spot] })),
-  withdraw: (spot) => set((s) => ({ open: s.open.filter((x) => x !== spot) })),
+  grumbled: null,
+  grumble: (at) => set({ grumbled: at }),
 }));
 
-/** Somewhere else to nap, picked at random from the spots on hand; null when there's nowhere. */
-export function elsewhere(from: Spot, random = Math.random): Spot | null {
-  const others = useRoam.getState().open.filter((s) => s !== from);
-  return others.length ? others[Math.floor(random() * others.length)] : null;
+/** Which side of the screen it comes in from: the side its last tab is on in the tab bar. */
+export function enterSide(from: Spot, to: Spot): 'left' | 'right' {
+  return SPOTS.indexOf(from) < SPOTS.indexOf(to) ? 'left' : 'right';
 }

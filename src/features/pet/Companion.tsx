@@ -1,5 +1,5 @@
 import { useIsFocused } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { AppState, Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
@@ -8,7 +8,6 @@ import Animated, {
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
-  withDelay,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
@@ -31,24 +30,35 @@ import { shadows, spacing } from '@/theme';
 import { Text, useTourTarget } from '@/ui';
 
 import { arts } from './art';
-import type { PetArt, PoseName } from './art/types';
+import type { FaceName, PetArt, PoseName } from './art/types';
 import { bubbleFit } from './bubble';
 import { PetFigure, type Move, type PetFigureHandle } from './PetFigure';
-import { elsewhere, useRoam, type Spot } from './roam';
+import { enterSide, useRoam, type Spot } from './roam';
 
-/** How long a pet stays up after waking, unless it's sulking (it waits up for you then). */
+/** How long a pet stays up after waking or cheering, unless it's sulking (it waits up for you then). */
 const NAP_AFTER = 12_000;
+/** Come over to a tab, it sits and has a look round this long, then curls up again. */
+const LOOK_ROUND = 5_000;
+/** How long you stay on a tab before it comes over (MS-12). */
+const FOLLOW_AFTER = 5_000;
+/** One time in four it's too sleepy to come at once, and comes over later. */
+const SLEEPY = 0.25;
+const SLEEPY_FOLLOW_AFTER = 40_000;
+/** Coming over sulky, it says what's wrong at most this often (not on every tab). */
+const GRUMBLE_EVERY = 10 * 60_000;
 /** How long a speech bubble stays. */
 const SAY_FOR = 4_500;
-/** How long it naps in one spot while you watch before it may wander to another tab (ms). */
-const WANDER_AFTER: [number, number] = [60_000, 150_000];
+/** How long it beams, eyes squeezed shut with joy. */
+const BEAM_FOR = 1_400;
+/** How far off the screen's edge it starts when it comes over (dp). */
+const OFF_EDGE = 12;
 
 /**
  * The companion pet (MS-01…MS-12, D21). Each tab has a nap spot (`at`); the pet is in one of them
- * at a time. It naps unless there's something to show: it wakes happy when you tick a habit or
- * finish a to-do (jumping over to the tab you're on), and waits on Today, sad (gentle) or cross
- * (cheeky), while a habit slips or to-dos sit overdue. Now and then it wakes, yawns, stretches and
- * leaps off to nap on another tab. Tap it to say hello. Off in Calm mode.
+ * at a time, and follows you: stay on a tab a few seconds and it comes over, leaping (or flying)
+ * in from the side of the tab it was on, has a look round, and curls up again. It wakes happy when
+ * you tick a habit or finish a to-do, and stays up, sad (gentle) or cross (cheeky), while a habit
+ * slips or to-dos sit overdue. Tap it to say hello. Off in Calm mode.
  */
 export function Companion({
   at,
@@ -99,9 +109,9 @@ function idleMoves(art: PetArt, asleep: boolean, expression: Expression): Move[]
   // winged pets stretch their wings now and then, awake
   const wings: Move[] = art.sit.wings ? ['flap'] : [];
   if (asleep) return ['breathe', 'breathe', 'snore', 'twitch'];
-  if (expression === 'happy') return [art.tail, art.tail, 'hop', 'twitch', 'tilt', ...wings];
+  if (expression === 'happy') return [art.tail, art.tail, 'blink', 'hop', 'twitch', 'look', ...wings];
   if (expression === 'cross') return ['flick', 'blink', 'blink', 'twitch', ...wings];
-  return ['blink', 'blink', art.tail === 'wag' ? 'wag' : 'sway', 'twitch', 'tilt', ...wings];
+  return ['blink', 'blink', art.tail === 'wag' ? 'wag' : 'sway', 'twitch', 'tilt', 'look', ...wings];
 }
 
 /** Timers that are cleared when the pet goes. */
@@ -113,8 +123,8 @@ function useLater() {
   }, []);
 }
 
-/** Something it's in the middle of: waking (a yawn), stretching, or leaping off or in. */
-type Doing = 'yawning' | 'stretching' | 'leaving' | 'landing' | null;
+/** Something it's in the middle of: a yawn (waking or dozing off), a stretch, or coming over. */
+type Doing = 'yawning' | 'stretching' | 'landing' | null;
 
 function Pet({
   art,
@@ -137,6 +147,7 @@ function Pet({
   const now = useNow();
   const signals = useLive(() => petSignals(db, today), [today]);
   const mood = moodOf(signals);
+  const sulky = mood === 'sulky';
   const expression = expressionOf(mood, personality);
   const bedtime = isBedtime(new Date(now));
   const figure = useRef<PetFigureHandle>(null);
@@ -150,6 +161,8 @@ function Pet({
   const spot = useRoam((s) => s.spot);
   const landing = useRoam((s) => s.landing);
   const here = spot === at;
+  /** What it does once it has come over (a cheer, or saying what's wrong). */
+  const greet = useRef<(() => void) | null>(null);
 
   // it moves only while you can see it: its tab on screen, the app open, and motion allowed (MS-06)
   const still = useReducedMotion();
@@ -161,23 +174,37 @@ function Pet({
   }, []);
   const moving = here && focused && open && !still;
 
-  // awake while sulking or for a while after waking; asleep at bedtime whatever happens
-  const [wokeAt, setWokeAt] = useState<number | null>(() => (mood === 'happy' ? Date.now() : null));
+  // awake while sulking or until it's time to nap again; asleep at bedtime whatever happens
+  const [napAt, setNapAt] = useState<number | null>(() => (mood === 'happy' ? Date.now() + NAP_AFTER : null));
   const [doing, setDoing] = useState<Doing>(null);
-  const asleep = bedtime || (mood !== 'sulky' && wokeAt === null && doing === null);
+  const [beaming, setBeaming] = useState(false);
+  const asleep = bedtime || (!sulky && napAt === null && doing === null);
   const pose: PoseName =
-    doing === 'leaving' || doing === 'landing'
+    doing === 'landing'
       ? 'leap'
       : doing === 'stretching'
         ? 'stretch'
         : doing === 'yawning' || !asleep
           ? 'sit'
           : 'sleep';
+  const face: FaceName = doing === 'yawning' ? 'yawn' : beaming && expression === 'happy' ? 'beam' : expression;
+
+  // up for a while, then a yawn, and it curls up again
   useEffect(() => {
-    if (wokeAt === null || mood === 'sulky') return;
-    const timer = setTimeout(() => setWokeAt(null), Math.max(0, wokeAt + NAP_AFTER - Date.now()));
+    if (napAt === null || sulky) return;
+    const timer = setTimeout(
+      () => {
+        setDoing((d) => d ?? 'yawning');
+        later(1000, () => {
+          setDoing((d) => (d === 'yawning' ? null : d));
+          // unless something woke it again meanwhile
+          setNapAt((next) => (next === napAt ? null : next));
+        });
+      },
+      Math.max(0, napAt - Date.now()),
+    );
     return () => clearTimeout(timer);
-  }, [wokeAt, mood]);
+  }, [napAt, sulky, later]);
 
   // the speech bubble
   const said = useRef(0);
@@ -197,21 +224,29 @@ function Pet({
     return () => clearTimeout(timer);
   }, [line]);
 
-  // leaping off and landing move the whole pet across the card
+  /** Eyes squeezed shut with joy, for a moment. */
+  const beam = useCallback(() => {
+    setBeaming(true);
+    later(BEAM_FOR, () => setBeaming(false));
+  }, [later]);
+
+  // coming over moves the whole pet across the screen
   const jumpX = useSharedValue(0);
   const jumpY = useSharedValue(0);
   const shown = useSharedValue(1);
+  /** Its leap is drawn facing left; coming in from the left it faces right. */
+  const facing = useSharedValue(1);
   const height = (width * art.box[1]) / art.box[0];
   const jump = useAnimatedStyle(() => ({
     opacity: shown.value,
-    transform: [{ translateX: jumpX.value }, { translateY: jumpY.value }],
+    transform: [{ translateX: jumpX.value }, { translateY: jumpY.value }, { scaleX: facing.value }],
   }));
 
   /** Wakes with a yawn and a stretch, then sits up. */
   const wake = useCallback(
     (then?: () => void) => {
       if (still) {
-        setWokeAt(Date.now());
+        setNapAt(Date.now() + NAP_AFTER);
         then?.();
         return;
       }
@@ -220,7 +255,7 @@ function Pet({
       later(1000, () => setDoing('stretching'));
       later(2200, () => {
         setDoing(null);
-        setWokeAt(Date.now());
+        setNapAt(Date.now() + NAP_AFTER);
         figure.current?.play('hop');
         then?.();
       });
@@ -228,65 +263,88 @@ function Pet({
     [still, later],
   );
 
-  /** Leaps off the card, to nap on another tab (or wait on Today). */
-  const leave = useCallback(
-    (to: Spot) => {
-      const go = () => useRoam.getState().moveTo(to, false);
-      if (still) return go();
-      wake(() =>
-        later(500, () => {
-          setDoing('leaving');
-          figure.current?.play('flap');
-          jumpX.value = withTiming(-width * 1.9, { duration: 700, easing: Easing.in(Easing.quad) });
-          jumpY.value = withSequence(
-            withTiming(-height * 0.7, { duration: 320, easing: Easing.out(Easing.quad) }),
-            withTiming(-height * 0.2, { duration: 380, easing: Easing.in(Easing.quad) }),
-          );
-          shown.value = withDelay(420, withTiming(0, { duration: 280 }));
-          later(720, () => {
-            setDoing(null);
-            setWokeAt(null);
-            go();
-            jumpX.value = 0;
-            jumpY.value = 0;
-            shown.value = 1;
-          });
-        }),
-      );
-    },
-    [still, wake, later, jumpX, jumpY, shown, width, height],
-  );
-
-  // landing here: it leaps in from the side, sits, and has a look round
-  useEffect(() => {
-    if (!here || !landing) return;
-    useRoam.getState().landed();
-    if (still) return;
-    later(0, () => {
-      setDoing('landing');
-      figure.current?.play('flap');
+  // coming over: in from the side of the tab it was on, in a long bound (two from far off) or
+  // flying; then a little squash as it lands, a look round, and in a while it curls up again
+  const land = useEffectEvent(() => {
+    const { from, landed } = useRoam.getState();
+    landed();
+    const hello = greet.current;
+    greet.current = null;
+    const arrive = () => {
+      setDoing(null);
+      setNapAt(Date.now() + LOOK_ROUND);
+      hello?.();
+    };
+    if (still) {
+      later(0, arrive);
+      return;
+    }
+    // from just off that edge of the screen (it has been laid out by now, so measuring answers at once)
+    let x = petX ?? (screen - width) / 2;
+    tourRef.current?.measureInWindow((left) => {
+      x = left;
     });
-    // from off to the side and above, in an arc down onto the spot
+    const fromLeft = enterSide(from, at) === 'left';
+    const start = fromLeft ? -(x + width + OFF_EDGE) : screen - x + OFF_EDGE;
+    const flies = Boolean(art.leap.wings);
+    const bounds = !flies && Math.abs(start) > width * 3.2 ? 2 : 1;
+    const duration = flies ? Math.min(1400, Math.max(900, Math.abs(start) * 2.4)) : bounds * 560;
+    later(0, () => setDoing('landing'));
+    facing.set(fromLeft ? -1 : 1);
+    shown.set(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: 150 })));
     jumpX.set(
       withSequence(
-        withTiming(width * 1.9, { duration: 0 }),
-        withTiming(0, { duration: 650, easing: Easing.out(Easing.quad) }),
+        withTiming(start, { duration: 0 }),
+        withTiming(0, { duration, easing: flies ? Easing.out(Easing.quad) : Easing.linear }),
       ),
     );
-    jumpY.set(
-      withSequence(
-        withTiming(-height * 0.8, { duration: 0 }),
-        withTiming(-height * 0.95, { duration: 260, easing: Easing.out(Easing.quad) }),
-        withTiming(0, { duration: 390, easing: Easing.in(Easing.quad) }),
-      ),
-    );
-    shown.set(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: 200 })));
-    later(660, () => {
-      setDoing(null);
-      setWokeAt(Date.now());
-      figure.current?.play('hop');
+    if (flies) {
+      // gliding down from up high, rising a little on a beat of its wings
+      jumpY.set(
+        withSequence(
+          withTiming(-height * 1.4, { duration: 0 }),
+          withTiming(-height * 0.7, { duration: duration * 0.4, easing: Easing.inOut(Easing.sin) }),
+          withTiming(-height * 0.9, { duration: duration * 0.25, easing: Easing.inOut(Easing.sin) }),
+          withTiming(0, { duration: duration * 0.35, easing: Easing.in(Easing.quad) }),
+        ),
+      );
+      for (let beat = 0; beat < duration - 300; beat += 420) later(beat, () => figure.current?.play('flap'));
+    } else {
+      const arc = duration / bounds;
+      const bound = () => [
+        withTiming(-height * 0.9, { duration: arc * 0.45, easing: Easing.out(Easing.quad) }),
+        withTiming(0, { duration: arc * 0.55, easing: Easing.in(Easing.quad) }),
+      ];
+      jumpY.set(withSequence(withTiming(-height * 0.3, { duration: 0 }), ...bound(), ...(bounds === 2 ? bound() : [])));
+    }
+    later(duration + 20, () => {
+      facing.set(1);
+      arrive();
+      figure.current?.play('stretch');
+      later(900, () => figure.current?.play('look'));
     });
-  }, [here, landing, still, later, jumpX, jumpY, shown, width, height]);
+  });
+  useEffect(() => {
+    if (here && landing) land();
+  }, [here, landing]);
+
+  // stay on a tab a few seconds and it comes over (MS-12); one time in four it's too sleepy to
+  // come at once, and comes later. Sulking, it always comes, and now and then says what's wrong.
+  // At bedtime it stays asleep where it is.
+  const comeOver = useEffectEvent(() => {
+    const { grumbled, grumble, moveTo } = useRoam.getState();
+    if (sulky && (grumbled === null || Date.now() - grumbled > GRUMBLE_EVERY)) {
+      grumble(Date.now());
+      greet.current = () => say(linesFor(expression, signals));
+    }
+    moveTo(at, true);
+  });
+  useEffect(() => {
+    if (here || !focused || !open || bedtime) return;
+    const wait = sulky || Math.random() >= SLEEPY ? FOLLOW_AFTER : SLEEPY_FOLLOW_AFTER;
+    const timer = setTimeout(() => comeOver(), wait);
+    return () => clearTimeout(timer);
+  }, [here, focused, open, bedtime, sulky]);
 
   // ticking a habit or finishing a to-do: it cheers once, coming over to the tab you're on if need be
   useEffect(() => {
@@ -300,48 +358,19 @@ function Pet({
     const allDone = total > 0 && done === total && useRoam.getState().celebrated !== today;
     if (allDone) useRoam.getState().celebrate(today);
     const hooray = (allDone ? t.pet.lines.allDone : t.pet.lines.happy).map((line) => `${t.pet.sound[kind]} ${line}`);
-    const party = () => figure.current?.play(allDone ? 'cheer' : 'hop');
+    const party = () => {
+      setNapAt(Date.now() + NAP_AFTER);
+      say(hooray);
+      figure.current?.play(allDone ? 'cheer' : 'hop');
+      beam();
+    };
     if (!here) {
+      greet.current = party;
       useRoam.getState().moveTo(at, true);
-      later(800, () => {
-        say(hooray);
-        party();
-      });
       return;
     }
-    later(0, () => {
-      setWokeAt(Date.now());
-      say(hooray);
-      party();
-    });
-  }, [signals.doneToday, signals.habitsToday, bedtime, focused, here, at, later, say, kind, today]);
-
-  // when something slips it comes back to Today and waits there
-  useEffect(() => {
-    if (mood !== 'sulky' || bedtime || at !== 'today' || here || !focused) return;
-    useRoam.getState().moveTo('today', true);
-    later(800, () => say(linesFor(expression, signals)));
-  }, [mood, bedtime, at, here, focused, later, say, expression, signals]);
-
-  // this spot is somewhere it can go
-  useEffect(() => {
-    useRoam.getState().offer(at);
-    return () => useRoam.getState().withdraw(at);
-  }, [at]);
-
-  // now and then, napping while you watch, it wanders off to another tab
-  useEffect(() => {
-    if (!moving || !asleep || bedtime || mood === 'sulky') return;
-    const [shortest, longest] = WANDER_AFTER;
-    const timer = setTimeout(
-      () => {
-        const to = elsewhere(at);
-        if (to) leave(to);
-      },
-      shortest + Math.random() * (longest - shortest),
-    );
-    return () => clearTimeout(timer);
-  }, [moving, asleep, bedtime, mood, leave, at]);
+    later(0, party);
+  }, [signals.doneToday, signals.habitsToday, bedtime, focused, here, at, later, say, beam, kind, today]);
 
   // waking up or curling up is a stretch
   const wasAsleep = useRef(asleep);
@@ -381,8 +410,9 @@ function Pet({
       wake(() => say(linesFor(expression, signals)));
       return;
     }
-    setWokeAt(Date.now());
+    setNapAt(Date.now() + NAP_AFTER);
     figure.current?.play(expression === 'happy' ? 'hop' : expression === 'cross' ? 'flick' : 'tilt');
+    if (expression === 'happy') beam();
     say(linesFor(expression, signals));
   };
 
@@ -397,13 +427,7 @@ function Pet({
           accessibilityHint={t.pet.hint}
           onPress={onPress}
           hitSlop={8}>
-          <PetFigure
-            ref={figure}
-            art={art}
-            pose={pose}
-            face={doing === 'yawning' ? 'yawn' : expression}
-            width={width}
-          />
+          <PetFigure ref={figure} art={art} pose={pose} face={face} width={width} />
         </Pressable>
       </Animated.View>
       {line ? (
