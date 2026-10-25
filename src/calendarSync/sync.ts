@@ -350,8 +350,9 @@ export async function push(db: Db, store: CalendarStore): Promise<number> {
         set(row.id, { externalId: keyOf(row.calendarId, id), externalEtag: print });
       }
       written += 1;
-    } catch {
+    } catch (e) {
       // out of reach for now (permission taken back, calendar gone): tried again next time
+      console.warn('Calendar sync could not send', row.title, e);
     }
   }
   return written;

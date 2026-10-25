@@ -142,10 +142,13 @@ class DaybloomCalendarModule : Module() {
       ContentUris.parseId(uri).toString()
     }
 
-    /** Changes (or cancels) one occurrence of a repeating event; the new occurrence's id. */
+    /**
+     * Changes (or cancels) one occurrence of a repeating event; the new occurrence's id. Android
+     * copies the rest from the repeating event, and takes a length here, not an end.
+     */
     AsyncFunction("insertException") { originalId: String, originalStartAt: Double, v: EventValues?, cancelled: Boolean ->
       requirePermission()
-      val values = if (v == null) ContentValues() else valuesOf(v).apply { remove(Events.CALENDAR_ID) }
+      val values = if (v == null) ContentValues() else occurrenceValuesOf(v)
       values.put(Events.ORIGINAL_INSTANCE_TIME, originalStartAt.toLong())
       if (cancelled) values.put(Events.STATUS, Events.STATUS_CANCELED)
       val uri = context.contentResolver.insert(
@@ -218,16 +221,32 @@ class DaybloomCalendarModule : Module() {
     put(Events.ALL_DAY, if (v.allDay) 1 else 0)
     // all-day events are kept at midnight UTC (Daybloom sends them that way)
     put(Events.EVENT_TIMEZONE, if (v.allDay) "UTC" else v.timeZone)
-    val length = (v.endAt - v.startAt).toLong()
     if (v.rrule != null) {
       put(Events.RRULE, v.rrule)
       putNull(Events.DTEND)
-      put(Events.DURATION, if (v.allDay) "P${maxOf(1L, length / DAY)}D" else "P${maxOf(0L, length / 1000)}S")
+      put(Events.DURATION, lengthOf(v))
     } else {
       putNull(Events.RRULE)
       putNull(Events.DURATION)
       put(Events.DTEND, v.endAt.toLong())
     }
+  }
+
+  /** A changed occurrence: only the columns Android lets an exception set (no end, no calendar). */
+  private fun occurrenceValuesOf(v: EventValues) = ContentValues().apply {
+    put(Events.TITLE, v.title)
+    put(Events.DESCRIPTION, v.notes)
+    put(Events.EVENT_LOCATION, v.location)
+    put(Events.DTSTART, v.startAt.toLong())
+    put(Events.ALL_DAY, if (v.allDay) 1 else 0)
+    put(Events.EVENT_TIMEZONE, if (v.allDay) "UTC" else v.timeZone)
+    put(Events.DURATION, lengthOf(v))
+  }
+
+  /** RFC 5545 length: whole days for all-day events, seconds otherwise. */
+  private fun lengthOf(v: EventValues): String {
+    val length = (v.endAt - v.startAt).toLong()
+    return if (v.allDay) "P${maxOf(1L, length / DAY)}D" else "P${maxOf(0L, length / 1000)}S"
   }
 
   private fun granted(permission: String) =

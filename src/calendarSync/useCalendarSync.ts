@@ -39,7 +39,7 @@ export async function sendChanges(): Promise<void> {
 export function useCalendarSync(): void {
   useEffect(() => {
     if (!phoneCalendar) return;
-    const sync = () => void syncCalendars().catch(() => undefined);
+    const sync = () => void syncCalendars().catch((e) => console.warn('Calendar sync failed', e));
     sync();
     const app = AppState.addEventListener('change', (state) => {
       if (state === 'active') sync();
@@ -59,7 +59,7 @@ export function useCalendarSync(): void {
       }
       if (touched(tables, EVENT_TABLES)) {
         clearTimeout(pending);
-        pending = setTimeout(() => void sendChanges().catch(() => undefined), SETTLE);
+        pending = setTimeout(() => void sendChanges().catch((e) => console.warn('Calendar sync failed', e)), SETTLE);
       }
     });
     return () => {
