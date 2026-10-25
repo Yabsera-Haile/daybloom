@@ -8,6 +8,7 @@ import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { MonthGoalCard } from '@/features/month/MonthGoal';
+import { Companion } from '@/features/pet/Companion';
 import { plansByDay, type Plan } from '@/features/plans';
 import { TabScreen } from '@/features/TabScreen';
 import { seasonShown } from '@/features/ThemeProvider';
@@ -141,6 +142,17 @@ export default function MonthScreen() {
     .sort((a, b) => a.date.localeCompare(b.date) || (a.dueTime ?? '99').localeCompare(b.dueTime ?? '99'));
   const agendaFrom = isThisMonth && !showEarlier ? today : first;
 
+  // the companion can nap in the grid's empty days: at the start of the first row or the end of the
+  // last, where there are at least two (MS-12)
+  const leading = weeks[0].filter((d) => d < first).length;
+  const trailing = weeks[weeks.length - 1].filter((d) => d > last).length;
+  const nap =
+    leading >= 2
+      ? { row: 0, side: 'left' as const, days: leading }
+      : trailing >= 2
+        ? { row: weeks.length - 1, side: 'right' as const, days: trailing }
+        : null;
+
   // Month grid (MO-04, MO-05): one label per day plus "+n"; labels 11px
   const grid = (
     <View
@@ -159,7 +171,7 @@ export default function MonthScreen() {
         ))}
       </View>
       <View className="gap-0.5">
-        {weeks.map((week) => (
+        {weeks.map((week, row) => (
           <View key={week[0]} className="flex-row gap-0.5">
             {week.map((d) => {
               const inMonth = d >= first && d <= last;
@@ -222,6 +234,14 @@ export default function MonthScreen() {
                 </Pressable>
               );
             })}
+            {nap && row === nap.row ? (
+              <View
+                pointerEvents="box-none"
+                className="absolute bottom-0 items-center"
+                style={[{ width: `${(nap.days / 7) * 100}%` }, nap.side === 'left' ? { left: 0 } : { right: 0 }]}>
+                <Companion at="month" width={80} bubble={nap.side === 'left' ? 'right' : 'left'} />
+              </View>
+            ) : null}
           </View>
         ))}
       </View>

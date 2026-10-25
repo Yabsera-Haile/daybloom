@@ -60,7 +60,7 @@ export function DateCard({
       {season ? <Sticker name={season} size={80} rotate={6} /> : null}
       {width ? (
         <View className="absolute bottom-0" style={{ right: width >= 340 || !season ? 92 : 4 }}>
-          <Companion />
+          <Companion at="today" />
         </View>
       ) : null}
     </Card>

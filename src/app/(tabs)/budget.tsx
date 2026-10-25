@@ -13,6 +13,7 @@ import { db } from '@/db/client';
 import { useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { BudgetSheet } from '@/features/budget/BudgetSheet';
+import { Companion } from '@/features/pet/Companion';
 import { BillCard, BudgetCard, CategoryBars, EntryRow, GoalCard, ListCard } from '@/features/budget/parts';
 import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
@@ -229,6 +230,10 @@ export default function BudgetScreen() {
           previousLabel={period === 'month' ? t.budget.previousMonth : t.budget.previousWeek}
           nextLabel={period === 'month' ? t.budget.nextMonth : t.budget.nextWeek}
         />
+        {/* the companion can nap here, right of the title and the dates (MS-12) */}
+        <View className="absolute bottom-0 right-0" pointerEvents="box-none">
+          <Companion at="budget" width={80} />
+        </View>
       </View>
 
       {/* BU-02: a gentle line while there's budget left (hidden in calm mode) */}

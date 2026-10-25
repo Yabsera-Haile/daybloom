@@ -177,14 +177,22 @@ export const fontFiles = {
     '700': 'PlusJakartaSans_700Bold',
     italic: 'PlusJakartaSans_400Regular_Italic',
   },
+  // the companion's handwriting (one weight)
+  hand: {
+    '400': 'PatrickHand_400Regular',
+    '500': 'PatrickHand_400Regular',
+    '600': 'PatrickHand_400Regular',
+    '700': 'PatrickHand_400Regular',
+    italic: 'PatrickHand_400Regular',
+  },
 } as const;
 
-export function fontFamilyFor(font: 'serif' | 'sans', weight: Weight, italic = false): string {
+export function fontFamilyFor(font: keyof typeof fontFiles, weight: Weight, italic = false): string {
   return italic ? fontFiles[font].italic : fontFiles[font][weight];
 }
 
 export const typography = tokens.typography as Record<
   keyof typeof tokens.typography,
-  { font: 'serif' | 'sans'; size: number; lineHeight: number; weight: Weight; letterSpacing?: number }
+  { font: keyof typeof fontFiles; size: number; lineHeight: number; weight: Weight; letterSpacing?: number }
 >;
 export type TypographyVariant = keyof typeof typography;

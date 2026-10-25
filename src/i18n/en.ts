@@ -1025,6 +1025,10 @@ export const en = {
     nameLabel: 'Your name',
     continue: 'Continue',
     skipThis: 'Skip this',
+    petTitle: 'Would you like a companion?',
+    petText:
+      'A little friend who naps on your pages, cheers when you get things done, and grumbles a bit when things slip. You can change this any time in Settings.',
+    noPet: 'No thanks',
     remindTitle: 'Never miss what matters',
     remindText: 'Daybloom can gently remind you before events and to-dos. You choose when, for each one.',
     example: 'Example reminder',
@@ -1239,6 +1243,11 @@ export const en = {
       cross: 'cross with you',
     } as Record<string, string>,
     hint: 'Says hello',
+    /** Its line on reminders, after the time and title (MS-03). */
+    remind: {
+      gentle: ['You’ve got this.', 'I’ll be right here.', 'One small step at a time.', 'Go gently.'],
+      cheeky: ['Don’t make me ask twice.', 'Chop chop!', 'I’m watching… lovingly.', 'No excuses today.'],
+    },
     lines: {
       asleep: ['Zzz… five more minutes…', 'Mm… dreaming of ticked boxes…', 'Shh… napping.'],
       bedtime: ['It’s late. Sleep well!', 'Zzz… see you in the morning.'],

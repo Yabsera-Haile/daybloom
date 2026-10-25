@@ -17,24 +17,28 @@ const turn = (part, deg) =>
   part ? `<g transform="rotate(${deg} ${part.pivot[0]} ${part.pivot[1]})">${part.svg}</g>` : '';
 
 /** One frame, the way the app stacks the layers. */
-function frame(pose, face, { ears = 0, tilt = 0 } = {}) {
+function frame(pose, face, { ears = 0, tilt = 0, shadow = true } = {}) {
   const [left, right] = pose.ears ?? [];
   const head = `<g transform="rotate(${tilt} ${pose.head.pivot[0]} ${pose.head.pivot[1]})">${turn(left, -ears)}${turn(right, ears)}${pose.head.svg}${face}</g>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${pose.tail?.svg ?? ''}${pose.body.svg}${head}${pose.front ?? ''}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${art.defs}${shadow ? `<ellipse cx="${art.shadow[0]}" cy="${art.shadow[1]}" rx="${art.shadow[2]}" ry="${art.shadow[3]}" fill="#5A4632" opacity="0.12"/>` : ''}${pose.tail?.svg ?? ''}${pose.body.svg}${head}${pose.front ?? ''}</svg>`;
 }
 
-const faces = art.awake.faces;
+const faces = art.sit.faces;
+const sit = (name, opts) => frame(art.sit, faces[name].eyes + faces[name].rest, opts);
 const frames = [
-  ['asleep', frame(art.asleep, art.asleep.face)],
-  ['content', frame(art.awake, faces.content.eyes + faces.content.rest)],
-  ['happy', frame(art.awake, faces.happy.eyes + faces.happy.rest, { tilt: -6 })],
-  ['sad (gentle)', frame(art.awake, faces.sad.eyes + faces.sad.rest, { ears: 24, tilt: 4 })],
-  ['cross (cheeky)', frame(art.awake, faces.cross.eyes + faces.cross.rest, { ears: -6 })],
+  ['asleep', frame(art.sleep, art.sleep.face)],
+  ['content', sit('content')],
+  ['happy', sit('happy', { tilt: -6 })],
+  ['sad (gentle)', sit('sad', { ears: 24, tilt: 4 })],
+  ['cross (cheeky)', sit('cross', { ears: -6 })],
+  ['yawn', sit('yawn', { tilt: -4 })],
+  ['stretch', frame(art.stretch, art.stretch.face)],
+  ['leap', frame(art.leap, art.leap.face, { shadow: false })],
 ];
 
 const html = `<!doctype html><meta charset="utf-8"><style>
 body { margin: 0; padding: 24px; background: #fff8f5; font: 14px sans-serif; color: #3b2a22; }
-.row { display: flex; gap: 20px; margin-bottom: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; max-width: ${4 * (w * 2.2 + 36)}px; }
 .card { background: #f6ebe4; border-radius: 20px; padding: 8px 8px 0; text-align: center; }
 .big svg { width: ${w * 2.2}px; height: ${h * 2.2}px; }
 .small svg { width: ${w * 0.6}px; height: ${h * 0.6}px; }
@@ -54,7 +58,7 @@ execFileSync(browser, [
   '--disable-gpu',
   '--hide-scrollbars',
   `--screenshot=${out}`,
-  `--window-size=${Math.ceil(5 * (w * 2.2 + 36) + 48)},${Math.ceil(h * 2.2 + h * 0.6 + 170)}`,
+  `--window-size=${Math.ceil(4 * (w * 2.2 + 36) + 48)},${Math.ceil(2 * (h * 2.2 + 60) + h * 0.6 + 130)}`,
   pathToFileURL(page).href,
 ]);
 console.log(out);

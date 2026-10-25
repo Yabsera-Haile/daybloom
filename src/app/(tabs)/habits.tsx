@@ -10,6 +10,7 @@ import { useLive } from '@/data/live';
 import { DailyGrid, WeeklyGrid } from '@/features/habits/Grids';
 import { dailyGroups, routineIconName, routineLook, useHabitData } from '@/features/habits/shared';
 import { ArchivedSheet, RoutineSheet } from '@/features/habits/Sheets';
+import { Companion, companionHeight, useCompanionOn } from '@/features/pet/Companion';
 import { TabScreen } from '@/features/TabScreen';
 import { bestStreak, donePeriods, doneOn, monthCompletion } from '@/habits/stats';
 import { archivedHabits, moveHabit, type Habit } from '@/habits/store';
@@ -104,6 +105,7 @@ export default function HabitsScreen() {
   const [routineSheet, setRoutineSheet] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const ws = settings.weekStart;
+  const companionOn = useCompanionOn();
   const { panes } = useWide();
 
   // month header (HB-01)
@@ -327,6 +329,13 @@ export default function HabitsScreen() {
             </View>
           </>
         )}
+
+        {/* the companion can nap down here, out of the way; the room is kept so nothing jumps (MS-12) */}
+        {companionOn ? (
+          <View className="items-end" style={{ height: companionHeight(88) }}>
+            <Companion at="habits" width={88} />
+          </View>
+        ) : null}
       </View>
 
       {routineSheet ? <RoutineSheet routineId={routineSheet} onClose={() => setRoutineSheet(null)} /> : null}

@@ -49,5 +49,20 @@ jest.mock('expo-router', () => {
 
 // Animations and the safe area, as their libraries suggest for tests.
 jest.mock('react-native-worklets', () => require('react-native-worklets/src/mock'));
-jest.mock('react-native-reanimated', () => ({ ...require('react-native-reanimated/mock'), useReducedMotion: () => false }));
+jest.mock('react-native-reanimated', () => ({
+  ...require('react-native-reanimated/mock'),
+  useReducedMotion: () => false,
+}));
+// Skia draws the companion pet; tests only need its tree, not the pictures.
+jest.mock('@shopify/react-native-skia', () => {
+  const { View } = require('react-native');
+  const Draw = ({ children }) => children ?? null;
+  return {
+    Canvas: ({ children, style }) => require('react').createElement(View, { style }, children),
+    Group: Draw,
+    ImageSVG: () => null,
+    Oval: () => null,
+    Skia: { SVG: { MakeFromString: () => ({}) } },
+  };
+});
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);

@@ -8,6 +8,7 @@ import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { HabitsAtGlance } from '@/features/habits/Glance';
+import { Companion } from '@/features/pet/Companion';
 import { PlanRow } from '@/features/PlanRow';
 import { dayStatus, paceLabel, plansByDay, type Plan } from '@/features/plans';
 import { TaskForm } from '@/features/sheets/TaskForm';
@@ -438,6 +439,10 @@ export default function WeekScreen() {
           ) : null}
         </View>
         {season ? <Sticker name={season} size={80} rotate={-6} /> : null}
+        {/* the companion can nap here, by the season picture (MS-12) */}
+        <View className="absolute bottom-0 right-1" pointerEvents="box-none">
+          <Companion at="week" width={84} />
+        </View>
       </View>
 
       {panes ? null : spread}

@@ -1,22 +1,21 @@
-import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, type ReactNode } from 'react';
+import { Canvas, Group, ImageSVG, Oval, Skia, type SkSVG } from '@shopify/react-native-skia';
+import { forwardRef, useEffect, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withDelay,
   withSequence,
   withTiming,
-  type SharedValue,
 } from 'react-native-reanimated';
-import { SvgXml } from 'react-native-svg';
 
-import type { Expression } from '@/pet/mood';
 import { Text } from '@/ui';
 
-import type { Part, PetArt } from './art/types';
+import type { FaceName, Part, PetArt, PoseName } from './art/types';
 
-/** Short moves the figure can make; each one ends, so nothing animates between them (battery). */
+/** Short moves the figure can make; each one ends, so nothing redraws between them (battery). */
 export type Move = 'breathe' | 'blink' | 'twitch' | 'sway' | 'flick' | 'tilt' | 'hop' | 'snore' | 'stretch';
 
 export interface PetFigureHandle {
@@ -25,35 +24,53 @@ export interface PetFigureHandle {
 
 type Props = {
   art: PetArt;
-  asleep: boolean;
-  expression: Expression;
+  pose: PoseName;
+  /** The face when sitting (other poses have their own). */
+  face: FaceName;
   /** Width in dp; the height follows the art's box. */
   width: number;
 };
 
 const ease = Easing.inOut(Easing.sin);
 const t = (to: number, duration: number) => withTiming(to, { duration, easing: ease });
+/** Degrees to radians; runs on the UI thread inside the moves. */
+const rad = (deg: number) => {
+  'worklet';
+  return (deg * Math.PI) / 180;
+};
 
 /** Ears droop when sad and flatten a little when cross (degrees, the right ear's way). */
-const earAngle = (expression: Expression) => (expression === 'sad' ? 24 : expression === 'cross' ? -6 : 0);
+const earAngle = (face: FaceName) => (face === 'sad' ? 24 : face === 'cross' ? -6 : 0);
+
+// each drawing is parsed once and kept
+const parsed = new Map<string, SkSVG | null>();
+function svgOf(art: PetArt, markup: string | undefined): SkSVG | null {
+  if (!markup) return null;
+  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${art.box[0]} ${art.box[1]}">${art.defs}${markup}</svg>`;
+  if (!parsed.has(xml)) {
+    const svg = Skia.SVG.MakeFromString(xml);
+    if (!svg) console.warn('A pet drawing could not be read:', markup.slice(0, 80));
+    parsed.set(xml, svg);
+  }
+  return parsed.get(xml) ?? null;
+}
 
 /**
- * A pet drawn from its layers (art/types.ts), with each part moving around its own pivot. Moves
- * are played on request (see Companion); with none playing, nothing redraws.
+ * A pet drawn from its layers (art/types.ts) in one Skia canvas, each part moving around its own
+ * pivot inside the drawing. Whole-body moves (a hop, a squash) move the canvas. Moves are played
+ * on request (see Companion); with none playing, nothing redraws.
  */
-export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
-  { art, asleep, expression, width },
-  ref,
-) {
+export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure({ art, pose, face, width }, ref) {
   const [bw, bh] = art.box;
   const height = (width * bh) / bw;
-  const pose = asleep ? art.asleep : art.awake;
-  const face = asleep ? null : art.awake.faces[expression];
+  const p = art[pose];
+  const sitting = pose === 'sit';
+  const faceArt = sitting ? art.sit.faces[face] : null;
 
   const body = useSharedValue(1);
   const head = useSharedValue(0);
   const nod = useSharedValue(0);
-  const ear = useSharedValue(asleep ? 0 : earAngle(expression));
+  const ear = useSharedValue(sitting ? earAngle(face) : 0);
   const twitch = useSharedValue(0);
   const tail = useSharedValue(0);
   const eyes = useSharedValue(1);
@@ -63,8 +80,8 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
 
   // ears settle into the mood's position
   useEffect(() => {
-    ear.value = t(asleep ? 0 : earAngle(expression), 260);
-  }, [ear, asleep, expression]);
+    ear.value = t(sitting ? earAngle(face) : 0, 260);
+  }, [ear, sitting, face]);
 
   useImperativeHandle(
     ref,
@@ -124,7 +141,15 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
     [body, nod, eyes, twitch, tail, head, squash, lift, zzz],
   );
 
-  const box = { width, height };
+  // the parts move inside the drawing
+  const tailMove = useDerivedValue(() => [{ rotate: rad(tail.value) }]);
+  const bodyMove = useDerivedValue(() => [{ scaleY: body.value }]);
+  const headMove = useDerivedValue(() => [{ translateY: nod.value * bh }, { rotate: rad(head.value) }]);
+  const leftEarMove = useDerivedValue(() => [{ rotate: rad(-ear.value) }]);
+  const rightEarMove = useDerivedValue(() => [{ rotate: rad(ear.value + twitch.value) }]);
+  const eyesMove = useDerivedValue(() => [{ scaleY: eyes.value }]);
+
+  // the whole pet hops and squashes as one view
   const whole = useAnimatedStyle(() => ({
     transform: [{ translateY: lift.value * height }, { scaleY: squash.value }, { scaleX: 2 - squash.value }],
   }));
@@ -133,31 +158,70 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
     transform: [{ translateY: -zzz.value * height * 0.25 }, { translateX: zzz.value * width * 0.08 }],
   }));
 
+  const drawings = useMemo(
+    () => ({
+      tail: svgOf(art, p.tail?.svg),
+      body: svgOf(art, p.body.svg),
+      leftEar: svgOf(art, p.ears?.[0].svg),
+      rightEar: svgOf(art, p.ears?.[1].svg),
+      head: svgOf(art, p.head.svg),
+      eyes: svgOf(art, faceArt?.eyes),
+      face: svgOf(art, faceArt ? faceArt.rest : (p as { face?: string }).face),
+      front: svgOf(art, p.front),
+    }),
+    [art, p, faceArt],
+  );
+
+  const [sx, sy, srx, sry] = art.shadow;
+  const at = (part: Part | undefined) => (part ? { x: part.pivot[0], y: part.pivot[1] } : { x: 0, y: 0 });
+  const full = { x: 0, y: 0, width: bw, height: bh };
+
   return (
-    <View style={box} pointerEvents="none">
-      <Animated.View style={[box, { transformOrigin: '50% 100%' }, whole]}>
-        {pose.tail ? <Layer art={art} part={pose.tail} width={width} value={tail} kind="rotate" /> : null}
-        <Layer art={art} part={pose.body} width={width} value={body} kind="scaleY" />
-        <HeadGroup art={art} part={pose.head} width={width} turn={head} nod={nod}>
-          {pose.ears ? (
-            <>
-              <Layer art={art} part={pose.ears[0]} width={width} value={ear} kind="rotate" mirror />
-              <Layer art={art} part={pose.ears[1]} width={width} value={ear} extra={twitch} kind="rotate" />
-            </>
-          ) : null}
-          <Layer art={art} part={pose.head} width={width} />
-          {face ? (
-            <>
-              <Layer art={art} part={{ svg: face.eyes, pivot: face.eyesAt }} width={width} value={eyes} kind="scaleY" />
-              <Layer art={art} part={{ svg: face.rest, pivot: face.eyesAt }} width={width} />
-            </>
-          ) : (
-            <Layer art={art} part={{ svg: art.asleep.face, pivot: [0, 0] }} width={width} />
-          )}
-        </HeadGroup>
-        {pose.front ? <Layer art={art} part={{ svg: pose.front, pivot: [0, 0] }} width={width} /> : null}
+    <View style={{ width, height }} pointerEvents="none">
+      <Animated.View style={[{ width, height, transformOrigin: '50% 100%' }, whole]}>
+        <Canvas style={{ width, height }}>
+          <Group transform={[{ scale: width / bw }]}>
+            {/* the ground shadow is drawn by Skia itself (a canvas of only SVG drawings shows nothing) */}
+            <Oval
+              x={sx - srx}
+              y={sy - sry}
+              width={srx * 2}
+              height={sry * 2}
+              color="#5A4632"
+              opacity={pose === 'leap' ? 0.06 : 0.12}
+            />
+            {drawings.tail ? (
+              <Group origin={at(p.tail)} transform={tailMove}>
+                <ImageSVG svg={drawings.tail} {...full} />
+              </Group>
+            ) : null}
+            <Group origin={at(p.body)} transform={bodyMove}>
+              <ImageSVG svg={drawings.body} {...full} />
+            </Group>
+            <Group origin={at(p.head)} transform={headMove}>
+              {drawings.leftEar ? (
+                <Group origin={at(p.ears?.[0])} transform={leftEarMove}>
+                  <ImageSVG svg={drawings.leftEar} {...full} />
+                </Group>
+              ) : null}
+              {drawings.rightEar ? (
+                <Group origin={at(p.ears?.[1])} transform={rightEarMove}>
+                  <ImageSVG svg={drawings.rightEar} {...full} />
+                </Group>
+              ) : null}
+              <ImageSVG svg={drawings.head} {...full} />
+              {drawings.eyes && faceArt ? (
+                <Group origin={{ x: faceArt.eyesAt[0], y: faceArt.eyesAt[1] }} transform={eyesMove}>
+                  <ImageSVG svg={drawings.eyes} {...full} />
+                </Group>
+              ) : null}
+              {drawings.face ? <ImageSVG svg={drawings.face} {...full} /> : null}
+            </Group>
+            {drawings.front ? <ImageSVG svg={drawings.front} {...full} /> : null}
+          </Group>
+        </Canvas>
       </Animated.View>
-      {asleep ? (
+      {pose === 'sleep' ? (
         <Animated.View style={[styles.zzz, { left: width * 0.42, top: height * 0.12 }, zzzStyle]}>
           <Text variant="labelSm" color="onSurfaceVariant">
             z
@@ -171,71 +235,6 @@ export const PetFigure = forwardRef<PetFigureHandle, Props>(function PetFigure(
         </Animated.View>
       ) : null}
     </View>
-  );
-});
-
-const origin = (art: PetArt, [x, y]: [number, number]) => `${(x / art.box[0]) * 100}% ${(y / art.box[1]) * 100}%`;
-
-/** The head and everything on it turn and nod together. */
-function HeadGroup({
-  art,
-  part,
-  width,
-  turn,
-  nod,
-  children,
-}: {
-  art: PetArt;
-  part: Part;
-  width: number;
-  turn: SharedValue<number>;
-  nod: SharedValue<number>;
-  children: ReactNode;
-}) {
-  const height = (width * art.box[1]) / art.box[0];
-  const style = useAnimatedStyle(() => ({
-    transform: [{ translateY: nod.value * height }, { rotate: `${turn.value}deg` }],
-  }));
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill, { transformOrigin: origin(art, part.pivot) }, style]}>
-      {children}
-    </Animated.View>
-  );
-}
-
-/** One drawing of the art, moved around its pivot by `value` (degrees, or a vertical stretch). */
-const Layer = memo(function Layer({
-  art,
-  part,
-  width,
-  value,
-  extra,
-  kind = 'rotate',
-  mirror = false,
-}: {
-  art: PetArt;
-  part: Part;
-  width: number;
-  value?: SharedValue<number>;
-  extra?: SharedValue<number>;
-  kind?: 'rotate' | 'scaleY';
-  /** Turns the other way (the left ear droops to the left). */
-  mirror?: boolean;
-}) {
-  const height = (width * art.box[1]) / art.box[0];
-  const xml = useMemo(
-    () => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${art.box[0]} ${art.box[1]}">${part.svg}</svg>`,
-    [art, part.svg],
-  );
-  const style = useAnimatedStyle(() => {
-    if (!value) return {};
-    const v = value.value + (extra?.value ?? 0);
-    return kind === 'rotate' ? { transform: [{ rotate: `${mirror ? -v : v}deg` }] } : { transform: [{ scaleY: v }] };
-  });
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill, { transformOrigin: origin(art, part.pivot) }, style]}>
-      <SvgXml xml={xml} width={width} height={height} />
-    </Animated.View>
   );
 });
 
