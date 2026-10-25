@@ -350,4 +350,12 @@ export const cat: PetArt = {
     head: { svg: grow(leapCentre, leapHead), pivot: grown(leapCentre, [52, 64]) },
     face: grow(leapCentre, leapFace),
   },
+
+  // where a seasonal outfit sits (MS-13): the top of the head, and under the chin
+  fits: {
+    sit: { hat: [80, 14, 0.95, 0], neck: [80, 75, 1, 0] },
+    sleep: { hat: [54, 66, 0.86, -8], neck: [86, 92, 0.8, -90], neckBehind: true },
+    stretch: { hat: [45, 66.6, 0.76, -6], neck: [64, 94, 0.7, -110], neckBehind: true },
+    leap: { hat: [45, 25.6, 0.76, -8], neck: [64, 58, 0.7, -110], neckBehind: true },
+  },
 };

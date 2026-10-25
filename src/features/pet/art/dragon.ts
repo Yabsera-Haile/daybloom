@@ -80,12 +80,16 @@ const cheeks = (opacity = 0.7, rx = 6) =>
 const nostrils = (x: number, y: number, s = 1) =>
   circle(x - 3 * s, y, 1.3 * s, shade) + circle(x + 3 * s, y, 1.3 * s, shade);
 
-const sitHead =
-  // little gold horns and peach spikes behind a round head
+/** Little gold horns (drawn again over a beanie, so they poke through it). */
+const sitHorns =
   path('M62 25 C57 17 57 9.5 60.5 5 C64 10 69 15.5 71.5 22 Z', horn) +
   path('M62.4 16 C63.6 18.6 66 21 68.6 22.6 L71.5 22 C69 15.5 64 10 60.5 5 C59.4 8.6 60.2 12.6 62.4 16 Z', hornShade) +
   path('M98 25 C103 17 103 9.5 99.5 5 C96 10 91 15.5 88.5 22 Z', horn) +
-  path('M97.6 16 C96.4 18.6 94 21 91.4 22.6 L88.5 22 C91 15.5 96 10 99.5 5 C100.6 8.6 99.8 12.6 97.6 16 Z', hornShade) +
+  path('M97.6 16 C96.4 18.6 94 21 91.4 22.6 L88.5 22 C91 15.5 96 10 99.5 5 C100.6 8.6 99.8 12.6 97.6 16 Z', hornShade);
+
+const sitHead =
+  // little gold horns and peach spikes behind a round head
+  sitHorns +
   path('M72 19 Q75.5 7.5 79 16 Q80 13.6 81 16 Q84.5 7.5 88 19 Z', spike) +
   path('M80 14 C104 14 117 28 117 44 C117 61 103 74 80 74 C57 74 43 61 43 44 C43 28 56 14 80 14 Z', fur) +
   ellipse(80, 59, 15, 10, snout) +
@@ -136,9 +140,12 @@ const sleepEar = (left: boolean) =>
     ? path('M28 84 C21 80 17 73 16.6 67 C23 69 29 73.6 32.4 79 Z', wing)
     : path('M76 72 C80 66 85.6 62 91 61 C89.6 67 86 72 80.6 75.6 Z', wing);
 
-const sleepHead =
+const sleepHorns =
   path('M42 70 C38 63 38.4 56 41.6 52 C45 56.6 49.4 61.6 51.4 67.6 Z', horn) +
-  path('M62 68.6 C64 61.6 68.6 56.6 73.6 54.6 C73.6 60 70.6 65.6 66.4 70 Z', horn) +
+  path('M62 68.6 C64 61.6 68.6 56.6 73.6 54.6 C73.6 60 70.6 65.6 66.4 70 Z', horn);
+
+const sleepHead =
+  sleepHorns +
   path('M54 66 C73 66 86 76.5 86 90 C86 104.5 72.5 113 54 113 C35.5 113 22 104.5 22 90 C22 76.5 35 66 54 66 Z', fur) +
   ellipse(54, 102, 13, 8.4, snout) +
   nostrils(54, 99, 0.8);
@@ -179,9 +186,12 @@ const stretchEar = (back: boolean) =>
     ? path('M60 80 C64 74 69.6 70 75 69 C73.6 75 70 80 64.6 83.6 Z', wing)
     : path('M30 86 C23 82 19 75 18.6 69 C25 71 31 75.6 34.4 81 Z', wing);
 
-const stretchHead =
+const stretchHorns =
   path('M33 76 C29 69 29.4 62 32.6 58 C36 62.6 40.4 67.6 42.4 73.6 Z', horn) +
-  path('M53 74.6 C55 67.6 59.6 62.6 64.6 60.6 C64.6 66 61.6 71.6 57.4 76 Z', horn) +
+  path('M53 74.6 C55 67.6 59.6 62.6 64.6 60.6 C64.6 66 61.6 71.6 57.4 76 Z', horn);
+
+const stretchHead =
+  stretchHorns +
   path('M45 72 C59 72 67 81 67 91 C67 101.5 57.5 108 45 108 C32.5 108 23.5 101.5 23.5 91 C23.5 81 31 72 45 72 Z', fur) +
   ellipse(43, 99.5, 11, 7.4, snout) +
   nostrils(43, 96.6, 0.75);
@@ -215,9 +225,12 @@ const leapEar = (back: boolean) =>
     ? path('M58 38 C62 32 67.6 28 73 27 C71.6 33 68 38 62.6 41.6 Z', wing)
     : path('M30 45 C23 41 19 34 18.6 28 C25 30 31 34.6 34.4 40 Z', wing);
 
-const leapHead =
+const leapHorns =
   path('M33 35 C29 28 29.4 21 32.6 17 C36 21.6 40.4 26.6 42.4 32.6 Z', horn) +
-  path('M53 33.6 C55 26.6 59.6 21.6 64.6 19.6 C64.6 25 61.6 30.6 57.4 35 Z', horn) +
+  path('M53 33.6 C55 26.6 59.6 21.6 64.6 19.6 C64.6 25 61.6 30.6 57.4 35 Z', horn);
+
+const leapHead =
+  leapHorns +
   path('M45 31 C59 31 67 40 67 50 C67 60.5 57.5 67 45 67 C32.5 67 23.5 60.5 23.5 50 C23.5 40 31 31 45 31 Z', fur) +
   ellipse(41, 58.5, 11, 7.4, snout) +
   nostrils(40, 55.6, 0.75);
@@ -252,6 +265,7 @@ export const dragon: PetArt = {
       { svg: sitEar(-1), pivot: [111.5, 42] },
     ],
     head: { svg: sitHead, pivot: [80, 74] },
+    horns: sitHorns,
     front: sitFront,
     faces: {
       content: {
@@ -314,6 +328,7 @@ export const dragon: PetArt = {
       { svg: sleepEar(false), pivot: [79, 74] },
     ],
     head: { svg: sleepHead, pivot: [54, 113] },
+    horns: sleepHorns,
     face: sleepFace,
     front: sleepFront,
   },
@@ -327,6 +342,7 @@ export const dragon: PetArt = {
       { svg: grow(stretchCentre, stretchEar(false)), pivot: grown(stretchCentre, [33, 82]) },
     ],
     head: { svg: grow(stretchCentre, stretchHead), pivot: grown(stretchCentre, [52, 104]) },
+    horns: grow(stretchCentre, stretchHorns),
     face: grow(stretchCentre, stretchFace),
   },
 
@@ -339,6 +355,15 @@ export const dragon: PetArt = {
       { svg: grow(leapCentre, leapEar(false)), pivot: grown(leapCentre, [33, 41]) },
     ],
     head: { svg: grow(leapCentre, leapHead), pivot: grown(leapCentre, [52, 64]) },
+    horns: grow(leapCentre, leapHorns),
     face: grow(leapCentre, leapFace),
+  },
+
+  // where a seasonal outfit sits (MS-13): the top of the head, and under the chin
+  fits: {
+    sit: { hat: [80, 14, 0.95, 0], neck: [80, 74, 1, 0] },
+    sleep: { hat: [54, 66, 0.86, -8], neck: [86, 92, 0.8, -90], neckBehind: true },
+    stretch: { hat: [45, 66.6, 0.76, -6], neck: [64, 94, 0.7, -110], neckBehind: true },
+    leap: { hat: [45, 25.6, 0.76, -8], neck: [64, 58, 0.7, -110], neckBehind: true },
   },
 };

@@ -28,6 +28,20 @@ export interface PetArt {
   stretch: Pose & { face: string };
   /** Mid-leap, for jumping off somewhere else and landing again. */
   leap: Pose & { face: string };
+  /** Where seasonal outfits sit in each pose (MS-13; drawn in art/outfits.ts). */
+  fits: Record<PoseName, Fit>;
+}
+
+/** A spot in the box to dress: x, y, size (1 for a head about 74 wide) and turn (degrees). */
+export type Place = [x: number, y: number, size: number, turn: number];
+
+export interface Fit {
+  /** The top of the head, where a hat sits. */
+  hat: Place;
+  /** Just under the chin, for a scarf; none where the neck can't be seen. */
+  neck?: Place;
+  /** The scarf goes behind the head (curled up asleep, side views) rather than over the collar. */
+  neckBehind?: boolean;
 }
 
 export type FaceName = Expression | 'yawn' | 'beam';
@@ -51,6 +65,8 @@ export interface Pose {
   head: Part;
   /** In front of everything: paws, a collar, a tail wrapped round the front. */
   front?: string;
+  /** Drawn again over a hat that covers the top of the head, so they poke through it (a dragon's horns). */
+  horns?: string;
 }
 
 export interface Face {
