@@ -34,6 +34,8 @@ export const monthDay = (day: string) => dayText(day, { month: 'short', day: 'nu
 export const monthYear = (day: string) => dayText(day, { month: 'long', year: 'numeric' });
 /** "October" */
 export const monthName = (day: string) => dayText(day, { month: 'long' });
+/** A month's first letter, for a chart's axis: J, F, M… */
+export const monthLetter = (day: string) => dayText(day, { month: 'narrow' });
 /** "Wednesday" */
 export const weekdayLong = (day: string) => dayText(day, { weekday: 'long' });
 /** "Wed" */
