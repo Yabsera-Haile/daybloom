@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v1.1, 2026-10-26. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 expenses from bank texts (Android), v4 a first-run tour, permissions, small screens, tablets and foldables, v5 the companion pet (**Phase 3 done**, ahead of Phase 2), and v6 your phone's calendars in both directions (**Phase 4 step A done**). Next: Phase 2 (polish and beta).
+**Status:** v1.1, 2026-10-26. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 expenses from bank texts (Android), v4 a first-run tour, permissions, small screens, tablets and foldables, v5 the companion pet (**Phase 3 done**, ahead of Phase 2), v6 your phone's calendars in both directions (**Phase 4 step A done**), and v6.1 a year of spending at a glance on Budget (BU-12). Next: Phase 2 (polish and beta).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
