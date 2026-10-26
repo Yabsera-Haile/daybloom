@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/db/client';
 import { useSettings } from '@/data/hooks';
 import { PetChoices } from '@/features/pet/PetChoices';
+import { useRestore } from '@/features/RestoreBackup';
 import { usePermissions, type PhonePermissions } from '@/features/usePermissions';
 import { t } from '@/i18n';
 import { clock } from '@/i18n/format';
@@ -203,6 +204,8 @@ export default function OnboardingScreen() {
   const nextAfter = (from: PageId, now: PhonePermissions = permissions) =>
     ORDER.slice(ORDER.indexOf(from) + 1).find((p) => applies(p, now)) ?? 'done';
   const next = () => setPage(nextAfter(page));
+  // a new phone with a backup (ST-07): the name and companion come with it, so on to permissions
+  const restore = useRestore(() => setPage(nextAfter('companion')));
 
   const finish = () => {
     saveSetting(db, 'onboarded', true);
@@ -254,6 +257,7 @@ export default function OnboardingScreen() {
               </View>
             </Middle>
             <Button label={t.onboarding.start} size="xl" fullWidth onPress={next} />
+            <Button label={t.restore.firstRun} variant="text" fullWidth onPress={restore.start} />
           </View>
         ) : null}
 
@@ -533,6 +537,7 @@ export default function OnboardingScreen() {
           </View>
         ) : null}
       </View>
+      {restore.sheet}
     </View>
   );
 }

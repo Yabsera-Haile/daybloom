@@ -1255,6 +1255,28 @@ export const en = {
     SGD: 'Singapore dollar',
   } as Record<string, string>,
 
+  // bringing a backup back (ST-07)
+  restore: {
+    row: 'Restore from a backup',
+    rowText: 'Bring back your plans from a backup file',
+    firstRun: 'Have a backup? Restore it',
+    title: 'Restore this backup?',
+    made: (day: string) => `Made on ${day}`,
+    events: (n: number) => (n === 1 ? '1 event' : `${n} events`),
+    todos: (n: number) => (n === 1 ? '1 to-do' : `${n} to-dos`),
+    habits: (n: number) => (n === 1 ? '1 habit' : `${n} habits`),
+    expenses: (n: number) => (n === 1 ? '1 expense' : `${n} expenses`),
+    goals: (n: number) => (n === 1 ? '1 savings goal' : `${n} savings goals`),
+    bills: (n: number) => (n === 1 ? '1 bill' : `${n} bills`),
+    empty: 'It has no plans in it, only settings.',
+    warn: 'Everything in Daybloom now is replaced by what’s in the backup. Your phone’s calendars stay as they are.',
+    go: 'Replace with the backup',
+    done: 'Your backup is back',
+    notBackup: 'That file isn’t a Daybloom backup. Pick the file named daybloom-backup.',
+    newer: 'This backup is from a newer Daybloom. Update the app, then try again.',
+    failed: 'Couldn’t open that file. Please try again.',
+  },
+
   // your phone's calendars (GC-01..GC-06)
   calendars: {
     noTitle: '(No title)',

@@ -8,6 +8,7 @@ import { hemisphereForTimeZone, type WeekStart } from '@/calendar/dates';
 import { localTimeZone } from '@/calendar/timezone';
 import { db } from '@/db/client';
 import { useCategories, useSettings, useToday } from '@/data/hooks';
+import { useRestore } from '@/features/RestoreBackup';
 import { CalendarSettings } from '@/features/settings/CalendarSettings';
 import { SoundSheet, ThemeSheet, themeLabel } from '@/features/settings/LookSheets';
 import { themeFor } from '@/features/ThemeProvider';
@@ -59,6 +60,8 @@ export default function SettingsScreen() {
   const currencies = [...new Set([settings.currency, ...Object.keys(t.currencies)])];
   const showToast = useUi((s) => s.showToast);
   const [backingUp, setBackingUp] = useState(false);
+  // ST-07: bring a backup back
+  const restore = useRestore();
   // ST-02: every plan, habit and expense in one file, saved wherever the person chooses
   const backup = async () => {
     if (backingUp) return;
@@ -312,6 +315,7 @@ export default function SettingsScreen() {
                 subtitle={backingUp ? t.settings.backupWorking : t.settings.backupText}
                 onPress={backup}
               />
+              <Row icon="history" title={t.restore.row} subtitle={t.restore.rowText} onPress={restore.start} />
               <Row icon="policy" title={t.settings.privacy} onPress={() => setPicker('privacy')} />
             </RowGroup>
           </>
@@ -321,6 +325,8 @@ export default function SettingsScreen() {
       <Text variant="bodySm" color="onSurfaceVariant" style={{ textAlign: 'center' }}>
         {t.settings.version(Constants.expoConfig?.version ?? '')}
       </Text>
+
+      {restore.sheet}
 
       {picker === 'weekStart' ? (
         <ChoiceSheet<WeekStart>
