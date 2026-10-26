@@ -1,6 +1,6 @@
 # Daybloom: Project Plan
 
-**Status:** v1.0, 2026-10-25. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 expenses from bank texts (Android), v4 a first-run tour, permissions, small screens, tablets and foldables, and v5 the companion pet (**Phase 3 done**, ahead of Phase 2). Next: Phase 2 (polish and beta).
+**Status:** v1.1, 2026-10-26. Every screen designed (`design/daybloom/`). **Phase 0 and milestones M1–M4 built** and checked on the Android emulator and the owner's phone; v2 added colour themes and reminder sounds, v3 expenses from bank texts (Android), v4 a first-run tour, permissions, small screens, tablets and foldables, v5 the companion pet (**Phase 3 done**, ahead of Phase 2), and v6 your phone's calendars in both directions (**Phase 4 step A done**). Next: Phase 2 (polish and beta).
 
 Related documents:
 - [../design/daybloom/](../design/daybloom/): **the v2 designs**, the source of truth for the build (clickable HTML prototype + screenshots)
@@ -218,7 +218,7 @@ Each milestone ends with an installable build on a real phone.
 Done in v5 (2026-10-25); see [section 7](#7-post-mvp-pet-mascot) and the v5 status above.
 
 ### Phase 4: Google Calendar integration
-See [section 8](#8-post-mvp-google-calendar-integration). **Step A built (2026-10-26, branch `calendars`; GC-01…GC-08, D26), and it reads and writes:** Settings › Your calendars, phone events in Daybloom's events table (source 'device'), a two-way sync (`src/calendarSync`: pull, push, fingerprints) over Daybloom's own Android module (`modules/daybloom-calendar`), "Add to Google Calendar" ticked on the event form, invitations answered in event details, and a one-time copy of earlier events. Step B (sign-in, Google's API) only if something needs it: guests with invitation emails, Meet links, instant updates.
+See [section 8](#8-post-mvp-google-calendar-integration). **Step A built (v6.0, 2026-10-26; GC-01…GC-08, D26), checked on the owner's phone, and it reads and writes:** Settings › Your calendars, phone events in Daybloom's events table (source 'device'), a two-way sync (`src/calendarSync`: pull, push, fingerprints) over Daybloom's own Android module (`modules/daybloom-calendar`), "Add to Google Calendar" ticked on the event form, invitations answered in event details, and a one-time copy of earlier events. Step B (sign-in, Google's API) only if something needs it: guests with invitation emails, Meet links, instant updates.
 
 ### Phase 5: iOS release
 The code is iOS-ready throughout. This phase covers the Apple Developer account, iOS QA (notifications, EventKit), the store listing and review.
