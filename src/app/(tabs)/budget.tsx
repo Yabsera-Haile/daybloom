@@ -8,16 +8,19 @@ import { byCategory, expensesIn, totalOf } from '@/budget/entries';
 import { savingGoals, weeklyToReach } from '@/budget/goals';
 import { periodRange, shiftPeriod } from '@/budget/money';
 import { budgetFor, budgetSummary, currentPeriod } from '@/budget/plans';
+import { budgetByMonth, lastMonthShown, spentByMonth, yearRange } from '@/budget/year';
 import { toDayKey } from '@/calendar/dates';
 import { db } from '@/db/client';
 import { useSettings, useToday } from '@/data/hooks';
 import { useLive } from '@/data/live';
 import { BudgetSheet } from '@/features/budget/BudgetSheet';
 import { Companion } from '@/features/pet/Companion';
-import { BillCard, BudgetCard, CategoryBars, EntryRow, GoalCard, ListCard } from '@/features/budget/parts';
+import { BillCard, BudgetCard, CategoryBars, EntryRow, GoalCard, ListCard, ViewSwitch } from '@/features/budget/parts';
+import { YearCard } from '@/features/budget/YearCard';
 import { TabScreen, useHeaderOffset } from '@/features/TabScreen';
 import { t } from '@/i18n';
 import { money, monthDay, monthName, monthYear, timeOf } from '@/i18n/format';
+import { readFlag, saveFlag } from '@/settings';
 import { useUi } from '@/state/ui';
 import {
   Button,
@@ -35,6 +38,8 @@ import {
 /**
  * Budget (BU-01…10; design/daybloom/budget, with ideas from Cashew): how much is left this month or
  * week, a bar that turns red when over, where the money went, recent spending, bills and goals.
+ * Switched to Year (BU-12), the dates step by year and the card shows the year's spending month by
+ * month; where it went and recent spending follow the year.
  */
 export default function BudgetScreen() {
   const settings = useSettings();
@@ -49,8 +54,21 @@ export default function BudgetScreen() {
   const [editingBudget, setEditingBudget] = useState(false);
   const range = periodRange(anchor ?? today, period, ws);
   const isCurrent = today >= range.start && today <= range.end;
+  // the period's budget, or the year's spending (BU-12); remembered for next time
+  const [view, setView] = useState<'period' | 'year'>(() => (readFlag(db, 'budgetYear') ? 'year' : 'period'));
+  const thisYear = Number(today.slice(0, 4));
+  const [pickedYear, setPickedYear] = useState<number | null>(null);
+  const year = pickedYear ?? thisYear;
+  const byYear = view === 'year';
+  const choose = (next: 'period' | 'year') => {
+    setView(next);
+    saveFlag(db, 'budgetYear', next === 'year');
+  };
+  const shown = byYear ? yearRange(year) : range;
 
-  const spent = useLive(() => expensesIn(db, range), [range.start, range.end]);
+  const spent = useLive(() => expensesIn(db, shown), [shown.start, shown.end]);
+  const months = useLive(() => (byYear ? spentByMonth(db, year) : []), [byYear, year]);
+  const monthBudgets = useLive(() => (byYear ? budgetByMonth(db, year) : []), [byYear, year]);
   const budget = useLive(() => budgetFor(db, period, range), [period, range.start]);
   const categories = useLive(() => new Map(allSpendCategories(db).map((c) => [c.id, c])), []);
   const goals = useLive(() => savingGoals(db), []);
@@ -61,19 +79,38 @@ export default function BudgetScreen() {
   const totals = byCategory(spent);
   const next = shiftPeriod(range, period, 1, ws);
   const shift = (by: 1 | -1) => {
+    if (byYear) {
+      setPickedYear(year + by === thisYear ? null : year + by);
+      return;
+    }
     const to = shiftPeriod(range, period, by, ws);
     setAnchor(today >= to.start && today <= to.end ? null : to.start);
   };
+  /** From a month on the chart back to that month's budget. */
+  const openMonth = (month: number) => {
+    const first = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const to = periodRange(first, period, ws);
+    setAnchor(today >= to.start && today <= to.end ? null : first);
+    choose('period');
+  };
+  const switcher = <ViewSwitch value={view} period={period} onChange={choose} />;
   const addDay = isCurrent ? today : range.end < today ? range.end : range.start;
-  const title =
-    period === 'month' ? t.budget.monthTitle(monthName(range.start)) : t.budget.weekTitle(monthDay(range.start));
-  const navLabel = isCurrent
-    ? period === 'month'
-      ? t.budget.thisMonth
-      : t.budget.thisWeek
+  const title = byYear
+    ? t.budget.yearTitle(String(year))
     : period === 'month'
-      ? monthYear(range.start)
-      : `${monthDay(range.start)} – ${monthDay(range.end)}`;
+      ? t.budget.monthTitle(monthName(range.start))
+      : t.budget.weekTitle(monthDay(range.start));
+  const navLabel = byYear
+    ? year === thisYear
+      ? t.budget.thisYear
+      : String(year)
+    : isCurrent
+      ? period === 'month'
+        ? t.budget.thisMonth
+        : t.budget.thisWeek
+      : period === 'month'
+        ? monthYear(range.start)
+        : `${monthDay(range.start)} – ${monthDay(range.end)}`;
   const left = summary.budgetCents ? Math.max(0, Math.round((1 - summary.usedShare) * 100)) : 0;
 
   // the tour scrolls down to savings goals to show them (ON-02); on a wide screen they're in the
@@ -103,7 +140,12 @@ export default function BudgetScreen() {
                 label={t.budget.viewAll}
                 variant="text"
                 size="md"
-                onPress={() => router.push({ pathname: '/spending', params: { start: range.start } })}
+                onPress={() =>
+                  router.push({
+                    pathname: '/spending',
+                    params: byYear ? { year: String(year) } : { start: range.start },
+                  })
+                }
               />
             ) : undefined
           }
@@ -223,12 +265,22 @@ export default function BudgetScreen() {
         </Text>
         <DateNavigator
           label={navLabel}
-          current={isCurrent}
-          onLabelPress={isCurrent ? undefined : () => setAnchor(null)}
+          current={byYear ? year === thisYear : isCurrent}
+          onLabelPress={
+            byYear
+              ? year === thisYear
+                ? undefined
+                : () => setPickedYear(null)
+              : isCurrent
+                ? undefined
+                : () => setAnchor(null)
+          }
           onPrevious={() => shift(-1)}
           onNext={() => shift(1)}
-          previousLabel={period === 'month' ? t.budget.previousMonth : t.budget.previousWeek}
-          nextLabel={period === 'month' ? t.budget.nextMonth : t.budget.nextWeek}
+          previousLabel={
+            byYear ? t.budget.previousYear : period === 'month' ? t.budget.previousMonth : t.budget.previousWeek
+          }
+          nextLabel={byYear ? t.budget.nextYear : period === 'month' ? t.budget.nextMonth : t.budget.nextWeek}
         />
         {/* the companion can nap here, right of the title and the dates (MS-12) */}
         <View className="absolute bottom-0 right-0" pointerEvents="box-none">
@@ -237,7 +289,7 @@ export default function BudgetScreen() {
       </View>
 
       {/* BU-02: a gentle line while there's budget left (hidden in calm mode) */}
-      {isCurrent && summary.budgetCents && summary.status !== 'over' && !settings.calm ? (
+      {!byYear && isCurrent && summary.budgetCents && summary.status !== 'over' && !settings.calm ? (
         <View className="flex-row items-center gap-space-md rounded-2xl bg-surface-container p-space-md">
           <Sticker name="savings" size={56} rotate={-6} />
           <View className="flex-1 gap-1">
@@ -251,13 +303,26 @@ export default function BudgetScreen() {
         </View>
       ) : null}
 
-      <BudgetCard
-        summary={summary}
-        currency={currency}
-        isCurrent={isCurrent}
-        nextStart={next.start}
-        onEdit={() => setEditingBudget(true)}
-      />
+      {byYear ? (
+        <YearCard
+          year={year}
+          spent={months}
+          budgets={monthBudgets}
+          last={lastMonthShown(year, today)}
+          currency={currency}
+          switcher={switcher}
+          onOpenMonth={openMonth}
+        />
+      ) : (
+        <BudgetCard
+          summary={summary}
+          currency={currency}
+          isCurrent={isCurrent}
+          nextStart={next.start}
+          onEdit={() => setEditingBudget(true)}
+          switcher={switcher}
+        />
+      )}
 
       {totals.length > 0 ? (
         <View className="gap-space-sm">
@@ -278,7 +343,10 @@ export default function BudgetScreen() {
             categories={categories}
             currency={currency}
             onPress={(id) =>
-              router.push({ pathname: '/spending', params: { start: range.start, category: id ?? 'none' } })
+              router.push({
+                pathname: '/spending',
+                params: { ...(byYear ? { year: String(year) } : { start: range.start }), category: id ?? 'none' },
+              })
             }
           />
         </View>

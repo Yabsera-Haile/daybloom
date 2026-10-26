@@ -5,6 +5,7 @@ import { addExpense, expensesIn } from '@/budget/entries';
 import { periodRange } from '@/budget/money';
 import { setBudget } from '@/budget/plans';
 import { toDayKey } from '@/calendar/dates';
+import { monthName } from '@/i18n/format';
 import { withTestDb } from '@/db/testDb';
 import { BudgetSheet } from '@/features/budget/BudgetSheet';
 import { ExpenseSheet } from '@/features/budget/ExpenseSheet';
@@ -75,5 +76,39 @@ describe('budget tab', () => {
     await refresh();
     expect(screen.getByText('This week')).toBeTruthy();
     expect(screen.getByText('Left to spend')).toBeTruthy();
+  });
+
+  it('T-BU12.5 Year shows the year month by month; a month on it opens that month; earlier years too', async () => {
+    const year = Number(today.slice(0, 4));
+    const thisMonth = monthName(today);
+    setBudget(getDb(), 'month', 485000, today, 1);
+    addExpense(getDb(), {
+      amountCents: 6000,
+      description: 'Shoes',
+      categoryId: 'other',
+      occurredAt: Date.now(),
+      currency: 'USD',
+    });
+    await render(<BudgetScreen />);
+    await fireEvent.press(screen.getByRole('radio', { name: 'The year’s spending, month by month' }));
+
+    expect(screen.getByText(`Spending in ${year}`)).toBeTruthy();
+    expect(screen.getByText('This year')).toBeTruthy();
+    expect(screen.getByText(`Spent in ${year}`)).toBeTruthy();
+    expect(screen.getByText(`${thisMonth}: 60.00`)).toBeTruthy();
+    expect(screen.getByText('4,790.00 under budget')).toBeTruthy();
+    expect(screen.getByRole('adjustable', { name: /Spending each month of/ })).toBeTruthy();
+    // where it went and recent spending follow the year
+    expect(screen.getByText('Shoes')).toBeTruthy();
+
+    await fireEvent.press(screen.getByRole('button', { name: `Open ${thisMonth}` }));
+    expect(screen.getByText(`${thisMonth} budget`)).toBeTruthy();
+    expect(screen.getByText('Left to spend')).toBeTruthy();
+
+    // back to the year, and the one before: every month at zero
+    await fireEvent.press(screen.getByRole('radio', { name: 'The year’s spending, month by month' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Previous year' }));
+    expect(screen.getByText(`Spending in ${year - 1}`)).toBeTruthy();
+    expect(screen.getByText('December: 0.00')).toBeTruthy();
   });
 });

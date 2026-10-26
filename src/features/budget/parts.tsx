@@ -130,12 +130,54 @@ export function EntryRow({
 }
 
 /** Left to spend, the bar that turns red when over, and the pace for the rest of the period (BU-03). */
+/**
+ * The period's budget or the year's spending (BU-12): two words in the card's corner, so the page
+ * above, and the companion's nap spot beside the dates, stay as they are.
+ */
+export function ViewSwitch({
+  value,
+  period,
+  onChange,
+}: {
+  value: 'period' | 'year';
+  period: 'month' | 'week';
+  onChange: (value: 'period' | 'year') => void;
+}) {
+  return (
+    <View
+      accessibilityRole="radiogroup"
+      accessibilityLabel={t.budget.showAs}
+      className="flex-row rounded-full bg-surface-container p-0.5">
+      {(['period', 'year'] as const).map((v) => {
+        const on = v === value;
+        const label = v === 'year' ? t.budget.year : period === 'week' ? t.budget.week : t.budget.month;
+        const spoken = v === 'year' ? t.budget.yearView : period === 'week' ? t.budget.weekView : t.budget.monthView;
+        return (
+          <Pressable
+            key={v}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: on }}
+            accessibilityLabel={spoken}
+            onPress={() => onChange(v)}
+            hitSlop={8}
+            className={`h-9 min-w-[56px] items-center justify-center rounded-full px-3 ${on ? 'bg-primary' : 'active:opacity-70'}`}>
+            <Text variant="labelMd" color={on ? 'onPrimary' : 'onSurfaceVariant'}>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export function BudgetCard({
   summary,
   currency,
   isCurrent,
   nextStart,
   onEdit,
+  switcher,
 }: {
   summary: BudgetSummary;
   currency: string;
@@ -143,6 +185,8 @@ export function BudgetCard({
   /** first day of the next period, for "starts fresh on" */
   nextStart: string;
   onEdit: () => void;
+  /** Month | Year, in the top corner */
+  switcher?: ReactNode;
 }) {
   const s = summary;
   const spent = money(s.spentCents, currency);
@@ -150,9 +194,12 @@ export function BudgetCard({
   if (s.budgetCents === null) {
     return (
       <Card className="gap-space-sm">
-        <Text variant="labelMd" color="onSurfaceVariant">
-          {t.budget.spent}
-        </Text>
+        <View className="flex-row items-center justify-between gap-2">
+          <Text variant="labelMd" color="onSurfaceVariant" style={{ flexShrink: 1 }}>
+            {t.budget.spent}
+          </Text>
+          {switcher}
+        </View>
         <Text variant="displayLgMobile">{spent}</Text>
         <Text variant="bodyMd" color="onSurfaceVariant">
           {t.budget.noBudgetText}
@@ -173,18 +220,19 @@ export function BudgetCard({
     );
   return (
     <Card className="gap-space-sm">
-      <View className="flex-row items-start justify-between gap-2">
-        <View className="flex-1" accessible>
-          <View className="flex-row items-center gap-1">
-            {over ? <Icon name="error" size={18} color="error" /> : null}
-            <Text variant="labelMd" color={over ? 'error' : 'onSurfaceVariant'}>
-              {over ? t.budget.overBy : t.budget.leftToSpend}
-            </Text>
-          </View>
-          <Text variant="displayLgMobile" color={over ? 'error' : 'primary'}>
-            {money(Math.abs(s.leftCents), currency)}
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="flex-1 flex-row items-center gap-1">
+          {over ? <Icon name="error" size={18} color="error" /> : null}
+          <Text variant="labelMd" color={over ? 'error' : 'onSurfaceVariant'} style={{ flexShrink: 1 }}>
+            {over ? t.budget.overBy : t.budget.leftToSpend}
           </Text>
         </View>
+        {switcher}
+      </View>
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <Text variant="displayLgMobile" color={over ? 'error' : 'primary'}>
+          {money(Math.abs(s.leftCents), currency)}
+        </Text>
         {isCurrent ? badge : null}
       </View>
       <View className="flex-row flex-wrap items-center justify-between gap-x-2">
