@@ -44,7 +44,7 @@
 | **Budget** | A monthly or weekly budget, spending by category, savings goals, bills, and a year of spending as a chart |
 | **Bank texts** (Android) | Payments from MoMo, M-Pesa or bank texts can be added to your budget for you |
 | **Your phone's calendars** | Show Google Calendar (and any calendar on the phone) next to your plans, add events to it, and answer invitations |
-| **A companion** | A cat, puppy or dragon naps on your pages, dresses for the season, cheers when you get things done and grumbles a little when things slip |
+| **A companion** | A cat, dog or dragon naps on your pages, dresses for the season, cheers when you get things done and grumbles a little when things slip |
 | **Make it yours** | Four seasonal colour themes, reminder sounds, calm mode, large-text and screen-reader support |
 
 ## Using Daybloom
