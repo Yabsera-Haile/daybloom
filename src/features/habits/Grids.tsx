@@ -79,10 +79,19 @@ export function DailyGrid({
             key={d}
             className={`items-center rounded-lg py-0.5 ${d === today ? 'bg-primary-fixed/60' : ''}`}
             style={{ width: CELL, marginLeft: GAP }}>
-            <Text variant="labelSm" color={d === today ? 'primary' : 'onSurfaceVariant'}>
+            {/* one line each, shrinking with large text so a date never breaks */}
+            <Text
+              variant="labelSm"
+              color={d === today ? 'primary' : 'onSurfaceVariant'}
+              numberOfLines={1}
+              adjustsFontSizeToFit>
               {weekdayLetter(d)}
             </Text>
-            <Text variant="labelSm" color={d === today ? 'primary' : 'onSurfaceVariant'}>
+            <Text
+              variant="labelSm"
+              color={d === today ? 'primary' : 'onSurfaceVariant'}
+              numberOfLines={1}
+              adjustsFontSizeToFit>
               {parseDayKey(d).day}
             </Text>
           </View>
@@ -160,10 +169,18 @@ export function WeeklyGrid({
               key={w}
               className={`items-center rounded-lg py-0.5 ${w === current ? 'bg-primary-fixed/60' : ''}`}
               style={{ width: W, marginLeft: 6 }}>
-              <Text variant="labelSm" color={w === current ? 'primary' : 'onSurfaceVariant'}>
+              <Text
+                variant="labelSm"
+                color={w === current ? 'primary' : 'onSurfaceVariant'}
+                numberOfLines={1}
+                adjustsFontSizeToFit>
                 {a}
               </Text>
-              <Text variant="labelSm" color={w === current ? 'primary' : 'onSurfaceVariant'}>
+              <Text
+                variant="labelSm"
+                color={w === current ? 'primary' : 'onSurfaceVariant'}
+                numberOfLines={1}
+                adjustsFontSizeToFit>
                 {b}
               </Text>
             </View>

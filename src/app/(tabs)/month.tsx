@@ -77,7 +77,7 @@ function TimedRow({ plan, day, tinted }: { plan: Plan; day: string; tinted?: boo
       }
       className={`min-h-touch flex-row items-stretch gap-3 rounded-xl p-2.5 active:opacity-80 ${urgent ? 'bg-secondary-fixed/50' : tinted ? 'bg-surface-container-low' : ''}`}>
       <View className="w-1.5 rounded-full" style={{ backgroundColor: label.stripe }} />
-      <Text variant="labelMd" color={urgent ? 'secondary' : 'onSurfaceVariant'} style={{ width: 64, paddingTop: 2 }}>
+      <Text variant="labelMd" color={urgent ? 'secondary' : 'onSurfaceVariant'} style={{ minWidth: 64, paddingTop: 2 }}>
         {when}
       </Text>
       <View style={{ flex: 1 }}>
@@ -165,6 +165,8 @@ export default function MonthScreen() {
             key={d}
             variant="labelSm"
             color="onSurfaceVariant"
+            numberOfLines={1}
+            adjustsFontSizeToFit
             style={{ flex: 1, textAlign: 'center', paddingVertical: 4, textTransform: 'uppercase' }}>
             {weekdayShort(d)}
           </Text>
@@ -355,7 +357,7 @@ export default function MonthScreen() {
                 <View
                   className={`h-12 w-12 items-center justify-center rounded-xl ${x.urgent ? 'bg-secondary-fixed' : 'bg-tertiary-fixed'}`}>
                   <Text
-                    variant="labelXs"
+                    variant="labelSm"
                     weight="700"
                     color={x.urgent ? 'onSecondaryFixed' : 'onTertiaryFixed'}
                     style={{ textTransform: 'uppercase' }}>
@@ -490,6 +492,8 @@ export default function MonthScreen() {
                 key={v}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: view === v }}
+                // the pill's padding counts too: 48dp to touch (NFR-04)
+                hitSlop={{ top: 4, bottom: 4 }}
                 onPress={() => setView(v)}
                 className={`h-10 flex-row items-center gap-1 rounded-full px-3 ${view === v ? 'bg-surface-container-lowest' : ''}`}
                 style={view === v ? shadows.card : undefined}>

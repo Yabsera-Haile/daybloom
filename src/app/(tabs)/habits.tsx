@@ -287,6 +287,7 @@ export default function HabitsScreen() {
                               <Pressable
                                 accessibilityRole="button"
                                 onPress={() => setRoutineSheet(g.routine!.id)}
+                                hitSlop={4}
                                 className="h-10 justify-center px-2">
                                 <Text variant="labelMd" color="primary">
                                   {t.habits.editRoutine}

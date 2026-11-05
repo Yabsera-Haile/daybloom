@@ -173,6 +173,8 @@ function HourRow({
       <Text
         variant={labelSmall ? 'labelSm' : 'labelMd'}
         color="outline"
+        numberOfLines={1}
+        adjustsFontSizeToFit
         style={{ width: 48, textAlign: 'right', paddingTop: labelSmall ? 8 : 12 }}>
         {label}
       </Text>
@@ -217,7 +219,12 @@ export function Timeline({ day, isToday, now, events, tasks, notes, markers = []
       accessible
       accessibilityLabel={t.today.nowAt(timeOf(now, tf))}
       className="flex-row items-center gap-2">
-      <Text variant="labelSm" color="secondary" style={{ width: 48, textAlign: 'right' }}>
+      <Text
+        variant="labelSm"
+        color="secondary"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        style={{ width: 48, textAlign: 'right' }}>
         {timeOf(now, tf).replace(/ (AM|PM)$/, '')}
       </Text>
       <View className="flex-1 flex-row items-center">

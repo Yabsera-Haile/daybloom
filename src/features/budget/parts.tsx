@@ -309,7 +309,11 @@ export function CategoryBars({
                   style={{ width: `${Math.max(2, pct(row.share))}%` }}
                 />
               </View>
-              <Text variant="labelSm" color="onSurfaceVariant" style={{ width: 40, textAlign: 'right' }}>
+              <Text
+                variant="labelSm"
+                color="onSurfaceVariant"
+                numberOfLines={1}
+                style={{ minWidth: 40, textAlign: 'right' }}>
                 {`${pct(row.share)}%`}
               </Text>
             </View>
@@ -423,7 +427,7 @@ export function GoalCard({
         <View className="flex-1">
           <ProgressBar value={share} tone={tone} label={t.budget.goals.progress(goal.title, pct(share))} />
         </View>
-        <Text variant="labelMd" color={tone} style={{ width: 44, textAlign: 'right' }}>
+        <Text variant="labelMd" color={tone} numberOfLines={1} style={{ minWidth: 44, textAlign: 'right' }}>
           {t.budget.goals.pct(pct(share))}
         </Text>
       </View>

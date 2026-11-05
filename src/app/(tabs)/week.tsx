@@ -328,7 +328,8 @@ export default function WeekScreen() {
       sideRef={sideScroll}>
       {/* Header (WK-01..03) */}
       <View className="gap-1 pt-space-sm">
-        <View className="flex-row items-center justify-between">
+        {/* with large text the pace goes under the week number */}
+        <View className="flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1">
           <View className="flex-row items-center gap-1">
             <Icon name="calendar_today" size={18} color="primary" />
             <Text variant="labelMd" color="onSurfaceVariant">

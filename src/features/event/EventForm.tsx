@@ -538,6 +538,7 @@ export function EventForm({ initial }: { initial: Initial }) {
                             accessibilityRole="checkbox"
                             accessibilityState={{ checked: on }}
                             accessibilityLabel={weekdayName(d)}
+                            hitSlop={2}
                             onPress={() => setCustomDays(on ? customDays.filter((x) => x !== d) : [...customDays, d])}
                             className={`h-11 w-11 items-center justify-center rounded-full border-[1.5px] ${on ? 'border-primary bg-primary' : 'border-outline-variant'}`}>
                             <Text variant="labelLg" color={on ? 'onPrimary' : 'onSurface'}>

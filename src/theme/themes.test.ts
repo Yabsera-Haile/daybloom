@@ -44,12 +44,52 @@ const TEXT: [ColorName, ColorName][] = [
   ['onTertiaryFixed', 'tertiaryFixed'],
   ['onPrimaryContainer', 'primaryContainer'],
   ['error', 'surface'],
+  // added with the companion, the calendars, the year chart and restore
+  ['primary', 'primaryFixed'], // Undo on the sage toast, a date navigator away from today
+  ['onSurfaceVariant', 'surfaceContainerLowest'], // card details, chart scale, calendar marks
+  ['onSurfaceVariant', 'surfaceContainerLow'], // the chart's month readout
+  ['error', 'surfaceContainerLowest'], // over budget
+  ['error', 'surfaceContainerLow'],
+  ['onSurface', 'surfaceVariant'], // Creative events
+  ['onSurfaceVariant', 'surfaceVariant'],
+  ['onSecondaryFixed', 'secondaryFixed'], // the over-budget badge
 ];
+
+/** A colour laid over another at some opacity (event cards are their category colour at 60%). */
+function over(top: string, under: string, alpha: number) {
+  const ch = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const [a, b] = [ch(top), ch(under)];
+  return `#${a
+    .map((v, i) =>
+      Math.round(v * alpha + b[i] * (1 - alpha))
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('')}`;
+}
 
 describe('seasonal themes', () => {
   it.each(THEME_NAMES)('T-NFR04.1 %s keeps every text colour readable (4.5:1)', (name) => {
     const c = palettes[name];
     const failing = TEXT.filter(([fg, bg]) => contrast(c[fg], c[bg]) < 4.5).map(([fg, bg]) => `${fg} on ${bg}`);
+    expect(failing).toEqual([]);
+  });
+
+  it.each(THEME_NAMES)('T-NFR04.3 %s: event cards keep their titles and details readable (4.5:1)', (name) => {
+    const c = palettes[name];
+    const look = themes[name].lookFor;
+    // the card is its category colour at 60% over a white card; Social and Creative are solid
+    const cards: [string, string, string][] = [
+      ['wellness', over(c.primaryFixed, c.surfaceContainerLowest, 0.6), 'primary'],
+      ['work', over(c.secondaryFixed, c.surfaceContainerLowest, 0.6), 'secondary'],
+      ['personal', over(c.tertiaryFixed, c.surfaceContainerLowest, 0.6), 'tertiary'],
+      ['creative', c.surfaceVariant, 'creative'],
+    ];
+    const failing = cards.flatMap(([key, bg]) =>
+      (['title', 'detail'] as const)
+        .filter((part) => contrast(look(key)[part] as string, bg) < 4.5)
+        .map((part) => `${key} ${part}`),
+    );
     expect(failing).toEqual([]);
   });
 
